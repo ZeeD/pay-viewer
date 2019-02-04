@@ -4,10 +4,16 @@ A Db contains all the informations
 internally is a dict[ feature, List[ Pair[when, howmuch] ] ]
 '''
 
-from .info import Info
 import collections
+import datetime
+import decimal
+import typing
+
+from .info import Info
+
 
 class Db:
+
     def __init__(self):
         self._dict: typing.DefaultDict[str,
                                        typing.List[(datetime.datetime,

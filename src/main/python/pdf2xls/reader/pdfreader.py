@@ -1,10 +1,12 @@
 'pdf reader'
 
-from .abcreader import ABCReader
 import io
+import typing
+
+import PyPDF2
 
 from ..model import Info
-import typing
+from .abcreader import ABCReader
 
 
 class PdfReader(ABCReader):
@@ -14,6 +16,13 @@ class PdfReader(ABCReader):
                    info_file: typing.Optional[io.RawIOBase]
                    ) -> typing.Iterable[Info]:
         'read from a file'
+
         if info_file is None:
             raise Exception('you must pass a file')
-        raise NotImplementedError()
+
+        pdfReader = PyPDF2.PdfFileReader(info_file)
+        pageObj = pdfReader.getPage(0)
+        text = pageObj.extractText()
+        print(text)
+
+        return []
