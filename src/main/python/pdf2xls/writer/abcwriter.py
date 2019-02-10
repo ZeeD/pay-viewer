@@ -1,16 +1,18 @@
 'ABC for the writers'
 
 import abc
-import io
 import typing
 
-from ..model import Info
+from ..model import info
+
 
 class ABCWriter(abc.ABC):
     'define a writer'
 
-    def write_infos(self,
-                    infos: typing.Iterable[Info],
-                    info_file: io.RawIOBase
-                    ) -> None:
-        'write the infos on a file'
+    @abc.abstractmethod
+    def write_feature_infos(self,
+                            info_file: typing.BinaryIO,
+                            feature: str,
+                            infos: typing.Iterable[info.InfoPoint]
+                            ) -> None:
+        'append an info to a file'

@@ -1,19 +1,18 @@
 'xls writer'
 
-from .abcwriter import ABCWriter
-import io
-
-from ..model import Info
 import typing
 
+from . import abcwriter
+from ..model import info
 
-class XlsWriter(ABCWriter):
+
+class XlsWriter(abcwriter.ABCWriter):
     'write infos on an .xls'
 
-    def write_infos(self,
-                    infos: typing.Iterable[Info],
-                    info_file: io.RawIOBase
-                    ) -> None:
+    def write_feature_infos(self,
+                            info_file: typing.BinaryIO,
+                            feature: str,
+                            infos: typing.Iterable[info.InfoPoint]) -> None:
         'write the infos on a file'
         if info_file is None:
             raise Exception('you must pass a file')

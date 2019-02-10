@@ -5,21 +5,23 @@ internally is a dict[ feature, List[ Pair[when, howmuch] ] ]
 '''
 
 import collections
-import datetime
-import decimal
 import typing
 
-from .info import Info
+from . import info
 
 
 class Db:
 
     def __init__(self):
         self._dict: typing.DefaultDict[str,
-                                       typing.List[(datetime.datetime,
-                                                    decimal.Decimal)]] = None
-        self._dict = collections.defaultdict(list)
+                                       typing.List[info.InfoPoint]] = collections.defaultdict(list)
 
-    def read_info(self, info: Info) -> None:
+    def add_info(self, info_: info.Info) -> None:
         'add to the internal dict the infos in the info object'
-        self._dict[info.feature].append((info.when, info.howmuch))
+        self._dict[info_.feature].append(info_.infoPoint())
+
+    def group_infos_by_feature(self) -> typing.Mapping[str, typing.Iterable[info.InfoPoint]]:
+        ret: typing.MutableMapping[str, typing.Iterable[info.InfoPoint]] = {}
+        for k in self._dict:
+            ret[k] = sorted(self._dict[k])
+        return ret

@@ -2,10 +2,14 @@
 
 import sys
 
-from pdf2xls.model import Db
-from pdf2xls.reader import HistoryReader, PdfReader
-from pdf2xls.writer import XlsWriter
-import typing
+import pdf2xls.model.db
+import pdf2xls.pdf2xls
+import pdf2xls.reader.historyreader
+import pdf2xls.reader.pdfreader
+import pdf2xls.writer.xlswriter
+
+HISTORY_DAT = 'history.dat'
+OUTPUT_XML = 'output.xml'
 
 
 def main() -> None:
@@ -13,32 +17,21 @@ def main() -> None:
 
     args = sys.argv[1:]
 
-    history_reader = HistoryReader()
-    pdf_reader = PdfReader()
-    xml_writer = XlsWriter()
+    history_reader = pdf2xls.reader.historyreader.HistoryReader()
+    pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
+    xls_writer = pdf2xls.writer.xlswriter.XlsWriter()
 
-    db = Db()
+    db = pdf2xls.model.db.Db()
 
-    return pdf2xml(args, history_reader, pdf_reader, xml_writer, db)
-
-
-def pdf2xml(args: typing.List[str],
-            history_reader: HistoryReader,
-            pdf_reader: PdfReader,
-            xls_writer: XlsWriter,
-            db: Db):
-    'pdf2xml'
-
-    for historic_info in history_reader.read_infos(None):
-        db.add_info(historic_info)
+    with open(HISTORY_DAT, 'rb') as history_file:
+        pdf2xls.pdf2xls.read_infos(history_file, history_reader, db)
 
     for file_name in args:
-        with open(file_name) as pdf_file:
-            for pdf_info in pdf_reader.read_infos(pdf_file):
-                db.add_info(pdf_info)
+        with open(file_name, 'rb') as pdf_file:
+            pdf2xls.pdf2xls.read_infos(pdf_file, pdf_reader, db)
 
-    with open('output.xml', 'wb') as xml_file:
-        xls_writer.write_infos(db.get_all_infos(), xml_file)
+    with open(OUTPUT_XML, 'wb') as xls_file:
+        pdf2xls.pdf2xls.write_infos(xls_file, xls_writer, db)
 
 
 if __name__ == '__main__':
