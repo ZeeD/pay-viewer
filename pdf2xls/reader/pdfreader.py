@@ -1,8 +1,10 @@
 'pdf reader'
 
+import io
 import typing
 
-import PyPDF2
+import pdfminer3.high_level
+import pdfminer3.layout
 
 from . import abcreader
 from ..model import info
@@ -16,9 +18,17 @@ class PdfReader(abcreader.ABCReader):
                    ) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        pdfReader = PyPDF2.PdfFileReader(info_file)
-        pageObj = pdfReader.getPage(0)
-        text = pageObj.extractText()
+        laparams = pdfminer3.layout.LAParams(detect_vertical=True,
+                                             all_texts=True)
+
+        outf = io.StringIO()
+        pdfminer3.high_level.extract_text_to_fp(info_file, outf,
+                                                laparams=laparams,
+                                                debug=True)
+        outf.flush()
+        outf.seek(0)
+        text = outf.read()
+        rows = [ row for row in text.split('\n') if row and row.strip() ]
         print(text)
 
         return []

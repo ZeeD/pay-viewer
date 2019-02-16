@@ -14,6 +14,4 @@ class XlsWriter(abcwriter.ABCWriter):
                             feature: str,
                             infos: typing.Iterable[info.InfoPoint]) -> None:
         'write the infos on a file'
-        if info_file is None:
-            raise Exception('you must pass a file')
         raise NotImplementedError()

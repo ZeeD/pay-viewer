@@ -1,5 +1,7 @@
 'history reader'
 
+import datetime
+import decimal
 import json
 import typing
 
@@ -15,4 +17,13 @@ class HistoryReader(abcreader.ABCReader):
                    ) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        return json.load(info_file, cls=list)
+        return json.load(info_file, object_hook=object_hook)
+
+
+def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:
+    'create info.Info instances if needed'
+
+    when = datetime.datetime.fromisoformat(d['when'])
+    howmuch = decimal.Decimal(d['howmuch'])
+    feature = d['feature']
+    return info.Info(when, howmuch, feature)

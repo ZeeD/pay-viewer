@@ -18,7 +18,7 @@ class Db:
 
     def add_info(self, info_: info.Info) -> None:
         'add to the internal dict the infos in the info object'
-        self._dict[info_.feature].append(info_.infoPoint())
+        self._dict[info_.feature].append(info.infoPoint(info_))
 
     def group_infos_by_feature(self) -> typing.Mapping[str, typing.Iterable[info.InfoPoint]]:
         ret: typing.MutableMapping[str, typing.Iterable[info.InfoPoint]] = {}

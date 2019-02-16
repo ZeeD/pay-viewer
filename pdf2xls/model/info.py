@@ -10,8 +10,12 @@ class InfoPoint(typing.NamedTuple):
     howmuch: decimal.Decimal
 
 
-class Info(InfoPoint):
+class Info(typing.NamedTuple):
+    when: datetime.datetime
+    howmuch: decimal.Decimal
     feature: str
 
-    def infoPoint(self) -> InfoPoint:
-        return InfoPoint(self.when, self.howmuch)
+
+def infoPoint(info: Info) -> InfoPoint:
+    'convert an info to an infopoint'
+    return InfoPoint(info.when, info.howmuch)
