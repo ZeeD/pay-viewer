@@ -9,6 +9,7 @@ verify_ssl = true
 pypdf2 = "*"
 coverage = "*"
 mockito = "*"
+openpyxl = "*"
 
 [requires]
 python_version = "3.7"
