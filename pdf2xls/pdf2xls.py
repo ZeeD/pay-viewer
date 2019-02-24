@@ -14,9 +14,8 @@ def read_infos(input_stream: typing.BinaryIO,
         db_.add_info(info)
 
 
-def write_infos(output_stream: typing.BinaryIO,
-                writer: abcwriter.ABCWriter,
+def write_infos(writer: abcwriter.ABCWriter,
                 db_: db.Db) -> None:
     'wraps the write to a stream from the db'
     for feature, infos in db_.group_infos_by_feature().items():
-        writer.write_feature_infos(output_stream, feature, infos)
+        writer.write_feature_infos(feature, infos)

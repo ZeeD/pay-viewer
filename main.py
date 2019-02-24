@@ -19,7 +19,6 @@ def main() -> None:
 
     history_reader = pdf2xls.reader.historyreader.HistoryReader()
     pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
-    xls_writer = pdf2xls.writer.xlswriter.XlsWriter()
 
     db = pdf2xls.model.db.Db()
 
@@ -31,7 +30,11 @@ def main() -> None:
             pdf2xls.pdf2xls.read_infos(pdf_file, pdf_reader, db)
 
     with open(OUTPUT_XML, 'wb') as xls_file:
-        pdf2xls.pdf2xls.write_infos(xls_file, xls_writer, db)
+        xls_writer = pdf2xls.writer.xlswriter.XlsWriter(xls_file)
+        try:
+            pdf2xls.pdf2xls.write_infos(xls_writer, db)
+        finally:
+            xls_writer.close()
 
 
 if __name__ == '__main__':

@@ -28,10 +28,9 @@ class TestPdf2Xls(unittest.TestCase):
     def testWriteInfos(self) -> None:
         'write_infos'
 
-        output_stream = mockito.mock(typing.BinaryIO)
         writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter)
         db = mockito.mock(pdf2xls.model.db.Db)
 
         mockito.when(db).group_infos_by_feature().thenReturn({})
 
-        pdf2xls.pdf2xls.write_infos(output_stream, writer, db)
+        pdf2xls.pdf2xls.write_infos(writer, db)
