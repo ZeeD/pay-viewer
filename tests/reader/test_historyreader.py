@@ -18,7 +18,7 @@ class TestHistoryReader(unittest.TestCase):
 
         history_reader = pdf2xls.reader.historyreader.HistoryReader()
         info_file = io.BytesIO(
-            b'[{"when":"1982-05-11","howmuch":1,"feature":"f"}]')
+            b'[{"when":"1982-05-11","howmuch":1,"feature":4}]')
 
         expected = [pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
                                             decimal.Decimal("1"),

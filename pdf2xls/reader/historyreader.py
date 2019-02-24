@@ -7,6 +7,7 @@ import typing
 
 from . import abcreader
 from ..model import info
+from ..model import keys
 
 
 class HistoryReader(abcreader.ABCReader):
@@ -27,5 +28,5 @@ def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:
 
     when = datetime.datetime.fromisoformat(d['when'])
     howmuch = decimal.Decimal(d['howmuch'])
-    feature = d['feature']
+    feature = keys.Keys(d['feature'])
     return info.Info(when, howmuch, feature)
