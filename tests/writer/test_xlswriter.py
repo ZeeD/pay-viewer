@@ -6,6 +6,7 @@ import io
 import unittest
 
 import pdf2xls.model.info
+import pdf2xls.model.keys
 import pdf2xls.writer.xlswriter
 
 
@@ -16,12 +17,11 @@ class TestXlsWriter(unittest.TestCase):
         'history stream is just a json'
 
         xls_writer = pdf2xls.writer.xlswriter.XlsWriter()
-        
+
         info_file = io.BytesIO()
-        feature = 'f'
-        infos = [pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
-                                            decimal.Decimal("1"),
-                                            "f")]
+        feature = pdf2xls.model.keys.Keys.minimo
+        infos = [pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
+                                              decimal.Decimal("1"))]
         xls_writer.write_feature_infos(info_file, feature, infos)
         info_file.seek(0)
         expected = b''

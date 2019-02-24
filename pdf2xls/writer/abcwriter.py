@@ -4,6 +4,7 @@ import abc
 import typing
 
 from ..model import info
+from ..model import keys
 
 
 class ABCWriter(abc.ABC):
@@ -12,7 +13,7 @@ class ABCWriter(abc.ABC):
     @abc.abstractmethod
     def write_feature_infos(self,
                             info_file: typing.BinaryIO,
-                            feature: str,
+                            feature: keys.Keys,
                             infos: typing.Iterable[info.InfoPoint]
                             ) -> None:
         'append an info to a file'

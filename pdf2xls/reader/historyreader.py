@@ -17,7 +17,9 @@ class HistoryReader(abcreader.ABCReader):
                    ) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        return json.load(info_file, object_hook=object_hook)
+        ret: typing.Iterable[info.Info] = json.load(info_file,
+                                                    object_hook=object_hook)
+        return ret
 
 
 def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:

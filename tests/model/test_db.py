@@ -6,6 +6,7 @@ import unittest
 
 import pdf2xls.model.db
 import pdf2xls.model.info
+import pdf2xls.model.keys
 
 
 class TestDb(unittest.TestCase):
@@ -22,10 +23,10 @@ class TestDb(unittest.TestCase):
         db = pdf2xls.model.db.Db()
         db.add_info(pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
                                             decimal.Decimal('1'),
-                                            'feature'))
+                                            pdf2xls.model.keys.Keys.minimo))
         groups = db.group_infos_by_feature()
         self.assertEqual({
-            'feature': [
+            pdf2xls.model.keys.Keys.minimo: [
                 pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
                                              decimal.Decimal('1'))
             ]
@@ -35,13 +36,13 @@ class TestDb(unittest.TestCase):
         db = pdf2xls.model.db.Db()
         db.add_info(pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
                                             decimal.Decimal('1'),
-                                            'feature'))
+                                            pdf2xls.model.keys.Keys.minimo))
         db.add_info(pdf2xls.model.info.Info(datetime.datetime(1983, 11, 10),
                                             decimal.Decimal('2'),
-                                            'feature'))
+                                            pdf2xls.model.keys.Keys.minimo))
         groups = db.group_infos_by_feature()
         self.assertEqual({
-            'feature': [
+            pdf2xls.model.keys.Keys.minimo: [
                 pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
                                              decimal.Decimal('1')),
                 pdf2xls.model.info.InfoPoint(datetime.datetime(1983, 11, 10),

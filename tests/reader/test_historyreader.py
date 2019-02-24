@@ -6,6 +6,7 @@ import io
 import unittest
 
 import pdf2xls.model.info
+import pdf2xls.model.keys
 import pdf2xls.reader.historyreader
 
 
@@ -21,6 +22,6 @@ class TestHistoryReader(unittest.TestCase):
 
         expected = [pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
                                             decimal.Decimal("1"),
-                                            "f")]
+                                            pdf2xls.model.keys.Keys.minimo)]
         infos = history_reader.read_infos(info_file)
         self.assertEqual(infos, expected)

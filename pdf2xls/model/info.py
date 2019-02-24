@@ -4,6 +4,8 @@ import datetime
 import decimal
 import typing
 
+from . import keys
+
 
 class InfoPoint(typing.NamedTuple):
     when: datetime.datetime
@@ -13,7 +15,7 @@ class InfoPoint(typing.NamedTuple):
 class Info(typing.NamedTuple):
     when: datetime.datetime
     howmuch: decimal.Decimal
-    feature: str
+    feature: keys.Keys
 
 
 def infoPoint(info: Info) -> InfoPoint:
