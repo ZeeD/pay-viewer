@@ -11,6 +11,7 @@ class Keys(enum.Enum):
     scatti = enum.auto()
     superm = enum.auto()
     sup_ass = enum.auto()
+    edr = enum.auto()
     totale_retributivo = enum.auto()
     ferie_a_prec = enum.auto()
     ferie_spett = enum.auto()

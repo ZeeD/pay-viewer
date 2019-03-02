@@ -14,11 +14,12 @@ from .. import loadResourcePdf
 class TestPdfReader(unittest.TestCase):
     'test class test_pdfreader.PdfReader'
 
-    def testReadInfosRealPdf(self) -> None:
-        'history stream is a pdf full of stuff'
+    def testRead201901(self) -> None:
+        'testRead201901'
 
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
         info_file = loadResourcePdf(2019, 1)
+        infos = pdf_reader.read_infos(info_file)
 
         expected = [
             pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
@@ -34,8 +35,68 @@ class TestPdfReader(unittest.TestCase):
                                     decimal.Decimal('674.16'),
                                     pdf2xls.model.keys.Keys.sup_ass),
             pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.edr),
+            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
                                     decimal.Decimal('2895.67'),
                                     pdf2xls.model.keys.Keys.totale_retributivo)
         ]
+        self.assertEqual(infos, expected)
+
+    def testRead201208(self) -> None:
+        'testRead201208'
+
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
+        info_file = loadResourcePdf(2012, 8)
         infos = pdf_reader.read_infos(info_file)
+
+        expected = [
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('1634.56'),
+                                    pdf2xls.model.keys.Keys.minimo),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.scatti),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.superm),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('85.87'),
+                                    pdf2xls.model.keys.Keys.sup_ass),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('10.33'),
+                                    pdf2xls.model.keys.Keys.edr),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+                                    decimal.Decimal('1730.76'),
+                                    pdf2xls.model.keys.Keys.totale_retributivo)
+        ]
+        self.assertEqual(infos, expected)
+
+    def testRead201213(self) -> None:
+        'testRead201213'
+
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
+        info_file = loadResourcePdf(2012, 13)
+        infos = pdf_reader.read_infos(info_file)
+
+        expected = [
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('1634.56'),
+                                    pdf2xls.model.keys.Keys.minimo),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.scatti),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.superm),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('85.87'),
+                                    pdf2xls.model.keys.Keys.sup_ass),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('10.33'),
+                                    pdf2xls.model.keys.Keys.edr),
+            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+                                    decimal.Decimal('1730.76'),
+                                    pdf2xls.model.keys.Keys.totale_retributivo)
+        ]
         self.assertEqual(infos, expected)
