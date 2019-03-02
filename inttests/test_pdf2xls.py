@@ -27,23 +27,27 @@ class TestPdf2Xls(unittest.TestCase):
 
         self.assertEqual({
             pdf2xls.model.keys.Keys.minimo: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(2019, 1, 1),
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('2061.41'))
             ],
             pdf2xls.model.keys.Keys.scatti: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(2019, 1, 1),
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('109.23'))
             ],
             pdf2xls.model.keys.Keys.superm: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(2019, 1, 1),
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('50.87'))
             ],
             pdf2xls.model.keys.Keys.sup_ass: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(2019, 1, 1),
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('674.16'))
             ],
+            pdf2xls.model.keys.Keys.edr: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('0'))
+            ],
             pdf2xls.model.keys.Keys.totale_retributivo: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(2019, 1, 1),
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('2895.67'))
             ]
         }, db.group_infos_by_feature())

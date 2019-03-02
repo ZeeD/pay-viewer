@@ -48,7 +48,7 @@ class PdfReader(abcreader.ABCReader):
         ]
 
 
-def extract_periodo(table: pandas.DataFrame) -> datetime.datetime:
+def extract_periodo(table: pandas.DataFrame) -> datetime.date:
     'extract the right row, and parse the date inside'
 
     cell = table[0][0]
@@ -63,7 +63,7 @@ def extract_periodo(table: pandas.DataFrame) -> datetime.datetime:
     }[words[0]]
     year = int(words[1])
 
-    return datetime.datetime(year, month, day)
+    return datetime.date(year, month, day)
 
 
 def extract(el: typing.Union[str, float]) -> decimal.Decimal:

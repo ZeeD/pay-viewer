@@ -22,22 +22,22 @@ class TestPdfReader(unittest.TestCase):
         infos = pdf_reader.read_infos(info_file)
 
         expected = [
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('2061.41'),
                                     pdf2xls.model.keys.Keys.minimo),
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('109.23'),
                                     pdf2xls.model.keys.Keys.scatti),
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('50.87'),
                                     pdf2xls.model.keys.Keys.superm),
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('674.16'),
                                     pdf2xls.model.keys.Keys.sup_ass),
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.edr),
-            pdf2xls.model.info.Info(datetime.datetime(2019, 1, 1),
+            pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('2895.67'),
                                     pdf2xls.model.keys.Keys.totale_retributivo)
         ]
@@ -51,22 +51,22 @@ class TestPdfReader(unittest.TestCase):
         infos = pdf_reader.read_infos(info_file)
 
         expected = [
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('1634.56'),
                                     pdf2xls.model.keys.Keys.minimo),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.scatti),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.superm),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('85.87'),
                                     pdf2xls.model.keys.Keys.sup_ass),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('10.33'),
                                     pdf2xls.model.keys.Keys.edr),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 8, 1),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('1730.76'),
                                     pdf2xls.model.keys.Keys.totale_retributivo)
         ]
@@ -80,22 +80,22 @@ class TestPdfReader(unittest.TestCase):
         infos = pdf_reader.read_infos(info_file)
 
         expected = [
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('1634.56'),
                                     pdf2xls.model.keys.Keys.minimo),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.scatti),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.superm),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('85.87'),
                                     pdf2xls.model.keys.Keys.sup_ass),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('10.33'),
                                     pdf2xls.model.keys.Keys.edr),
-            pdf2xls.model.info.Info(datetime.datetime(2012, 12, 31),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('1730.76'),
                                     pdf2xls.model.keys.Keys.totale_retributivo)
         ]

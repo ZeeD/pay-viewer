@@ -8,12 +8,12 @@ from . import keys
 
 
 class InfoPoint(typing.NamedTuple):
-    when: datetime.datetime
+    when: datetime.date
     howmuch: decimal.Decimal
 
 
 class Info(typing.NamedTuple):
-    when: datetime.datetime
+    when: datetime.date
     howmuch: decimal.Decimal
     feature: keys.Keys
 

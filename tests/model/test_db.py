@@ -21,31 +21,31 @@ class TestDb(unittest.TestCase):
 
     def testJustOneInfo(self) -> None:
         db = pdf2xls.model.db.Db()
-        db.add_info(pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
+        db.add_info(pdf2xls.model.info.Info(datetime.date(1982, 5, 11),
                                             decimal.Decimal('1'),
                                             pdf2xls.model.keys.Keys.minimo))
         groups = db.group_infos_by_feature()
         self.assertEqual({
             pdf2xls.model.keys.Keys.minimo: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
+                pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
                                              decimal.Decimal('1'))
             ]
         }, groups)
 
     def testTwoInfosOneFeature(self) -> None:
         db = pdf2xls.model.db.Db()
-        db.add_info(pdf2xls.model.info.Info(datetime.datetime(1982, 5, 11),
+        db.add_info(pdf2xls.model.info.Info(datetime.date(1982, 5, 11),
                                             decimal.Decimal('1'),
                                             pdf2xls.model.keys.Keys.minimo))
-        db.add_info(pdf2xls.model.info.Info(datetime.datetime(1983, 11, 10),
+        db.add_info(pdf2xls.model.info.Info(datetime.date(1983, 11, 10),
                                             decimal.Decimal('2'),
                                             pdf2xls.model.keys.Keys.minimo))
         groups = db.group_infos_by_feature()
         self.assertEqual({
             pdf2xls.model.keys.Keys.minimo: [
-                pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
+                pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
                                              decimal.Decimal('1')),
-                pdf2xls.model.info.InfoPoint(datetime.datetime(1983, 11, 10),
+                pdf2xls.model.info.InfoPoint(datetime.date(1983, 11, 10),
                                              decimal.Decimal('2'))
             ]
         }, groups)

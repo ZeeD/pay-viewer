@@ -26,7 +26,7 @@ class HistoryReader(abcreader.ABCReader):
 def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:
     'create info.Info instances if needed'
 
-    when = datetime.datetime.fromisoformat(d['when'])
+    when = datetime.date.fromisoformat(d['when'])
     howmuch = decimal.Decimal(d['howmuch'])
     feature = keys.Keys(d['feature'])
     return info.Info(when, howmuch, feature)

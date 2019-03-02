@@ -19,7 +19,7 @@ class TestXlsWriter(unittest.TestCase):
         info_file = io.BytesIO()
 
         feature = pdf2xls.model.keys.Keys.minimo
-        infos = [pdf2xls.model.info.InfoPoint(datetime.datetime(1982, 5, 11),
+        infos = [pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
                                               decimal.Decimal("1"))]
 
         xls_writer = pdf2xls.writer.xlswriter.XlsWriter(info_file)
