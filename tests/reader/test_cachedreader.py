@@ -35,12 +35,12 @@ class TestCachedReader(unittest.TestCase):
         mockito.when(mock_mtime_reader).mtime().thenReturn(datetime.datetime(1983, 11, 10))
         mockito.when(mock_reader).mtime().thenReturn(datetime.datetime(1982, 5, 11))
         mockito.when(mock_support_reader).read_infos().thenReturn(cached_infos)
-        
+
         cached_reader = pdf2xls.reader.cachedreader.CachedReader(
             mock_reader,
             info_file, mock_mtime_reader,
-            lambda info_file, mtime_reader: mock_support_reader,
-            lambda info_file, mtime_reader: mock_support_writer)
+            mock_support_reader,
+            mock_support_writer)
 
         expected = cached_infos
         infos = cached_reader.read_infos()

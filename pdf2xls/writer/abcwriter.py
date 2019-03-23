@@ -1,7 +1,6 @@
 'ABC for the writers'
 
 import abc
-import datetime
 import typing
 
 from ..model import info

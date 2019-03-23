@@ -1,10 +1,11 @@
 'main'
 
-from _ast import arg
 import glob
 import sys
+import typing
 
 import pdf2xls.model.db
+import pdf2xls.mtime.mtimereader
 import pdf2xls.pdf2xls
 import pdf2xls.reader.historyreader
 import pdf2xls.reader.pdfreader
@@ -17,7 +18,7 @@ OUTPUT_XLS = 'output.xlsx'
 def main() -> None:
     'entry point'
 
-    args = sys.argv[1:]
+    args: typing.List[str] = sys.argv[1:]
 
     db = pdf2xls.model.db.Db()
 
@@ -27,13 +28,16 @@ def main() -> None:
         pass
     else:
         with f as history_file:
-            history_reader = pdf2xls.reader.historyreader.HistoryReader(history_file)
+            mtime_reader = pdf2xls.mtime.mtimereader.MtimeReader(history_file)
+            history_reader = pdf2xls.reader.historyreader.HistoryReader(history_file, mtime_reader)
             pdf2xls.pdf2xls.read_infos(history_reader, db)
 
     for arg in args:
         for file_name in glob.glob(arg):
             with open(file_name, 'rb') as pdf_file:
-                pdf_reader = pdf2xls.reader.pdfreader.PdfReader(pdf_file)
+                mtime_reader = pdf2xls.mtime.mtimereader.MtimeReader(pdf_file)
+                pdf_reader = pdf2xls.reader.pdfreader.PdfReader(pdf_file,
+                                                                mtime_reader)
                 pdf2xls.pdf2xls.read_infos(pdf_reader, db)
 
     with open(OUTPUT_XLS, 'wb') as xls_file:

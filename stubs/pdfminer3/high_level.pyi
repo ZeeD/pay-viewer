@@ -2,7 +2,7 @@
 
 import typing
 
-from . import layout
+from pdfminer3 import layout
 
 
 def extract_text_to_fp(info_file: typing.BinaryIO,

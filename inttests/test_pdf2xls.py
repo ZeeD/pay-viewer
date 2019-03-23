@@ -4,9 +4,12 @@ import datetime
 import decimal
 import unittest
 
+import mockito
+
 import pdf2xls.model.db
 import pdf2xls.model.info
 import pdf2xls.model.keys
+import pdf2xls.mtime.abcmtimerereader
 import pdf2xls.pdf2xls
 import pdf2xls.reader.pdfreader
 
@@ -20,10 +23,11 @@ class TestPdf2Xls(unittest.TestCase):
         'read_infos'
 
         input_stream = loadResourcePdf(2019, 1)
-        reader = pdf2xls.reader.pdfreader.PdfReader()
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+        reader = pdf2xls.reader.pdfreader.PdfReader(input_stream, mock_mtime_reader)
         db = pdf2xls.model.db.Db()
 
-        pdf2xls.pdf2xls.read_infos(input_stream, reader, db)
+        pdf2xls.pdf2xls.read_infos(reader, db)
 
         self.assertEqual({
             pdf2xls.model.keys.Keys.minimo: [

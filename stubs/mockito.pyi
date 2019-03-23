@@ -5,16 +5,19 @@ import typing
 T = typing.TypeVar('T')
 
 
-def mock(cls: typing.Type[T]) -> T:
+def mock(spec: typing.Type[T]) -> T:
     'mock'
 
 
 class Mock(typing.Generic[T]):
 
-    def __getattr__(self):
-        '---'
+    def __getattr__(self, name: str) -> Mock[T]:
+        '__getattr__'
 
-    def thenReturn(self) -> None:
+    def __call__(self, *args: typing.Any, **kwargs: typing.Any) -> Mock[T]:
+        '__call__'
+
+    def thenReturn(self, *return_values: typing.Any) -> None:
         'thenReturn'
 
 

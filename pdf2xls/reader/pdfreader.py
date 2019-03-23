@@ -65,7 +65,7 @@ def extract_periodo(table: pandas.DataFrame) -> datetime.date:
 
 
 def extract(el: typing.Union[str, float]) -> decimal.Decimal:
-    s: String = None
+    s: typing.Union[str, float]
     if isinstance(el, float):
         if math.isnan(el):
             s = '0'

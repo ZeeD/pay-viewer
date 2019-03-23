@@ -14,7 +14,7 @@ class ABCReader(abcmtimerereader.ABCMtimeReader):
     def __init__(self,
                  info_file: typing.BinaryIO,
                  mtime_reader: abcmtimerereader.ABCMtimeReader):
-        self.info_file = info_file
+        super().__init__(info_file)
         self.mtime_reader = mtime_reader
 
     @abc.abstractmethod
