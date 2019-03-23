@@ -1,6 +1,5 @@
 'test module pdf2xls'
 
-import typing
 import unittest
 
 import mockito
@@ -17,13 +16,12 @@ class TestPdf2Xls(unittest.TestCase):
     def testReadInfos(self) -> None:
         'read_infos'
 
-        input_stream = mockito.mock(typing.BinaryIO)
         reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)
         db = mockito.mock(pdf2xls.model.db.Db)
 
-        mockito.when(reader).read_infos(input_stream).thenReturn([])
+        mockito.when(reader).read_infos().thenReturn([])
 
-        pdf2xls.pdf2xls.read_infos(input_stream, reader, db)
+        pdf2xls.pdf2xls.read_infos(reader, db)
 
     def testWriteInfos(self) -> None:
         'write_infos'

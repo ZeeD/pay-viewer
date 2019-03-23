@@ -1,6 +1,5 @@
 'history writer'
 
-import collections
 import typing
 
 from . import abcwriter
@@ -8,7 +7,7 @@ from ..model import info
 from ..model import keys
 
 
-class HisotryWriter(abcwriter.ABCWriter):
+class HistoryWriter(abcwriter.ABCWriter):
     'write infos on an .json'
     
     def __init__(self,

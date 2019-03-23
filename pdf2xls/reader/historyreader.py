@@ -13,12 +13,10 @@ from ..model import keys
 class HistoryReader(abcreader.ABCReader):
     'retrieve old infos'
 
-    def read_infos(self,
-                   info_file: typing.BinaryIO
-                   ) -> typing.Iterable[info.Info]:
+    def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        ret: typing.Iterable[info.Info] = json.load(info_file,
+        ret: typing.Iterable[info.Info] = json.load(self.info_file,
                                                     object_hook=object_hook)
         return ret
 

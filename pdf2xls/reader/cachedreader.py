@@ -1,42 +1,35 @@
 'cached reader'
 
-import datetime
-import decimal
-import json
 import typing
 
 from . import abcreader
 from . import historyreader
 from ..model import info
-from ..model import keys
+from ..mtime import abcmtimerereader
 from ..writer import historywriter
 
 
 class CachedReader(abcreader.ABCReader):
     'wraps another reader, avoid read_infos if possible'
-    
+
     def __init__(self,
                  reader: abcreader.ABCReader,
-                 support_reader=historyreader.HistoryReader(),
-                 support_writer=historywriter.HistoryWriter()):
+                 info_file: typing.BinaryIO,
+                 mtime_reader: abcmtimerereader.ABCMtimeReader,
+                 support_reader_class=historyreader.HistoryReader,
+                 support_writer_class=historywriter.HistoryWriter):
+        super().__init__(info_file, mtime_reader)
+
         self.reader = reader
-        self.support_reader = support_reader
-        self.support_writer = support_writer
+        self.support_reader = support_reader_class(info_file, mtime_reader)
+        self.support_writer = support_writer_class(info_file, mtime_reader)
 
-    def read_infos(self,
-                   info_file: typing.BinaryIO
-                   ) -> typing.Iterable[info.Info]:
-        'read from a file'
+    def read_infos(self) -> typing.Iterable[info.Info]:
+        'if the cache is fresh, read from it, otherwise update it'
 
-        ret: typing.Iterable[info.Info] = json.load(info_file,
-                                                    object_hook=object_hook)
-        return ret
+        if self.mtime() < self.reader.mtime():
+            infos = self.reader.read_infos()
+            self.support_writer.write_feature_infos(None, infos)  # TODO
+            return infos
 
-
-def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:
-    'create info.Info instances if needed'
-
-    when = datetime.date.fromisoformat(d['when'])
-    howmuch = decimal.Decimal(d['howmuch'])
-    feature = keys.Keys(d['feature'])
-    return info.Info(when, howmuch, feature)
+        return self.support_reader.read_infos()

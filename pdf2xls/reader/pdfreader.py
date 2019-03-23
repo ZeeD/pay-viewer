@@ -16,12 +16,10 @@ from ..model import keys
 class PdfReader(abcreader.ABCReader):
     'retrieve infos from .pdf'
 
-    def read_infos(self,
-                   info_file: typing.BinaryIO
-                   ) -> typing.Iterable[info.Info]:
+    def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        tables = tabula.read_pdf(info_file, multiple_tables=True,
+        tables = tabula.read_pdf(self.info_file, multiple_tables=True,
                                  java_options=['-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider'],
                                  guess=False, lattice=True)
 

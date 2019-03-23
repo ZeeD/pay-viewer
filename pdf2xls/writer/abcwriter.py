@@ -1,6 +1,7 @@
 'ABC for the writers'
 
 import abc
+import datetime
 import typing
 
 from ..model import info
@@ -20,7 +21,7 @@ class ABCWriter(abc.ABC):
                             feature: keys.Keys,
                             infos: typing.Iterable[info.InfoPoint]
                             ) -> None:
-        'append an info to a file'
+        'append an info to a file - returns mtime'
 
     @abc.abstractmethod
     def close(self) -> None:

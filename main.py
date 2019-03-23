@@ -19,8 +19,6 @@ def main() -> None:
 
     args = sys.argv[1:]
 
-    pdf_reader = pdf2xls.reader.pdfreader.PdfReader()
-
     db = pdf2xls.model.db.Db()
 
     try:
@@ -29,13 +27,14 @@ def main() -> None:
         pass
     else:
         with f as history_file:
-            history_reader = pdf2xls.reader.historyreader.HistoryReader()
-            pdf2xls.pdf2xls.read_infos(history_file, history_reader, db)
+            history_reader = pdf2xls.reader.historyreader.HistoryReader(history_file)
+            pdf2xls.pdf2xls.read_infos(history_reader, db)
 
     for arg in args:
         for file_name in glob.glob(arg):
             with open(file_name, 'rb') as pdf_file:
-                pdf2xls.pdf2xls.read_infos(pdf_file, pdf_reader, db)
+                pdf_reader = pdf2xls.reader.pdfreader.PdfReader(pdf_file)
+                pdf2xls.pdf2xls.read_infos(pdf_reader, db)
 
     with open(OUTPUT_XLS, 'wb') as xls_file:
         xls_writer = pdf2xls.writer.xlswriter.XlsWriter(xls_file)

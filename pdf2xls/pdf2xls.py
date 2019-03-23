@@ -1,16 +1,14 @@
 'hi level iface'
-import typing
 
 from .model import db
 from .reader import abcreader
 from .writer import abcwriter
 
 
-def read_infos(input_stream: typing.BinaryIO,
-               reader: abcreader.ABCReader,
+def read_infos(reader: abcreader.ABCReader,
                db_: db.Db) -> None:
     'wraps the load from a stream to the db'
-    for info in reader.read_infos(input_stream):
+    for info in reader.read_infos():
         db_.add_info(info)
 
 
