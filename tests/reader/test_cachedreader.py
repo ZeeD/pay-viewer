@@ -3,6 +3,7 @@
 import datetime
 import decimal
 import io
+import typing
 import unittest
 
 import mockito
@@ -30,7 +31,7 @@ class TestCachedReader(unittest.TestCase):
             b'[{"when":"1982-05-11","howmuch":1,"feature":4}]')
         mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
         mock_support_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)
-        mock_support_writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter)
+        mock_support_writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter[typing.TextIO])
 
         mockito.when(mock_mtime_reader).mtime().thenReturn(datetime.datetime(1983, 11, 10))
         mockito.when(mock_reader).mtime().thenReturn(datetime.datetime(1982, 5, 11))

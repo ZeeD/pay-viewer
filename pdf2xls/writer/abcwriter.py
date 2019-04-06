@@ -6,12 +6,14 @@ import typing
 from ..model import info
 from ..model import keys
 
+T = typing.TypeVar('T', typing.BinaryIO, typing.TextIO)
 
-class ABCWriter(abc.ABC):
+
+class ABCWriter(abc.ABC, typing.Generic[T]) :
     'define a writer'
 
     def __init__(self,
-                 info_file: typing.BinaryIO) -> None:
+                 info_file: T) -> None:
         'keep track of the info_file'
         self.info_file = info_file
 
