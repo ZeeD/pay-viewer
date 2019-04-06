@@ -16,10 +16,10 @@ class CachedReader(abcreader.ABCReader):
 
     def __init__(self,
                  reader: abcreader.ABCReader,
-                 info_file: typing.BinaryIO,
+                 info_file: typing.TextIO,
                  mtime_reader: abcmtimerereader.ABCMtimeReader,
-                 support_reader: typing.Optional[abcreader.ABCReader]=None,
-                 support_writer: typing.Optional[abcwriter.ABCWriter]=None
+                 support_reader: typing.Optional[abcreader.ABCReader[typing.TextIO]]=None,
+                 support_writer: typing.Optional[abcwriter.ABCWriter[typing.TextIO]]=None
                  ) -> None:
         self.reader = reader
         super().__init__(info_file, mtime_reader)
