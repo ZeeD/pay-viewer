@@ -2,7 +2,6 @@
 
 import datetime
 import decimal
-import typing
 import unittest
 
 import mockito
@@ -22,7 +21,7 @@ class TestPdfReader(unittest.TestCase):
         'testRead201901'
 
         info_file = loadResourcePdf(2019, 1)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 
@@ -52,7 +51,7 @@ class TestPdfReader(unittest.TestCase):
         'testRead201208'
 
         info_file = loadResourcePdf(2012, 8)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 
@@ -82,7 +81,7 @@ class TestPdfReader(unittest.TestCase):
         'testRead201213'
 
         info_file = loadResourcePdf(2012, 13)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 

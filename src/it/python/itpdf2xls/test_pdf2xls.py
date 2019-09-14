@@ -23,7 +23,7 @@ class TestPdf2Xls(unittest.TestCase):
         'read_infos'
 
         input_stream = loadResourcePdf(2019, 1)
-        mock_mtime_reader: pdf2xls.mtime.abcmtimerereader.ABCMtimeReader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         reader = pdf2xls.reader.pdfreader.PdfReader(input_stream, mock_mtime_reader)
         db = pdf2xls.model.db.Db()
 

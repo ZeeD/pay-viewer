@@ -23,10 +23,8 @@ class TestHistoryReader(unittest.TestCase):
                                             decimal.Decimal("1"),
                                             pdf2xls.model.keys.Keys.minimo)]
 
-        info_file = io.BytesIO(
-            b'[{"when":"1982-05-11","howmuch":1,"feature":4}]')
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
-        history_reader = pdf2xls.reader.historyreader.HistoryReader(info_file,
-                                                                    mock_mtime_reader)
+        info_file = io.StringIO('[{"when":"1982-05-11","howmuch":1,"feature":4}]')
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        history_reader = pdf2xls.reader.historyreader.HistoryReader(info_file, mock_mtime_reader)
         infos = history_reader.read_infos()
         self.assertEqual(infos, expected)

@@ -7,7 +7,7 @@ T = typing.TypeVar('T')
 TT = typing.TypeVar('TT', bound=type)
 
 
-def mock(spec: TT) -> T:
+def mock(spec: typing.Type[T]) -> T:
     'mock'
 
 

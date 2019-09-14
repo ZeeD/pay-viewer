@@ -3,7 +3,6 @@
 import datetime
 import decimal
 import io
-import typing
 import unittest
 
 import mockito
@@ -26,12 +25,11 @@ class TestCachedReader(unittest.TestCase):
                                             decimal.Decimal("1"),
                                             pdf2xls.model.keys.Keys.minimo)]
 
-        mock_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)
-        info_file = io.BytesIO(
-            b'[{"when":"1982-05-11","howmuch":1,"feature":4}]')
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
-        mock_support_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)
-        mock_support_writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter[typing.TextIO])
+        mock_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)  # type: ignore
+        info_file = io.StringIO('[{"when":"1982-05-11","howmuch":1,"feature":4}]')
+        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        mock_support_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)  # type: ignore
+        mock_support_writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter)  # type: ignore
 
         mockito.when(mock_mtime_reader).mtime().thenReturn(datetime.datetime(1983, 11, 10))
         mockito.when(mock_reader).mtime().thenReturn(datetime.datetime(1982, 5, 11))
