@@ -2,7 +2,6 @@
 
 import glob
 import sys
-import typing
 
 import pdf2xls.model.db
 import pdf2xls.mtime.mtimereader
@@ -18,12 +17,12 @@ OUTPUT_XLS = 'output.xlsx'
 def main() -> None:
     'entry point'
 
-    args: typing.List[str] = sys.argv[1:]
+    args = sys.argv[1:]
 
     db = pdf2xls.model.db.Db()
 
     try:
-        f = open(HISTORY_DAT, 'rb')
+        f = open(HISTORY_DAT, 'r')
     except FileNotFoundError:
         pass
     else:

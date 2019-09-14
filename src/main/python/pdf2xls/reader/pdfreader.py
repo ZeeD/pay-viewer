@@ -11,15 +11,22 @@ import tabula
 from . import abcreader
 from ..model import info
 from ..model import keys
+from ..mtime import abcmtimerereader
 
 
 class PdfReader(abcreader.ABCReader):
     'retrieve infos from .pdf'
 
+    def __init__(self,
+                 info_file: typing.BinaryIO,
+                mtime_reader: abcmtimerereader.ABCMtimeReader):
+        super().__init__(info_file, mtime_reader)
+
     def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        tables = tabula.read_pdf(self.info_file, multiple_tables=True,
+        tables = tabula.read_pdf(typing.cast(typing.BinaryIO, self.info_file),
+                                 multiple_tables=True,
                                  java_options=['-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider'],
                                  guess=False, lattice=True)
 

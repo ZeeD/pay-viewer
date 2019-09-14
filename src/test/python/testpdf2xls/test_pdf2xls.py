@@ -27,7 +27,7 @@ class TestPdf2Xls(unittest.TestCase):
     def testWriteInfos(self) -> None:
         'write_infos'
 
-        writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter[typing.TextIO])
+        writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter[typing.BinaryIO])
         db = mockito.mock(pdf2xls.model.db.Db)
 
         mockito.when(db).group_infos_by_feature().thenReturn({})

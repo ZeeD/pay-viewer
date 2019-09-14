@@ -1,11 +1,13 @@
 'stub for mockito'
 
+import abc
 import typing
 
 T = typing.TypeVar('T')
+TT = typing.TypeVar('TT', bound=type)
 
 
-def mock(spec: typing.Type[T]) -> T:
+def mock(spec: TT) -> T:
     'mock'
 
 

@@ -2,12 +2,11 @@
 
 import typing
 
-from pdf2xls.writer import abcwriter
-
 from . import abcreader
 from . import historyreader
 from ..model import info
 from ..mtime import abcmtimerereader
+from ..writer import abcwriter
 from ..writer import historywriter
 
 
@@ -18,11 +17,11 @@ class CachedReader(abcreader.ABCReader):
                  reader: abcreader.ABCReader,
                  info_file: typing.TextIO,
                  mtime_reader: abcmtimerereader.ABCMtimeReader,
-                 support_reader: typing.Optional[abcreader.ABCReader[typing.TextIO]]=None,
-                 support_writer: typing.Optional[abcwriter.ABCWriter[typing.TextIO]]=None
+                 support_reader: typing.Optional[abcreader.ABCReader]=None,
+                 support_writer: typing.Optional[abcwriter.ABCWriter]=None
                  ) -> None:
-        self.reader = reader
         super().__init__(info_file, mtime_reader)
+        self.reader = reader
         if support_reader is not None:
             self.support_reader = support_reader
         else:

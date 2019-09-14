@@ -12,7 +12,7 @@ class ABCReader(abcmtimerereader.ABCMtimeReader):
     'define a reader'
 
     def __init__(self,
-                 info_file: typing.BinaryIO,
+                 info_file: abcmtimerereader.UnionIO,
                  mtime_reader: abcmtimerereader.ABCMtimeReader):
         super().__init__(info_file)
         self.mtime_reader = mtime_reader

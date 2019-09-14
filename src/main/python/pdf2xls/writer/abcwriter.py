@@ -5,15 +5,14 @@ import typing
 
 from ..model import info
 from ..model import keys
+from ..mtime import abcmtimerereader
 
-T = typing.TypeVar('T', typing.BinaryIO, typing.TextIO)
 
-
-class ABCWriter(abc.ABC, typing.Generic[T]) :
+class ABCWriter(abc.ABC):
     'define a writer'
 
     def __init__(self,
-                 info_file: T) -> None:
+                 info_file: abcmtimerereader.UnionIO) -> None:
         'keep track of the info_file'
         self.info_file = info_file
 
@@ -27,3 +26,8 @@ class ABCWriter(abc.ABC, typing.Generic[T]) :
     @abc.abstractmethod
     def close(self) -> None:
         'close the info_file'
+
+    @classmethod
+    def __class_getitem__(cls) -> None:
+        'make pylint happy'
+        ...

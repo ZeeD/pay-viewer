@@ -8,10 +8,16 @@ import typing
 from . import abcreader
 from ..model import info
 from ..model import keys
+from ..mtime import abcmtimerereader
 
 
 class HistoryReader(abcreader.ABCReader):
     'retrieve old infos'
+
+    def __init__(self,
+                 info_file: typing.TextIO,
+                mtime_reader: abcmtimerereader.ABCMtimeReader):
+        super().__init__(info_file, mtime_reader)
 
     def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
