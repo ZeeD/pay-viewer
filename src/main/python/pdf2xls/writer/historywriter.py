@@ -27,4 +27,14 @@ class HistoryWriter(abcwriter.ABCWriter):
     def close(self) -> None:
         'atomically write all the infos'
 
-        json.dump(self.table, typing.cast(typing.TextIO, self.info_file))
+        # convert keys into strings
+        jsonizable = {
+            str(k1): {
+                k2: str(v2)
+                for k2, v2 in v1.items()
+            }
+            for k1, v1 in self.table.items()
+        }
+
+        json.dump(jsonizable, typing.cast(typing.TextIO, self.info_file))
+        self.info_file.close()

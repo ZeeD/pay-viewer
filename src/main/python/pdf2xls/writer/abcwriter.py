@@ -36,4 +36,3 @@ class ABCWriter(abc.ABC):
     @classmethod
     def __class_getitem__(cls) -> None:
         'make pylint happy'
-        ...

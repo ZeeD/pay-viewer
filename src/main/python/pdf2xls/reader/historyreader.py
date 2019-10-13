@@ -22,15 +22,15 @@ class HistoryReader(abcreader.ABCReader):
     def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        ret: typing.Iterable[info.Info] = json.load(self.info_file,
-                                                    object_hook=object_hook)
-        return ret
-
-
-def object_hook(d: typing.Mapping[str, typing.Any]) -> info.Info:
-    'create info.Info instances if needed'
-
-    when = datetime.date.fromisoformat(d['when'])
-    howmuch = decimal.Decimal(d['howmuch'])
-    feature = keys.Keys(d['feature'])
-    return info.Info(when, howmuch, feature)
+        jsonizable: typing.Dict[str, typing.Dict[str, str]]
+        jsonizable = json.load(self.info_file)
+        table = {
+            datetime.date.fromisoformat(k1): {
+                keys.Keys[k2]: decimal.Decimal(v2)
+                for k2, v2 in v1.items()
+            }
+            for k1, v1 in jsonizable.items()
+        }
+        for when, feature_howmuch in table.items():
+            for feature, howmuch in feature_howmuch.items():
+                yield info.Info(when, howmuch, feature)
