@@ -31,14 +31,36 @@ def convert_to_pdf_json(file_names: typing.Iterable[str]
         yield file_name, f'{file_name}.json'
 
 
-def get_pdf_reader(pdf_file_name: str) -> pdf2xls.reader.pdfreader.PdfReader:
+def get_history_writer(json_file_name: str
+                       ) -> pdf2xls.writer.historywriter.HistoryWriter:
+    with open(json_file_name, 'w') as json_file:
+        return pdf2xls.writer.historywriter.HistoryWriter(json_file)
+
+
+def get_pdf_reader(pdf_file_name: str
+                   ) -> pdf2xls.reader.pdfreader.PdfReader:
     with open(pdf_file_name, 'rb') as pdf_file:
         mtime_reader = pdf2xls.mtime.mtimereader.MtimeReader(pdf_file)
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(pdf_file, mtime_reader)
 
+        # copy data into json
         db = pdf2xls.model.db.Db()
-        
+        pdf2xls.pdf2xls.read_infos(pdf_reader, db)
+        history_writer = get_history_writer(f'{pdf_file_name}.json')
+        try:
+            pdf2xls.pdf2xls.write_infos(history_writer, db)
+        finally:
+            history_writer.close()
+
         return pdf_reader
+
+
+def get_history_reader(json_file_name: str
+                       ) -> pdf2xls.reader.historyreader.HistoryReader:
+    with open(json_file_name, 'r') as json_file:
+        mtime_reader = pdf2xls.mtime.mtimereader.MtimeReader(json_file)
+        return pdf2xls.reader.historyreader.HistoryReader(json_file,
+                                                          mtime_reader)
 
 
 def get_reader(pdf_file_name: str) -> pdf2xls.reader.abcreader.ABCReader:

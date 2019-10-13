@@ -1,11 +1,9 @@
 'history writer'
 
-import collections
 import json
 import typing
 
 from . import abcwriter
-from . import xlswriter
 from ..model import info
 from ..model import keys
 
@@ -17,7 +15,6 @@ class HistoryWriter(abcwriter.ABCWriter):
                  info_file: typing.TextIO
                  ) -> None:
         super().__init__(info_file)
-        self.table: xlswriter.Table = collections.defaultdict(dict)  # by month, then by key
 
     def write_feature_infos(self,
                             feature: keys.Keys,

@@ -16,7 +16,7 @@ class HistoryReader(abcreader.ABCReader):
 
     def __init__(self,
                  info_file: typing.TextIO,
-                mtime_reader: abcmtimerereader.ABCMtimeReader):
+                 mtime_reader: abcmtimerereader.ABCMtimeReader):
         super().__init__(info_file, mtime_reader)
 
     def read_infos(self) -> typing.Iterable[info.Info]:

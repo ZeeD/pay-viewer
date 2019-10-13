@@ -1,6 +1,5 @@
 'xls writer'
 
-import collections
 import datetime
 import decimal
 import typing
@@ -11,8 +10,6 @@ from . import abcwriter
 from ..model import info
 from ..model import keys
 
-Table = typing.Dict[datetime.date, typing.Dict[str, decimal.Decimal]]
-
 
 class XlsWriter(abcwriter.ABCWriter):
     'write infos on an .xls'
@@ -22,7 +19,6 @@ class XlsWriter(abcwriter.ABCWriter):
         self.workbook = openpyxl.Workbook(write_only=True)
         self.sheet = self.workbook.create_sheet()
         self.sheet.append(['month'] + sorted(key.name for key in keys.Keys))
-        self.table: Table = collections.defaultdict(dict)  # by month, then by key
 
     def write_feature_infos(self,
                             feature: keys.Keys,
