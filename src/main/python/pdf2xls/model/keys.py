@@ -21,3 +21,4 @@ class Keys(enum.Enum):
     par_spett = enum.auto()
     par_godute = enum.auto()
     par_saldo = enum.auto()
+    netto_da_pagare = enum.auto()

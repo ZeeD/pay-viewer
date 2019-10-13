@@ -37,6 +37,7 @@ class PdfReader(abcreader.ABCReader):
         table_periodo = tables[1]
         table_money = tables[5]
         # table_meta = tables[2]
+        table_netto_da_pagare = tables[9]
 
         when = extract_periodo(table_periodo)
 
@@ -47,13 +48,16 @@ class PdfReader(abcreader.ABCReader):
         edr = extract_edr(table_money)
         totale_retributivo = extract_totale_retributivo(table_money)
 
+        netto_da_pagare = extract_netto_da_pagare(table_netto_da_pagare)
+
         self.cached_infos = [
             info.Info(when, minimo, keys.Keys.minimo),
             info.Info(when, scatti, keys.Keys.scatti),
             info.Info(when, superm, keys.Keys.superm),
             info.Info(when, sup_ass, keys.Keys.sup_ass),
             info.Info(when, edr, keys.Keys.edr),
-            info.Info(when, totale_retributivo, keys.Keys.totale_retributivo)
+            info.Info(when, totale_retributivo, keys.Keys.totale_retributivo),
+            info.Info(when, netto_da_pagare, keys.Keys.netto_da_pagare)
         ]
         return self.cached_infos
 
@@ -111,3 +115,7 @@ def extract_sup_ass(table: pandas.DataFrame) -> decimal.Decimal:
 
 def extract_totale_retributivo(table: pandas.DataFrame) -> decimal.Decimal:
     return extract(table[8][3])
+
+
+def extract_netto_da_pagare(table: pandas.DataFrame) -> decimal.Decimal:
+    return extract(table[0][0].split()[0])
