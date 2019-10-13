@@ -21,9 +21,13 @@ class PdfReader(abcreader.ABCReader):
                  info_file: typing.BinaryIO,
                 mtime_reader: abcmtimerereader.ABCMtimeReader):
         super().__init__(info_file, mtime_reader)
+        self.cached_infos: typing.Optional[typing.Iterable[info.Info]] = None
 
     def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
+
+        if self.cached_infos:
+            return self.cached_infos
 
         tables = tabula.read_pdf(typing.cast(typing.BinaryIO, self.info_file),
                                  multiple_tables=True,
@@ -43,7 +47,7 @@ class PdfReader(abcreader.ABCReader):
         edr = extract_edr(table_money)
         totale_retributivo = extract_totale_retributivo(table_money)
 
-        return [
+        self.cached_infos = [
             info.Info(when, minimo, keys.Keys.minimo),
             info.Info(when, scatti, keys.Keys.scatti),
             info.Info(when, superm, keys.Keys.superm),
@@ -51,6 +55,7 @@ class PdfReader(abcreader.ABCReader):
             info.Info(when, edr, keys.Keys.edr),
             info.Info(when, totale_retributivo, keys.Keys.totale_retributivo)
         ]
+        return self.cached_infos
 
 
 def extract_periodo(table: pandas.DataFrame) -> datetime.date:
