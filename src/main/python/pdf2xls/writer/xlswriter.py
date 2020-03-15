@@ -4,12 +4,13 @@ import datetime
 import decimal
 import typing
 
-import openpyxl
 import openpyxl.cell
+import openpyxl.workbook.workbook
 
 from . import abcwriter
 from ..model import info
 from ..model import keys
+
 
 NUMBER_FORMAT_TEXT = '@'
 NUMBER_FORMAT_DATE = 'mm-dd-yy'
@@ -43,9 +44,9 @@ class XlsWriter(abcwriter.ABCWriter):
 
     def __init__(self, info_file: typing.BinaryIO) -> None:
         super().__init__(info_file)
-        self.workbook = openpyxl.Workbook(write_only=True)
+        self.workbook = openpyxl.workbook.workbook.Workbook(write_only=True)
         self.sheet = self.workbook.create_sheet('main')
-        self.sheet.append([self._cell('month', NUMBER_FORMAT_TEXT)] + 
+        self.sheet.append([self._cell('month', NUMBER_FORMAT_TEXT)] +
                           [self._cell(key.name, NUMBER_FORMAT_TEXT)
                            for key in keys.Keys])
 
@@ -62,7 +63,7 @@ class XlsWriter(abcwriter.ABCWriter):
 
         for when in sorted(self.table):
             features: typing.Dict[str, decimal.Decimal] = self.table[when]
-            self.sheet.append([self._cell(when, NUMBER_FORMAT_DATE)] + 
+            self.sheet.append([self._cell(when, NUMBER_FORMAT_DATE)] +
                               [self._cell(features.get(key.name, None),
                                           VALUE_NUMBER_FORMAT[key])
                                for key in keys.Keys])
