@@ -3,3 +3,6 @@
 /.pylintrc
 /mypy.ini
 /resources/
+/src/it/resources/
+/src/main/resources/
+__pycache__
