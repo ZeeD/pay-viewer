@@ -2,7 +2,8 @@
 
 import typing
 
-Worksheet = typing.List[typing.Iterable[typing.Any]]
+
+import openpyxl.worksheet.worksheet
 
 
 class Workbook:
@@ -12,7 +13,7 @@ class Workbook:
 
     def create_sheet(self,
                      title: typing.Optional[str]=None
-                     ) -> Worksheet:
+                     ) -> openpyxl.worksheet.worksheet.Worksheet:
         'create_sheet'
 
     def save(self, info_file: typing.BinaryIO) -> None:
