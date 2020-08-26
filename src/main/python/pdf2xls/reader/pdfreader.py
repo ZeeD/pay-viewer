@@ -30,15 +30,14 @@ class PdfReader(abcreader.ABCReader):
             return self.cached_infos
 
         tables = tabula.read_pdf(typing.cast(typing.BinaryIO, self.info_file),
-                                 multiple_tables=True,
-                                 java_options=['-Dsun.java2d.cmm=sun.java2d.cmm.kcms.KcmsServiceProvider'],
-                                 guess=False, lattice=True)
+                                 pandas_options={'header': None},
+                                 pages=1)
 
-        table_periodo = tables[1]
-        table_money = tables[5]
-        # table_meta = tables[2]
-        table_netto_da_pagare = tables[9]
-        table_ferie = tables[10]
+        table_periodo = tables[0]
+        table_money = tables[1]
+        # table_details = tables[2] # TODO retrieve details
+        table_dati_fiscali = tables[3]
+        table_ferie = tables[4]
 
         when = extract_periodo(table_periodo)
 
@@ -49,7 +48,7 @@ class PdfReader(abcreader.ABCReader):
         edr = extract_edr(table_money)
         totale_retributivo = extract_totale_retributivo(table_money)
 
-        netto_da_pagare = extract_netto_da_pagare(table_netto_da_pagare)
+        netto_da_pagare = extract_netto_da_pagare(table_dati_fiscali)
 
         ferie_a_prec = extract_ferie_a_prec(table_ferie)
         ferie_spett = extract_ferie_spett(table_ferie)
@@ -83,7 +82,7 @@ class PdfReader(abcreader.ABCReader):
 def extract_periodo(table: pandas.DataFrame) -> datetime.date:
     'extract the right row, and parse the date inside'
 
-    cell = table[0][0]
+    cell = typing.cast(str, table.at[1, 2])
     words = cell.split(':')[1].split()
 
     day = 31 if words[0] == '13.MA' else 1
@@ -114,61 +113,61 @@ def extract(el: typing.Union[str, float]) -> decimal.Decimal:
 
 
 def extract_minimo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[0][1])
+    return extract(table.at[1, 0])
 
 
 def extract_scatti(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[1][1])
+    return extract(table.at[1, 1])
 
 
 def extract_superm(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[4][1])
+    return extract(table.at[1, 4])
 
 
 def extract_edr(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[0][3])
+    return extract(table.at[3, 0])
 
 
 def extract_sup_ass(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[5][1])
+    return extract(table.at[1, 5])
 
 
 def extract_totale_retributivo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[8][3])
+    return extract(table.at[3, 8])
 
 
 def extract_netto_da_pagare(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[0][0].split()[0])
+    return extract(typing.cast(str, table.at[0, 0]).split()[0])
 
 
 def extract_ferie_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[1][1])
+    return extract(table.at[1, 1])
 
 
 def extract_ferie_spett(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[2][1])
+    return extract(table.at[2, 1])
 
 
 def extract_ferie_godute(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[3][1])
+    return extract(table.at[3, 1])
 
 
 def extract_ferie_saldo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[4][1])
+    return extract(table.at[4, 1])
 
 
 def extract_par_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[1][2])
+    return extract(table.at[1, 2])
 
 
 def extract_par_spett(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[2][2])
+    return extract(table.at[2, 2])
 
 
 def extract_par_godute(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[3][2])
+    return extract(table.at[3, 2])
 
 
 def extract_par_saldo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table[4][2])
+    return extract(table.at[4, 2])
 
