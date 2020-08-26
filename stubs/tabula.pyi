@@ -10,6 +10,6 @@ def read_pdf(input_path: typing.BinaryIO,
              java_options: typing.List[str],
              guess: bool,
              lattice: bool,
-             pages: typing.Union[int, str]
+             pages: typing.Union[int, str]=1
              ) -> typing.List[pandas.DataFrame]:
     'read_pdf'
