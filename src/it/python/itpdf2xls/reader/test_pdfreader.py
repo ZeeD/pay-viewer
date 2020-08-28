@@ -17,12 +17,18 @@ from .. import loadResourcePdf
 class TestPdfReader(unittest.TestCase):
     'test class test_pdfreader.PdfReader'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.maxDiff = None
+
     def testRead201901(self) -> None:
         'testRead201901'
 
         info_file = loadResourcePdf(2019, 1)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
+        mock_mtime_reader = mockito.mock(
+            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -51,8 +57,10 @@ class TestPdfReader(unittest.TestCase):
         'testRead201208'
 
         info_file = loadResourcePdf(2012, 8)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
+        mock_mtime_reader = mockito.mock(
+            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -73,7 +81,34 @@ class TestPdfReader(unittest.TestCase):
                                     pdf2xls.model.keys.Keys.edr),
             pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('1730.76'),
-                                    pdf2xls.model.keys.Keys.totale_retributivo)
+                                    pdf2xls.model.keys.Keys.totale_retributivo),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('255'),
+                                    pdf2xls.model.keys.Keys.netto_da_pagare),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_a_prec),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_spett),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_godute),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_saldo),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_a_prec),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_spett),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_godute),
+            pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_saldo)
         ]
         self.assertEqual(infos, expected)
 
@@ -81,8 +116,10 @@ class TestPdfReader(unittest.TestCase):
         'testRead201213'
 
         info_file = loadResourcePdf(2012, 13)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, mock_mtime_reader)
+        mock_mtime_reader = mockito.mock(
+            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, mock_mtime_reader)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -103,6 +140,33 @@ class TestPdfReader(unittest.TestCase):
                                     pdf2xls.model.keys.Keys.edr),
             pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('1730.76'),
-                                    pdf2xls.model.keys.Keys.totale_retributivo)
+                                    pdf2xls.model.keys.Keys.totale_retributivo),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('402.00'),
+                                    pdf2xls.model.keys.Keys.netto_da_pagare),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_a_prec),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('6.68'),
+                                    pdf2xls.model.keys.Keys.ferie_spett),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.ferie_godute),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('6.68'),
+                                    pdf2xls.model.keys.Keys.ferie_saldo),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_a_prec),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('34.86'),
+                                    pdf2xls.model.keys.Keys.par_spett),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('0'),
+                                    pdf2xls.model.keys.Keys.par_godute),
+            pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
+                                    decimal.Decimal('34.68'),
+                                    pdf2xls.model.keys.Keys.par_saldo)
         ]
         self.assertEqual(infos, expected)

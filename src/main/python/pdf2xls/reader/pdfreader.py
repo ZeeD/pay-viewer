@@ -35,9 +35,9 @@ class PdfReader(abcreader.ABCReader):
 
         table_periodo = tables[0]
         table_money = tables[1]
-        # table_details = tables[2] # TODO retrieve details
+        # table_details = tables[2]
         table_dati_fiscali = tables[3]
-        table_dati_previdenziali = tables[4]
+        # table_dati_previdenziali = tables[4]
 
         when = extract_periodo(table_periodo)
 
@@ -137,15 +137,28 @@ def extract_totale_retributivo(table: pandas.DataFrame) -> decimal.Decimal:
 
 
 def extract_netto_da_pagare(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[1, 7]).split()[0])
+    raw = typing.cast(typing.Union[float, str], table.at[1, 7])
+    if not isinstance(raw, str):
+        raw = table.at[1, 6]
+
+    try:
+        return extract(typing.cast(str, raw).split()[0])
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_ferie_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[11, 7]).split()[1])
+    try:
+        return extract(typing.cast(str, table.at[11, 7]).split()[1])
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_ferie_spett(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[11, 7]).split()[2])
+    try:
+        return extract(typing.cast(str, table.at[11, 7]).split()[2])
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_ferie_godute(table: pandas.DataFrame) -> decimal.Decimal:
@@ -157,11 +170,17 @@ def extract_ferie_saldo(table: pandas.DataFrame) -> decimal.Decimal:
 
 
 def extract_par_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[12, 7]).split()[1])
+    try:
+        return extract(typing.cast(str, table.at[12, 7]).split()[1])
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_par_spett(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[12, 7]).split()[2])
+    try:
+        return extract(typing.cast(str, table.at[12, 7]).split()[2])
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_par_godute(table: pandas.DataFrame) -> decimal.Decimal:
