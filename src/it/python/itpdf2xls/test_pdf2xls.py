@@ -53,5 +53,41 @@ class TestPdf2Xls(unittest.TestCase):
             pdf2xls.model.keys.Keys.totale_retributivo: [
                 pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                              decimal.Decimal('2895.67'))
+            ],
+            pdf2xls.model.keys.Keys.ferie_a_prec: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('-1.82'))
+            ],
+            pdf2xls.model.keys.Keys.ferie_spett: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('1.67'))
+            ],
+            pdf2xls.model.keys.Keys.ferie_godute: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('0'))
+            ],
+            pdf2xls.model.keys.Keys.ferie_saldo: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('-0.15'))
+            ],
+            pdf2xls.model.keys.Keys.par_a_prec: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('594.68'))
+            ],
+            pdf2xls.model.keys.Keys.par_spett: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('8.67'))
+            ],
+            pdf2xls.model.keys.Keys.par_godute: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('0'))
+            ],
+            pdf2xls.model.keys.Keys.par_saldo: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('603.35'))
+            ],
+            pdf2xls.model.keys.Keys.netto_da_pagare: [
+                pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
+                                             decimal.Decimal('2090.00'))
             ]
         }, db.group_infos_by_feature())
