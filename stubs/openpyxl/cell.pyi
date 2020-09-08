@@ -1,10 +1,11 @@
 import typing
 
-import openpyxl
-
+import openpyxl.worksheet.worksheet
 
 class Cell:
     number_format: str
 
-    def __init__(self, worksheet: openpyxl.Worksheet, value: typing.Any=None):
+    def __init__(self,
+                 worksheet: openpyxl.worksheet.worksheet.Worksheet,
+                 value: typing.Any=None):
         ...

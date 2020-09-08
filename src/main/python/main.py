@@ -13,7 +13,7 @@ import pdf2xls.reader.pdfreader
 import pdf2xls.writer.historywriter
 import pdf2xls.writer.xlswriter
 
-OUTPUT_XLS = '/Users/DeTullioVito/Desktop/workspace_oxygen/pdf2xls/output.xlsx'
+OUTPUT_XLS = f'{__file__}/../../../../output.xlsx'
 
 
 def get_file_names(args: typing.List[str]) -> typing.Iterable[str]:
