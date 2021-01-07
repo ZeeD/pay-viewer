@@ -6,7 +6,6 @@ import io
 import unittest
 
 import mockito
-
 import pdf2xls.model.info
 import pdf2xls.model.keys
 import pdf2xls.mtime.abcmtimerereader
@@ -22,17 +21,24 @@ class TestCachedReader(unittest.TestCase):
         'history stream is just a json'
 
         cached_infos = [pdf2xls.model.info.Info(datetime.date(1982, 5, 11),
-                                            decimal.Decimal("1"),
-                                            pdf2xls.model.keys.Keys.minimo)]
+                                                decimal.Decimal("1"),
+                                                pdf2xls.model.keys.Keys.minimo)]
 
-        mock_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)  # type: ignore
-        info_file = io.StringIO('[{"when":"1982-05-11","howmuch":1,"feature":4}]')
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        mock_support_reader = mockito.mock(pdf2xls.reader.abcreader.ABCReader)  # type: ignore
-        mock_support_writer = mockito.mock(pdf2xls.writer.abcwriter.ABCWriter)  # type: ignore
+        mock_reader = mockito.mock(
+            pdf2xls.reader.abcreader.ABCReader)  # type: ignore
+        info_file = io.StringIO(
+            '[{"when":"1982-05-11","howmuch":1,"feature":4}]')
+        mock_mtime_reader = mockito.mock(
+            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        mock_support_reader = mockito.mock(
+            pdf2xls.reader.abcreader.ABCReader)  # type: ignore
+        mock_support_writer = mockito.mock(
+            pdf2xls.writer.abcwriter.ABCWriter)  # type: ignore
 
-        mockito.when(mock_mtime_reader).mtime().thenReturn(datetime.datetime(1983, 11, 10))
-        mockito.when(mock_reader).mtime().thenReturn(datetime.datetime(1982, 5, 11))
+        mockito.when(mock_mtime_reader).mtime().thenReturn(
+            datetime.datetime(1983, 11, 10))
+        mockito.when(mock_reader).mtime().thenReturn(
+            datetime.datetime(1982, 5, 11))
         mockito.when(mock_support_reader).read_infos().thenReturn(cached_infos)
 
         cached_reader = pdf2xls.reader.cachedreader.CachedReader(

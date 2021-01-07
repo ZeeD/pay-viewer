@@ -4,6 +4,7 @@ import abc
 import datetime
 import typing
 
+
 UnionIO = typing.Union[typing.BinaryIO, typing.TextIO]
 
 

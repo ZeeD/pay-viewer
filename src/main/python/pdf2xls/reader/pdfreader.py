@@ -19,7 +19,7 @@ class PdfReader(abcreader.ABCReader):
 
     def __init__(self,
                  info_file: typing.BinaryIO,
-                mtime_reader: abcmtimerereader.ABCMtimeReader):
+                 mtime_reader: abcmtimerereader.ABCMtimeReader):
         super().__init__(info_file, mtime_reader)
         self.cached_infos: typing.Optional[typing.Iterable[info.Info]] = None
 
@@ -189,4 +189,3 @@ def extract_par_godute(table: pandas.DataFrame) -> decimal.Decimal:
 
 def extract_par_saldo(table: pandas.DataFrame) -> decimal.Decimal:
     return extract(table.at[12, 8])
-

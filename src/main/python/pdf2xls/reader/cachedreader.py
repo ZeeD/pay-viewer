@@ -25,7 +25,8 @@ class CachedReader(abcreader.ABCReader):
         if support_reader is not None:
             self.support_reader = support_reader
         else:
-            self.support_reader = historyreader.HistoryReader(info_file, mtime_reader)
+            self.support_reader = historyreader.HistoryReader(
+                info_file, mtime_reader)
         if support_writer is not None:
             self.support_writer = support_writer
         else:
@@ -37,7 +38,8 @@ class CachedReader(abcreader.ABCReader):
         if self.mtime() < self.reader.mtime():
             infos: typing.Iterable[info.Info] = self.reader.read_infos()
             for info_ in infos:
-                self.support_writer.write_feature_infos(info_.feature, [info.infoPoint(info_)])
+                self.support_writer.write_feature_infos(
+                    info_.feature, [info.infoPoint(info_)])
             return infos
 
         return self.support_reader.read_infos()
