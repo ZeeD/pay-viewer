@@ -22,7 +22,6 @@ class HistoryReader(abcreader.ABCReader):
     def read_infos(self) -> typing.Iterable[info.Info]:
         'read from a file'
 
-        jsonizable: typing.Dict[str, typing.Dict[str, str]]
         jsonizable = json.load(self.info_file)
         table = {
             datetime.date.fromisoformat(k1): {
