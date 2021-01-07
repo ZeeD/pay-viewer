@@ -5,7 +5,6 @@ import decimal
 import unittest
 
 import mockito
-
 import pdf2xls.model.info
 import pdf2xls.model.keys
 import pdf2xls.mtime.abcmtimerereader

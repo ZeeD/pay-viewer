@@ -5,7 +5,6 @@ import decimal
 import unittest
 
 import mockito
-
 import pdf2xls.model.db
 import pdf2xls.model.info
 import pdf2xls.model.keys
@@ -23,8 +22,10 @@ class TestPdf2Xls(unittest.TestCase):
         'read_infos'
 
         input_stream = loadResourcePdf(2019, 1)
-        mock_mtime_reader = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        reader = pdf2xls.reader.pdfreader.PdfReader(input_stream, mock_mtime_reader)
+        mock_mtime_reader = mockito.mock(
+            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
+        reader = pdf2xls.reader.pdfreader.PdfReader(
+            input_stream, mock_mtime_reader)
         db = pdf2xls.model.db.Db()
 
         pdf2xls.pdf2xls.read_infos(reader, db)

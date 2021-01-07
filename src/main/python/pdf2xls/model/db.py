@@ -10,6 +10,7 @@ import typing
 from . import info
 from . import keys
 
+
 DD_T = typing.DefaultDict[keys.Keys, typing.List[info.InfoPoint]]
 M_T = typing.Mapping[keys.Keys, typing.Iterable[info.InfoPoint]]
 MM_T = typing.MutableMapping[keys.Keys, typing.Iterable[info.InfoPoint]]

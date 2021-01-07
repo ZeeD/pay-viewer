@@ -16,7 +16,7 @@ class TestXlsWriter(unittest.TestCase):
 
     def testWriteZeroRows(self) -> None:
         'read_infos'
-        
+
         outfile = resourceXls('testWriteZeroRows')
 
         writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
@@ -24,7 +24,7 @@ class TestXlsWriter(unittest.TestCase):
 
     def testWriteOneRow(self) -> None:
         'read_infos'
-        
+
         outfile = resourceXls('testWriteOneRow')
 
         writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
@@ -44,7 +44,7 @@ class TestXlsWriter(unittest.TestCase):
 
     def testWriteOneColumn(self) -> None:
         'read_infos'
-        
+
         outfile = resourceXls('testWriteOneColumn')
 
         writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
