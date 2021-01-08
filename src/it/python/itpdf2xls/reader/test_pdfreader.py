@@ -220,6 +220,14 @@ class TestPdfReader(unittest.TestCase):
         self.assertEqual(legenda_rol, decimal.Decimal('0'))
 
 
+    def test_month_2012_09(self) -> None:
+        info_file = loadResourcePdf(2012, 9)
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, MTIME_READER)
+        info = next(iter(pdf_reader.read_infos())).when
+
+        self.assertEqual(info, datetime.date(2012, 9, 1))
+
+
 def extract(infos: typing.Iterable[pdf2xls.model.info.Info],
             key: pdf2xls.model.keys.Keys
             )-> decimal.Decimal:
