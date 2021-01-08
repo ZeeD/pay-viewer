@@ -11,6 +11,9 @@ import pdf2xls.mtime.abcmtimerereader
 import pdf2xls.reader.pdfreader
 
 from .. import loadResourcePdf
+import typing
+
+MTIME_READER = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
 
 
 class TestPdfReader(unittest.TestCase):
@@ -24,10 +27,8 @@ class TestPdfReader(unittest.TestCase):
         'testRead201901'
 
         info_file = loadResourcePdf(2019, 1)
-        mock_mtime_reader = mockito.mock(
-            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
-            info_file, mock_mtime_reader)
+            info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -56,10 +57,8 @@ class TestPdfReader(unittest.TestCase):
         'testRead201208'
 
         info_file = loadResourcePdf(2012, 8)
-        mock_mtime_reader = mockito.mock(
-            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
-            info_file, mock_mtime_reader)
+            info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -115,10 +114,8 @@ class TestPdfReader(unittest.TestCase):
         'testRead201213'
 
         info_file = loadResourcePdf(2012, 13)
-        mock_mtime_reader = mockito.mock(
-            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
-            info_file, mock_mtime_reader)
+            info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
         expected = [
@@ -169,3 +166,58 @@ class TestPdfReader(unittest.TestCase):
                                     pdf2xls.model.keys.Keys.par_saldo)
         ]
         self.assertEqual(infos, expected)
+
+    def test_ferie_godute(self) -> None:
+        info_file = loadResourcePdf(2019, 13)
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, MTIME_READER)
+        infos = pdf_reader.read_infos()
+
+        ferie_godute = extract(infos, pdf2xls.model.keys.Keys.ferie_godute)
+
+        self.assertEqual(ferie_godute, decimal.Decimal('3'))
+
+    def test_legenda_2019_01(self) -> None:
+        info_file = loadResourcePdf(2019, 1)
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, MTIME_READER)
+        infos = pdf_reader.read_infos()
+
+        legenda_ordinario = extract(
+            infos, pdf2xls.model.keys.Keys.legenda_ordinario)
+        legenda_ferie = extract(infos, pdf2xls.model.keys.Keys.legenda_ferie)
+        legenda_reperibilita = extract(
+            infos, pdf2xls.model.keys.Keys.legenda_reperibilita)
+        legenda_rol = extract(infos, pdf2xls.model.keys.Keys.legenda_rol)
+
+        self.assertEqual(legenda_ordinario, decimal.Decimal('70'))
+        self.assertEqual(legenda_ferie, decimal.Decimal('72'))
+        self.assertEqual(legenda_reperibilita, decimal.Decimal('64.5'))
+        self.assertEqual(legenda_rol, decimal.Decimal('2'))
+
+
+    def test_legenda_2017_02(self) -> None:
+        info_file = loadResourcePdf(2017, 2)
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
+            info_file, MTIME_READER)
+        infos = pdf_reader.read_infos()
+
+        legenda_ordinario = extract(
+            infos, pdf2xls.model.keys.Keys.legenda_ordinario)
+        legenda_straordinario = extract(
+            infos, pdf2xls.model.keys.Keys.legenda_straordinario)
+        legenda_ferie = extract(infos, pdf2xls.model.keys.Keys.legenda_ferie)
+        legenda_reperibilita = extract(
+            infos, pdf2xls.model.keys.Keys.legenda_reperibilita)
+        legenda_rol = extract(infos, pdf2xls.model.keys.Keys.legenda_rol)
+
+        self.assertEqual(legenda_ordinario, decimal.Decimal('136'))
+        self.assertEqual(legenda_straordinario, decimal.Decimal('2'))
+        self.assertEqual(legenda_ferie, decimal.Decimal('32'))
+        self.assertEqual(legenda_reperibilita, decimal.Decimal('102'))
+        self.assertEqual(legenda_rol, decimal.Decimal('0'))
+
+def extract(infos: typing.Iterable[pdf2xls.model.info.Info],
+            key: pdf2xls.model.keys.Keys
+            )-> decimal.Decimal:
+    return next(info for info in infos if info.feature == key).howmuch
