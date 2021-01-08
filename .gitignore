@@ -4,5 +4,6 @@
 /mypy.ini
 /resources/
 /src/it/resources/
-/src/main/resources/
+/src/main/resources/*
+!/src/main/resources/tabula-template.json
 __pycache__
