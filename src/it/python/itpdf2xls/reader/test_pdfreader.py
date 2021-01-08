@@ -2,18 +2,21 @@
 
 import datetime
 import decimal
+import typing
 import unittest
 
 import mockito
+
 import pdf2xls.model.info
 import pdf2xls.model.keys
 import pdf2xls.mtime.abcmtimerereader
 import pdf2xls.reader.pdfreader
 
 from .. import loadResourcePdf
-import typing
 
-MTIME_READER = mockito.mock(pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)
+
+MTIME_READER = mockito.mock(
+    pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
 
 
 class TestPdfReader(unittest.TestCase):
@@ -31,7 +34,7 @@ class TestPdfReader(unittest.TestCase):
             info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = [
+        expected = {
             pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('2061.41'),
                                     pdf2xls.model.keys.Keys.minimo),
@@ -50,8 +53,8 @@ class TestPdfReader(unittest.TestCase):
             pdf2xls.model.info.Info(datetime.date(2019, 1, 1),
                                     decimal.Decimal('2895.67'),
                                     pdf2xls.model.keys.Keys.totale_retributivo)
-        ]
-        self.assertEqual(infos, expected)
+        }
+        self.assertTrue(expected <= set(infos))
 
     def testRead201208(self) -> None:
         'testRead201208'
@@ -61,7 +64,7 @@ class TestPdfReader(unittest.TestCase):
             info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = [
+        expected = {
             pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('1634.56'),
                                     pdf2xls.model.keys.Keys.minimo),
@@ -107,8 +110,8 @@ class TestPdfReader(unittest.TestCase):
             pdf2xls.model.info.Info(datetime.date(2012, 8, 1),
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.par_saldo)
-        ]
-        self.assertEqual(infos, expected)
+        }
+        self.assertTrue(expected <= set(infos))
 
     def testRead201213(self) -> None:
         'testRead201213'
@@ -118,7 +121,7 @@ class TestPdfReader(unittest.TestCase):
             info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = [
+        expected = {
             pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('1634.56'),
                                     pdf2xls.model.keys.Keys.minimo),
@@ -156,7 +159,7 @@ class TestPdfReader(unittest.TestCase):
                                     decimal.Decimal('0'),
                                     pdf2xls.model.keys.Keys.par_a_prec),
             pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
-                                    decimal.Decimal('34.86'),
+                                    decimal.Decimal('34.68'),
                                     pdf2xls.model.keys.Keys.par_spett),
             pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('0'),
@@ -164,8 +167,8 @@ class TestPdfReader(unittest.TestCase):
             pdf2xls.model.info.Info(datetime.date(2012, 12, 31),
                                     decimal.Decimal('34.68'),
                                     pdf2xls.model.keys.Keys.par_saldo)
-        ]
-        self.assertEqual(infos, expected)
+        }
+        self.assertTrue(expected <= set(infos))
 
     def test_ferie_godute(self) -> None:
         info_file = loadResourcePdf(2019, 13)
@@ -195,7 +198,6 @@ class TestPdfReader(unittest.TestCase):
         self.assertEqual(legenda_reperibilita, decimal.Decimal('64.5'))
         self.assertEqual(legenda_rol, decimal.Decimal('2'))
 
-
     def test_legenda_2017_02(self) -> None:
         info_file = loadResourcePdf(2017, 2)
         pdf_reader = pdf2xls.reader.pdfreader.PdfReader(
@@ -216,6 +218,7 @@ class TestPdfReader(unittest.TestCase):
         self.assertEqual(legenda_ferie, decimal.Decimal('32'))
         self.assertEqual(legenda_reperibilita, decimal.Decimal('102'))
         self.assertEqual(legenda_rol, decimal.Decimal('0'))
+
 
 def extract(infos: typing.Iterable[pdf2xls.model.info.Info],
             key: pdf2xls.model.keys.Keys
