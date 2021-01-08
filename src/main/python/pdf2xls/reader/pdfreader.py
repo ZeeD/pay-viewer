@@ -12,7 +12,6 @@ from . import abcreader
 from ..model import info
 from ..model import keys
 from ..mtime import abcmtimerereader
-import itertools
 
 
 TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'

@@ -35,7 +35,12 @@ VALUE_NUMBER_FORMAT = {
     keys.Keys.par_spett: NUMBER_FORMAT_NUMBER,
     keys.Keys.par_godute: NUMBER_FORMAT_NUMBER,
     keys.Keys.par_saldo: NUMBER_FORMAT_NUMBER,
-    keys.Keys.netto_da_pagare: NUMBER_FORMAT_CURRENCY
+    keys.Keys.netto_da_pagare: NUMBER_FORMAT_CURRENCY,
+    keys.Keys.legenda_ordinario: NUMBER_FORMAT_NUMBER,
+    keys.Keys.legenda_straordinario: NUMBER_FORMAT_NUMBER,
+    keys.Keys.legenda_ferie: NUMBER_FORMAT_NUMBER,
+    keys.Keys.legenda_reperibilita: NUMBER_FORMAT_NUMBER,
+    keys.Keys.legenda_rol: NUMBER_FORMAT_NUMBER,
 }
 
 
