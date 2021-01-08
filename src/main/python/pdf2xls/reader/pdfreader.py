@@ -48,7 +48,14 @@ class PdfReader(abcreader.ABCReader):
         table_netto_pagare = tables[3]
         table_dati_fiscali = tables[4]
         table_ferie = tables[5]
-        table_legenda = tables[6]
+        try:
+            table_legenda_keys = tables[6]
+        except IndexError:
+            table_legenda_keys = pandas.DataFrame()
+        try:
+            table_legenda_values = tables[7]
+        except IndexError:
+            table_legenda_values = pandas.DataFrame()
 
         when = extract_periodo(table_periodo)
 
@@ -70,11 +77,11 @@ class PdfReader(abcreader.ABCReader):
         par_godute = extract_par_godute(table_ferie)
         par_saldo = extract_par_saldo(table_ferie)
 
-        legenda_ordinario = extract_legenda(table_legenda, 'OR')
-        legenda_straordinario = extract_legenda(table_legenda, 'ST')
-        legenda_ferie = extract_legenda(table_legenda, 'FR')
-        legenda_reperibilita = extract_legenda(table_legenda, 'RA')
-        legenda_rol = extract_legenda(table_legenda, 'RL')
+        legenda_ordinario = extract_legenda(table_legenda_keys, table_legenda_values, 'OR')
+        legenda_straordinario = extract_legenda(table_legenda_keys, table_legenda_values, 'ST')
+        legenda_ferie = extract_legenda(table_legenda_keys, table_legenda_values, 'FR')
+        legenda_reperibilita = extract_legenda(table_legenda_keys, table_legenda_values, 'RA')
+        legenda_rol = extract_legenda(table_legenda_keys, table_legenda_values, 'RL')
 
         self.cached_infos = [
             info.Info(when, minimo, keys.Keys.minimo),
@@ -222,9 +229,11 @@ def extract_par_saldo(table: pandas.DataFrame) -> decimal.Decimal:
     except IndexError:
         return decimal.Decimal(0)
 
-
-def extract_legenda(table: pandas.DataFrame, key: str) -> decimal.Decimal:
-    for row in itertools.islice(table.itertuples(False), 1, None):
-        if key in row[0]:
-            return extract(row[1])
+def extract_legenda(table_keys: pandas.DataFrame,
+                    table_values: pandas.DataFrame,
+                    key: str
+                    ) -> decimal.Decimal:
+    for i, row in table_keys.itertuples():
+        if row.startswith(f'{key}='):
+            return extract(table_values.iloc[i,0])
     return decimal.Decimal(0)
