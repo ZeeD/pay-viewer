@@ -22,3 +22,8 @@ class Keys(enum.Enum):
     par_godute = enum.auto()
     par_saldo = enum.auto()
     netto_da_pagare = enum.auto()
+    legenda_ordinario = enum.auto()
+    legenda_straordinario = enum.auto()
+    legenda_ferie = enum.auto()
+    legenda_reperibilita = enum.auto()
+    legenda_rol = enum.auto()

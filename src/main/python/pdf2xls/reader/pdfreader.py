@@ -12,6 +12,10 @@ from . import abcreader
 from ..model import info
 from ..model import keys
 from ..mtime import abcmtimerereader
+import itertools
+
+
+TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'
 
 
 class PdfReader(abcreader.ABCReader):
@@ -29,15 +33,22 @@ class PdfReader(abcreader.ABCReader):
         if self.cached_infos:
             return self.cached_infos
 
-        tables = tabula.read_pdf(typing.cast(typing.BinaryIO, self.info_file),
-                                 pandas_options={'header': None},
-                                 pages=1)
+#         [setattr(pandas.options.display, name, 1000)
+#          for name in dir(pandas.options.display) if 'max' in name]
+
+        tables = tabula.read_pdf_with_template(typing.cast(typing.BinaryIO, self.info_file),
+                                               TEMPLATE_PATH,
+                                               pandas_options={'header': None},
+                                               pages=1,
+                                               stream=True)
 
         table_periodo = tables[0]
         table_money = tables[1]
-        # table_details = tables[2]
-        table_dati_fiscali = tables[3]
-        # table_dati_previdenziali = tables[4]
+        table_details = tables[2]
+        table_netto_pagare = tables[3]
+        table_dati_fiscali = tables[4]
+        table_ferie = tables[5]
+        table_legenda = tables[6]
 
         when = extract_periodo(table_periodo)
 
@@ -48,16 +59,22 @@ class PdfReader(abcreader.ABCReader):
         edr = extract_edr(table_money)
         totale_retributivo = extract_totale_retributivo(table_money)
 
-        netto_da_pagare = extract_netto_da_pagare(table_dati_fiscali)
+        netto_da_pagare = extract_netto_da_pagare(table_netto_pagare)
 
-        ferie_a_prec = extract_ferie_a_prec(table_dati_fiscali)
-        ferie_spett = extract_ferie_spett(table_dati_fiscali)
-        ferie_godute = extract_ferie_godute(table_dati_fiscali)
-        ferie_saldo = extract_ferie_saldo(table_dati_fiscali)
-        par_a_prec = extract_par_a_prec(table_dati_fiscali)
-        par_spett = extract_par_spett(table_dati_fiscali)
-        par_godute = extract_par_godute(table_dati_fiscali)
-        par_saldo = extract_par_saldo(table_dati_fiscali)
+        ferie_a_prec = extract_ferie_a_prec(table_ferie)
+        ferie_spett = extract_ferie_spett(table_ferie)
+        ferie_godute = extract_ferie_godute(table_ferie)
+        ferie_saldo = extract_ferie_saldo(table_ferie)
+        par_a_prec = extract_par_a_prec(table_ferie)
+        par_spett = extract_par_spett(table_ferie)
+        par_godute = extract_par_godute(table_ferie)
+        par_saldo = extract_par_saldo(table_ferie)
+
+        legenda_ordinario = extract_legenda(table_legenda, 'OR')
+        legenda_straordinario = extract_legenda(table_legenda, 'ST')
+        legenda_ferie = extract_legenda(table_legenda, 'FR')
+        legenda_reperibilita = extract_legenda(table_legenda, 'RA')
+        legenda_rol = extract_legenda(table_legenda, 'RL')
 
         self.cached_infos = [
             info.Info(when, minimo, keys.Keys.minimo),
@@ -74,7 +91,14 @@ class PdfReader(abcreader.ABCReader):
             info.Info(when, par_a_prec, keys.Keys.par_a_prec),
             info.Info(when, par_spett, keys.Keys.par_spett),
             info.Info(when, par_godute, keys.Keys.par_godute),
-            info.Info(when, par_saldo, keys.Keys.par_saldo)
+            info.Info(when, par_saldo, keys.Keys.par_saldo),
+            info.Info(when, legenda_ordinario, keys.Keys.legenda_ordinario),
+            info.Info(when, legenda_straordinario,
+                      keys.Keys.legenda_straordinario),
+            info.Info(when, legenda_ferie, keys.Keys.legenda_ferie),
+            info.Info(when, legenda_reperibilita,
+                      keys.Keys.legenda_reperibilita),
+            info.Info(when, legenda_rol, keys.Keys.legenda_rol)
         ]
         return self.cached_infos
 
@@ -82,8 +106,8 @@ class PdfReader(abcreader.ABCReader):
 def extract_periodo(table: pandas.DataFrame) -> datetime.date:
     'extract the right row, and parse the date inside'
 
-    cell = typing.cast(str, table.at[1, 2])
-    words = cell.split(':')[1].split()
+    cell = typing.cast(str, table.at[0, 0])
+    words = cell.split()
 
     day = 31 if words[0] == '13.MA' else 1
     month = {
@@ -137,55 +161,70 @@ def extract_totale_retributivo(table: pandas.DataFrame) -> decimal.Decimal:
 
 
 def extract_netto_da_pagare(table: pandas.DataFrame) -> decimal.Decimal:
-    raw = typing.cast(typing.Union[float, str], table.at[1, 7])
-    if not isinstance(raw, str):
-        raw = table.at[1, 6]
-
     try:
-        return extract(typing.cast(str, raw).split()[0])
+        return extract(typing.cast(str, table.at[0, 0]))
     except IndexError:
         return decimal.Decimal(0)
 
 
 def extract_ferie_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
     try:
-        return extract(typing.cast(str, table.at[11, 7]).split()[1])
+        return extract(typing.cast(str, table.at[1, 1]))
     except IndexError:
         return decimal.Decimal(0)
 
 
 def extract_ferie_spett(table: pandas.DataFrame) -> decimal.Decimal:
     try:
-        return extract(typing.cast(str, table.at[11, 7]).split()[2])
+        return extract(typing.cast(str, table.at[1, 2]))
     except IndexError:
         return decimal.Decimal(0)
 
 
 def extract_ferie_godute(table: pandas.DataFrame) -> decimal.Decimal:
-    return decimal.Decimal(0)
+    try:
+        return extract(typing.cast(str, table.at[1, 3]))
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_ferie_saldo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(typing.cast(str, table.at[11, 8]))
+    try:
+        return extract(typing.cast(str, table.at[1, 4]))
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_par_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
     try:
-        return extract(typing.cast(str, table.at[12, 7]).split()[1])
+        return extract(typing.cast(str, table.at[2, 1]))
     except IndexError:
         return decimal.Decimal(0)
 
 
 def extract_par_spett(table: pandas.DataFrame) -> decimal.Decimal:
     try:
-        return extract(typing.cast(str, table.at[12, 7]).split()[2])
+        return extract(typing.cast(str, table.at[2, 2]))
     except IndexError:
         return decimal.Decimal(0)
 
 
 def extract_par_godute(table: pandas.DataFrame) -> decimal.Decimal:
-    return decimal.Decimal(0)
+    try:
+        return extract(typing.cast(str, table.at[2, 3]))
+    except IndexError:
+        return decimal.Decimal(0)
 
 
 def extract_par_saldo(table: pandas.DataFrame) -> decimal.Decimal:
-    return extract(table.at[12, 8])
+    try:
+        return extract(typing.cast(str, table.at[2, 4]))
+    except IndexError:
+        return decimal.Decimal(0)
+
+
+def extract_legenda(table: pandas.DataFrame, key: str) -> decimal.Decimal:
+    for row in itertools.islice(table.itertuples(False), 1, None):
+        if key in row[0]:
+            return extract(row[1])
+    return decimal.Decimal(0)
