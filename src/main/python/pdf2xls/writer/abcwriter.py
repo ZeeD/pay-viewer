@@ -10,7 +10,6 @@ from ..model import info
 from ..model import keys
 from ..mtime import abcmtimerereader
 
-
 Table = typing.DefaultDict[datetime.date, typing.Dict[str, decimal.Decimal]]
 
 

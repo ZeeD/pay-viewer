@@ -5,10 +5,10 @@ import decimal
 import json
 import typing
 
-from . import abcreader
 from ..model import info
 from ..model import keys
 from ..mtime import abcmtimerereader
+from . import abcreader
 
 
 class HistoryReader(abcreader.ABCReader):

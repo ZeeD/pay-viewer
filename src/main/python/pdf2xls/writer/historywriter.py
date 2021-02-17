@@ -3,9 +3,9 @@
 import json
 import typing
 
-from . import abcwriter
 from ..model import info
 from ..model import keys
+from . import abcwriter
 
 
 class HistoryWriter(abcwriter.ABCWriter):
