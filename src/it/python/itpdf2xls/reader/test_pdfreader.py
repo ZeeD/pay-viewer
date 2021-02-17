@@ -14,7 +14,6 @@ import pdf2xls.reader.pdfreader
 
 from .. import loadResourcePdf
 
-
 MTIME_READER = mockito.mock(
     pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
 
@@ -22,8 +21,8 @@ MTIME_READER = mockito.mock(
 class TestPdfReader(unittest.TestCase):
     'test class test_pdfreader.PdfReader'
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, methodName: str='runTest') -> None:
+        super().__init__(methodName)
         self.maxDiff = None
 
     def testRead201901(self) -> None:
@@ -219,10 +218,10 @@ class TestPdfReader(unittest.TestCase):
         self.assertEqual(legenda_reperibilita, decimal.Decimal('102'))
         self.assertEqual(legenda_rol, decimal.Decimal('0'))
 
-
     def test_month_2012_09(self) -> None:
         info_file = loadResourcePdf(2012, 9)
-        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file, MTIME_READER)
+        pdf_reader = pdf2xls.reader.pdfreader.PdfReader(info_file,
+                                                        MTIME_READER)
         info = next(iter(pdf_reader.read_infos())).when
 
         self.assertEqual(info, datetime.date(2012, 9, 1))

@@ -13,7 +13,6 @@ import pdf2xls.reader.pdfreader
 import pdf2xls.writer.historywriter
 import pdf2xls.writer.xlswriter
 
-
 OUTPUT_XLS = f'{__file__}/../../../../output.xlsx'
 
 

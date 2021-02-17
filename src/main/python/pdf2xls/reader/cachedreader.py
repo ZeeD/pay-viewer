@@ -2,12 +2,12 @@
 
 import typing
 
-from . import abcreader
-from . import historyreader
 from ..model import info
 from ..mtime import abcmtimerereader
 from ..writer import abcwriter
 from ..writer import historywriter
+from . import abcreader
+from . import historyreader
 
 
 class CachedReader(abcreader.ABCReader):
