@@ -70,15 +70,12 @@ class XlsWriter(ABCWriter):
     def close(self) -> None:
         'atomically write all the infos'
 
-        rows = [
-            self._row('month', NUMBER_FORMAT_TEXT,
-                      ((key.name, NUMBER_FORMAT_TEXT) for key in Keys)) +
-            self._row(when, NUMBER_FORMAT_DATE,
-                      ((self.table[when].get(key.name, None),
-                        VALUE_NUMBER_FORMAT[key])
-                       for key in Keys))
-            for when in sorted(self.table)
-        ]
+        rows = ([self._row('month', NUMBER_FORMAT_TEXT,
+                           ((key.name, NUMBER_FORMAT_TEXT) for key in Keys))] +
+                [self._row(when, NUMBER_FORMAT_DATE,
+                           ((self.table[when].get(key.name, None), VALUE_NUMBER_FORMAT[key])
+                            for key in Keys))
+                 for when in sorted(self.table)])
 
         widths: Dict[str, int] = {}
         for row in rows:
