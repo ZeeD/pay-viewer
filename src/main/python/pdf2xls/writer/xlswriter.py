@@ -15,9 +15,9 @@ from openpyxl.utils.cell import get_column_letter
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
 
-from ..model.info import InfoPoint
 from ..model.keys import Keys
 from .abcwriter import ABCWriter
+from .abcwriter import InfoPoints
 
 E = Union[None, str, date, Decimal]
 
@@ -50,6 +50,7 @@ VALUE_NUMBER_FORMAT = {
     Keys.legenda_ferie: NUMBER_FORMAT_NUMBER,
     Keys.legenda_reperibilita: NUMBER_FORMAT_NUMBER,
     Keys.legenda_rol: NUMBER_FORMAT_NUMBER,
+    Keys.detail: NUMBER_FORMAT_TEXT
 }
 
 
@@ -59,12 +60,10 @@ class XlsWriter(ABCWriter):
     def __init__(self, info_file: BinaryIO) -> None:
         super().__init__(info_file)
 
-    def write_feature_infos(self,
-                            feature: Keys,
-                            info_points: Iterable[InfoPoint]) -> None:
+    def write_feature_infos(self, feature: Keys, infos: InfoPoints) -> None:
         'keep track of the stuff to write'
 
-        for info_point in info_points:
+        for info_point in infos:
             self.table[info_point.when][feature.name] = info_point.howmuch
 
     def close(self) -> None:

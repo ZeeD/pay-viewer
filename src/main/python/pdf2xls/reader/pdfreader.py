@@ -1,44 +1,49 @@
 'pdf reader'
 
-import datetime
-import decimal
-import math
-import typing
+from datetime import date
+from decimal import Decimal
+from math import isnan
+from typing import BinaryIO
+from typing import Iterable
+from typing import Optional
+from typing import Union
+from typing import cast
 
-import pandas
-import tabula
+from pandas import DataFrame
+from pandas import options
+from tabula import read_pdf_with_template
 
-from ..model import info
-from ..model import keys
-from ..mtime import abcmtimerereader
-from . import abcreader
+from ..model.info import Info
+from ..model.info import InfoDetail
+from ..model.keys import Keys
+from ..mtime.abcmtimerereader import ABCMtimeReader
+from .abcreader import ABCReader
 
 TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'
 
 
-class PdfReader(abcreader.ABCReader):
+class PdfReader(ABCReader):
     'retrieve infos from .pdf'
 
-    def __init__(self,
-                 info_file: typing.BinaryIO,
-                 mtime_reader: abcmtimerereader.ABCMtimeReader):
+    def __init__(self, info_file: BinaryIO, mtime_reader: ABCMtimeReader):
         super().__init__(info_file, mtime_reader)
-        self.cached_infos: typing.Optional[typing.Iterable[info.Info]] = None
+        self.cached_infos: Optional[Iterable[Info]] = None
 
-    def read_infos(self) -> typing.Iterable[info.Info]:
+    def read_infos(self) -> Iterable[Info]:
         'read from a file'
 
         if self.cached_infos:
             return self.cached_infos
 
-#         [setattr(pandas.options.display, name, 1000)
-#          for name in dir(pandas.options.display) if 'max' in name]
+        for name in dir(options.display):
+            if 'max' in name:
+                setattr(options.display, name, 1000)
 
-        tables = tabula.read_pdf_with_template(typing.cast(typing.BinaryIO, self.info_file),
-                                               TEMPLATE_PATH,
-                                               pandas_options={'header': None},
-                                               pages=1,
-                                               stream=True)
+        tables = read_pdf_with_template(cast(BinaryIO, self.info_file),
+                                        TEMPLATE_PATH,
+                                        pandas_options={'header': None},
+                                        pages=1,
+                                        stream=True)
 
         table_periodo = tables[0]
         table_money = tables[1]
@@ -49,11 +54,11 @@ class PdfReader(abcreader.ABCReader):
         try:
             table_legenda_keys = tables[6]
         except IndexError:
-            table_legenda_keys = pandas.DataFrame()
+            table_legenda_keys = DataFrame()
         try:
             table_legenda_values = tables[7]
         except IndexError:
-            table_legenda_values = pandas.DataFrame()
+            table_legenda_values = DataFrame()
 
         when = extract_periodo(table_periodo)
 
@@ -91,37 +96,42 @@ class PdfReader(abcreader.ABCReader):
                                       table_legenda_values,
                                       'RL')
 
-        self.cached_infos = [
-            info.Info(when, minimo, keys.Keys.minimo),
-            info.Info(when, scatti, keys.Keys.scatti),
-            info.Info(when, superm, keys.Keys.superm),
-            info.Info(when, sup_ass, keys.Keys.sup_ass),
-            info.Info(when, edr, keys.Keys.edr),
-            info.Info(when, totale_retributivo, keys.Keys.totale_retributivo),
-            info.Info(when, netto_da_pagare, keys.Keys.netto_da_pagare),
-            info.Info(when, ferie_a_prec, keys.Keys.ferie_a_prec),
-            info.Info(when, ferie_spett, keys.Keys.ferie_spett),
-            info.Info(when, ferie_godute, keys.Keys.ferie_godute),
-            info.Info(when, ferie_saldo, keys.Keys.ferie_saldo),
-            info.Info(when, par_a_prec, keys.Keys.par_a_prec),
-            info.Info(when, par_spett, keys.Keys.par_spett),
-            info.Info(when, par_godute, keys.Keys.par_godute),
-            info.Info(when, par_saldo, keys.Keys.par_saldo),
-            info.Info(when, legenda_ordinario, keys.Keys.legenda_ordinario),
-            info.Info(when, legenda_straordinario,
-                      keys.Keys.legenda_straordinario),
-            info.Info(when, legenda_ferie, keys.Keys.legenda_ferie),
-            info.Info(when, legenda_reperibilita,
-                      keys.Keys.legenda_reperibilita),
-            info.Info(when, legenda_rol, keys.Keys.legenda_rol)
-        ]
+        details = extract_details(table_details)
+
+        self.cached_infos = ([Info(when, minimo, Keys.minimo),
+                              Info(when, scatti, Keys.scatti),
+                              Info(when, superm, Keys.superm),
+                              Info(when, sup_ass, Keys.sup_ass),
+                              Info(when, edr, Keys.edr),
+                              Info(when, totale_retributivo,
+                                   Keys.totale_retributivo),
+                              Info(when, netto_da_pagare,
+                                   Keys.netto_da_pagare),
+                              Info(when, ferie_a_prec, Keys.ferie_a_prec),
+                              Info(when, ferie_spett, Keys.ferie_spett),
+                              Info(when, ferie_godute, Keys.ferie_godute),
+                              Info(when, ferie_saldo, Keys.ferie_saldo),
+                              Info(when, par_a_prec, Keys.par_a_prec),
+                              Info(when, par_spett, Keys.par_spett),
+                              Info(when, par_godute, Keys.par_godute),
+                              Info(when, par_saldo, Keys.par_saldo),
+                              Info(when, legenda_ordinario,
+                                   Keys.legenda_ordinario),
+                              Info(when, legenda_straordinario,
+                                   Keys.legenda_straordinario),
+                              Info(when, legenda_ferie, Keys.legenda_ferie),
+                              Info(when, legenda_reperibilita,
+                                   Keys.legenda_reperibilita),
+                              Info(when, legenda_rol, Keys.legenda_rol)] +
+                             [Info(when, None, Keys.detail, detail)
+                              for detail in details])
         return self.cached_infos
 
 
-def extract_periodo(table: pandas.DataFrame) -> datetime.date:
+def extract_periodo(table: DataFrame) -> date:
     'extract the right row, and parse the date inside'
 
-    cell = typing.cast(str, table.at[0, 0])
+    cell = cast(str, table.at[0, 0])
     words = cell.split()
 
     day = 31 if words[0] == '13.MA' else 1
@@ -133,13 +143,13 @@ def extract_periodo(table: pandas.DataFrame) -> datetime.date:
     }[words[0]]
     year = int(words[1])
 
-    return datetime.date(year, month, day)
+    return date(year, month, day)
 
 
-def extract(el: typing.Union[str, float]) -> decimal.Decimal:
-    s: typing.Union[str, float]
+def extract(el: Union[str, float]) -> Decimal:
+    s: Union[str, float]
     if isinstance(el, float):
-        if math.isnan(el):
+        if isnan(el):
             s = '0'
         else:
             s = round(el, 2)
@@ -148,101 +158,123 @@ def extract(el: typing.Union[str, float]) -> decimal.Decimal:
         if s.endswith('-'):
             s = s[-1] + s[:-1]
 
-    return decimal.Decimal(s)
+    return Decimal(s)
 
 
-def extract_minimo(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_minimo(table: DataFrame) -> Decimal:
     return extract(table.at[1, 0])
 
 
-def extract_scatti(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_scatti(table: DataFrame) -> Decimal:
     return extract(table.at[1, 1])
 
 
-def extract_superm(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_superm(table: DataFrame) -> Decimal:
     return extract(table.at[1, 4])
 
 
-def extract_edr(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_edr(table: DataFrame) -> Decimal:
     return extract(table.at[3, 0])
 
 
-def extract_sup_ass(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_sup_ass(table: DataFrame) -> Decimal:
     return extract(table.at[1, 5])
 
 
-def extract_totale_retributivo(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_totale_retributivo(table: DataFrame) -> Decimal:
     return extract(table.at[3, 8])
 
 
-def extract_netto_da_pagare(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_netto_da_pagare(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[0, 0]))
+        return extract(cast(str, table.at[0, 0]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_ferie_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_ferie_a_prec(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[1, 1]))
+        return extract(cast(str, table.at[1, 1]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_ferie_spett(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_ferie_spett(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[1, 2]))
+        return extract(cast(str, table.at[1, 2]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_ferie_godute(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_ferie_godute(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[1, 3]))
+        return extract(cast(str, table.at[1, 3]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_ferie_saldo(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_ferie_saldo(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[1, 4]))
+        return extract(cast(str, table.at[1, 4]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_par_a_prec(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_par_a_prec(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[2, 1]))
+        return extract(cast(str, table.at[2, 1]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_par_spett(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_par_spett(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[2, 2]))
+        return extract(cast(str, table.at[2, 2]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_par_godute(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_par_godute(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[2, 3]))
+        return extract(cast(str, table.at[2, 3]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_par_saldo(table: pandas.DataFrame) -> decimal.Decimal:
+def extract_par_saldo(table: DataFrame) -> Decimal:
     try:
-        return extract(typing.cast(str, table.at[2, 4]))
+        return extract(cast(str, table.at[2, 4]))
     except IndexError:
-        return decimal.Decimal(0)
+        return Decimal(0)
 
 
-def extract_legenda(table_keys: pandas.DataFrame,
-                    table_values: pandas.DataFrame,
-                    key: str
-                    ) -> decimal.Decimal:
+def extract_legenda(table_keys: DataFrame, table_values: DataFrame, key: str) -> Decimal:
     for i, row in table_keys.itertuples():
         if row.startswith(f'{key}='):
             return extract(table_values.iloc[i, 0])
-    return decimal.Decimal(0)
+    return Decimal(0)
+
+
+def extract_details(table: DataFrame) -> Iterable[InfoDetail]:
+    for row in table.itertuples(False, None):
+        if len(row) == 8:
+            yield InfoDetail(prev=None if isnan(row[0]) else int(row[0]),
+                             fisc=None if isnan(row[1]) else int(row[1]),
+                             cod=row[2],
+                             descrizione=row[3],
+                             ore_o_giorni=extract(row[4]),
+                             compenso_unitario=extract(row[5]),
+                             trattenute=extract(row[6]),
+                             competenze=extract(row[7]))
+        else:
+            if len(row) == 9 and isnan(row[4]) and all(isnan(e) for e in table[4]):
+                yield InfoDetail(prev=None if isnan(row[0]) else int(row[0]),
+                                 fisc=None if isnan(row[1]) else int(row[1]),
+                                 cod=row[2],
+                                 descrizione=row[3],
+                                 ore_o_giorni=extract(row[5]),
+                                 compenso_unitario=extract(row[6]),
+                                 trattenute=extract(row[7]),
+                                 competenze=extract(row[8]))
+            else:
+                raise Exception(row)

@@ -1,24 +1,21 @@
 'history writer'
 
-import json
-import typing
+from json import dump
+from typing import TextIO
+from typing import cast
 
-from ..model import info
-from ..model import keys
-from . import abcwriter
+from ..model.keys import Keys
+from .abcwriter import ABCWriter
+from .abcwriter import InfoPoints
 
 
-class HistoryWriter(abcwriter.ABCWriter):
+class HistoryWriter(ABCWriter):
     'write infos on an .json'
 
-    def __init__(self,
-                 info_file: typing.TextIO
-                 ) -> None:
+    def __init__(self, info_file: TextIO) -> None:
         super().__init__(info_file)
 
-    def write_feature_infos(self,
-                            feature: keys.Keys,
-                            infos: typing.Iterable[info.InfoPoint]) -> None:
+    def write_feature_infos(self, feature: Keys, infos: InfoPoints) -> None:
         'keep track of the stuff to write'
 
         for info_point in infos:
@@ -28,13 +25,9 @@ class HistoryWriter(abcwriter.ABCWriter):
         'atomically write all the infos'
 
         # convert keys into strings
-        jsonizable = {
-            str(k1): {
-                k2: str(v2)
-                for k2, v2 in v1.items()
-            }
-            for k1, v1 in self.table.items()
-        }
+        jsonizable = {str(k1): {k2: None if v2 is None else str(v2)
+                                for k2, v2 in v1.items()}
+                      for k1, v1 in self.table.items()}
 
-        json.dump(jsonizable, typing.cast(typing.TextIO, self.info_file))
+        dump(jsonizable, cast(TextIO, self.info_file))
         self.info_file.close()

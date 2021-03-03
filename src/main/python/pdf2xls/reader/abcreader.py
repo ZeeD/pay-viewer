@@ -1,25 +1,24 @@
 'ABC for the readers'
 
-import abc
-import datetime
-import typing
+from abc import abstractmethod
+from datetime import datetime
+from typing import Iterable
 
-from ..model import info
-from ..mtime import abcmtimerereader
+from ..model.info import Info
+from ..mtime.abcmtimerereader import ABCMtimeReader
+from ..mtime.abcmtimerereader import UnionIO
 
 
-class ABCReader(abcmtimerereader.ABCMtimeReader):
+class ABCReader(ABCMtimeReader):
     'define a reader'
 
-    def __init__(self,
-                 info_file: abcmtimerereader.UnionIO,
-                 mtime_reader: abcmtimerereader.ABCMtimeReader):
+    def __init__(self, info_file: UnionIO, mtime_reader: ABCMtimeReader):
         super().__init__(info_file)
         self.mtime_reader = mtime_reader
 
-    @abc.abstractmethod
-    def read_infos(self) -> typing.Iterable[info.Info]:
+    @abstractmethod
+    def read_infos(self) -> Iterable[Info]:
         'read a list of infos from the info_file'
 
-    def mtime(self) -> datetime.datetime:
+    def mtime(self) -> datetime:
         return self.mtime_reader.mtime()
