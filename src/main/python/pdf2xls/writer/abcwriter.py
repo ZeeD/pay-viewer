@@ -1,36 +1,36 @@
 'ABC for the writers'
 
-import abc
-import collections
-import datetime
-import decimal
-import typing
+from abc import ABC
+from abc import abstractmethod
+from collections import defaultdict
+from datetime import date
+from decimal import Decimal
+from typing import DefaultDict
+from typing import Dict
+from typing import Iterable
+from typing import Optional
 
-from ..model import info
-from ..model import keys
-from ..mtime import abcmtimerereader
+from ..model.info import InfoPoint
+from ..model.keys import Keys
+from ..mtime.abcmtimerereader import UnionIO
 
-Table = typing.DefaultDict[datetime.date, typing.Dict[str, decimal.Decimal]]
+Table = DefaultDict[date, Dict[str, Optional[Decimal]]]
+InfoPoints = Iterable[InfoPoint]
 
-
-class ABCWriter(abc.ABC):
+class ABCWriter(ABC):
     'define a writer'
 
-    def __init__(self,
-                 info_file: abcmtimerereader.UnionIO) -> None:
+    def __init__(self, info_file: UnionIO) -> None:
         'keep track of the info_file'
         self.info_file = info_file
-        self.table: Table = collections.defaultdict(
-            dict)  # by month, then by key
+        # by month, then by key
+        self.table: Table = defaultdict(dict)
 
-    @abc.abstractmethod
-    def write_feature_infos(self,
-                            feature: keys.Keys,
-                            infos: typing.Iterable[info.InfoPoint]
-                            ) -> None:
+    @abstractmethod
+    def write_feature_infos(self, feature: Keys, infos: InfoPoints) -> None:
         'append an info to a file - returns mtime'
 
-    @abc.abstractmethod
+    @abstractmethod
     def close(self) -> None:
         'close the info_file'
 

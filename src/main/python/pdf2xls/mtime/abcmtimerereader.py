@@ -1,19 +1,21 @@
 'ABC for the mtime readers'
 
-import abc
-import datetime
-import typing
+from abc import ABC
+from abc import abstractmethod
+from datetime import datetime
+from typing import BinaryIO
+from typing import TextIO
+from typing import Union
 
-UnionIO = typing.Union[typing.BinaryIO, typing.TextIO]
+UnionIO = Union[BinaryIO, TextIO]
 
 
-class ABCMtimeReader(abc.ABC):
+class ABCMtimeReader(ABC):
     'define an mtime reader'
 
-    def __init__(self,
-                 info_file: UnionIO):
+    def __init__(self, info_file: UnionIO):
         self.info_file = info_file
 
-    @abc.abstractmethod
-    def mtime(self) -> datetime.datetime:
+    @abstractmethod
+    def mtime(self) -> datetime:
         'retrieve the mtime of the info_file'
