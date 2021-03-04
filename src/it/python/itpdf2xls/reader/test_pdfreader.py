@@ -9,7 +9,7 @@ from unittest import TestCase
 from mockito import mock
 
 from pdf2xls.model.info import Info
-from pdf2xls.model.keys import Keys
+from pdf2xls.model.keys import ColumnHeader
 from pdf2xls.mtime.abcmtimerereader import ABCMtimeReader
 from pdf2xls.reader.pdfreader import PdfReader
 
@@ -32,12 +32,12 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = {Info(date(2019, 1, 1), Decimal('2061.41'), Keys.minimo),
-                    Info(date(2019, 1, 1), Decimal('109.23'), Keys.scatti),
-                    Info(date(2019, 1, 1), Decimal('50.87'), Keys.superm),
-                    Info(date(2019, 1, 1), Decimal('674.16'), Keys.sup_ass),
-                    Info(date(2019, 1, 1), Decimal('0'), Keys.edr),
-                    Info(date(2019, 1, 1), Decimal('2895.67'), Keys.totale_retributivo)}
+        expected = {Info(date(2019, 1, 1), Decimal('2061.41'), ColumnHeader.minimo),
+                    Info(date(2019, 1, 1), Decimal('109.23'), ColumnHeader.scatti),
+                    Info(date(2019, 1, 1), Decimal('50.87'), ColumnHeader.superm),
+                    Info(date(2019, 1, 1), Decimal('674.16'), ColumnHeader.sup_ass),
+                    Info(date(2019, 1, 1), Decimal('0'), ColumnHeader.edr),
+                    Info(date(2019, 1, 1), Decimal('2895.67'), ColumnHeader.totale_retributivo)}
         self.assertTrue(expected <= set(infos))
 
     def testRead201208(self) -> None:
@@ -47,23 +47,23 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = {Info(date(2012, 8, 1), Decimal('1634.56'), Keys.minimo),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.scatti),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.superm),
-                    Info(date(2012, 8, 1), Decimal('85.87'), Keys.sup_ass),
-                    Info(date(2012, 8, 1), Decimal('10.33'), Keys.edr),
+        expected = {Info(date(2012, 8, 1), Decimal('1634.56'), ColumnHeader.minimo),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.scatti),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.superm),
+                    Info(date(2012, 8, 1), Decimal('85.87'), ColumnHeader.sup_ass),
+                    Info(date(2012, 8, 1), Decimal('10.33'), ColumnHeader.edr),
                     Info(date(2012, 8, 1), Decimal('1730.76'),
-                         Keys.totale_retributivo),
+                         ColumnHeader.totale_retributivo),
                     Info(date(2012, 8, 1), Decimal('255'),
-                         Keys.netto_da_pagare),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.ferie_a_prec),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.ferie_spett),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.ferie_godute),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.ferie_saldo),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.par_a_prec),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.par_spett),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.par_godute),
-                    Info(date(2012, 8, 1), Decimal('0'), Keys.par_saldo)}
+                         ColumnHeader.netto_da_pagare),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.ferie_a_prec),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.ferie_spett),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.ferie_godute),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.ferie_saldo),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.par_a_prec),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.par_spett),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.par_godute),
+                    Info(date(2012, 8, 1), Decimal('0'), ColumnHeader.par_saldo)}
         self.assertTrue(expected <= set(infos))
 
     def testRead201213(self) -> None:
@@ -73,25 +73,25 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        expected = {Info(date(2012, 12, 31), Decimal('1634.56'), Keys.minimo),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.scatti),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.superm),
-                    Info(date(2012, 12, 31), Decimal('85.87'), Keys.sup_ass),
-                    Info(date(2012, 12, 31), Decimal('10.33'), Keys.edr),
+        expected = {Info(date(2012, 12, 31), Decimal('1634.56'), ColumnHeader.minimo),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.scatti),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.superm),
+                    Info(date(2012, 12, 31), Decimal('85.87'), ColumnHeader.sup_ass),
+                    Info(date(2012, 12, 31), Decimal('10.33'), ColumnHeader.edr),
                     Info(date(2012, 12, 31), Decimal('1730.76'),
-                         Keys.totale_retributivo),
+                         ColumnHeader.totale_retributivo),
                     Info(date(2012, 12, 31), Decimal('402.00'),
-                         Keys.netto_da_pagare),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.ferie_a_prec),
+                         ColumnHeader.netto_da_pagare),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.ferie_a_prec),
                     Info(date(2012, 12, 31), Decimal('6.68'),
-                         Keys.ferie_spett),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.ferie_godute),
+                         ColumnHeader.ferie_spett),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.ferie_godute),
                     Info(date(2012, 12, 31), Decimal('6.68'),
-                         Keys.ferie_saldo),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.par_a_prec),
-                    Info(date(2012, 12, 31), Decimal('34.68'), Keys.par_spett),
-                    Info(date(2012, 12, 31), Decimal('0'), Keys.par_godute),
-                    Info(date(2012, 12, 31), Decimal('34.68'), Keys.par_saldo)}
+                         ColumnHeader.ferie_saldo),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.par_a_prec),
+                    Info(date(2012, 12, 31), Decimal('34.68'), ColumnHeader.par_spett),
+                    Info(date(2012, 12, 31), Decimal('0'), ColumnHeader.par_godute),
+                    Info(date(2012, 12, 31), Decimal('34.68'), ColumnHeader.par_saldo)}
         self.assertTrue(expected <= set(infos))
 
     def test_ferie_godute(self) -> None:
@@ -99,7 +99,7 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        ferie_godute = extract(infos, Keys.ferie_godute)
+        ferie_godute = extract(infos, ColumnHeader.ferie_godute)
 
         self.assertEqual(ferie_godute, Decimal('3'))
 
@@ -108,10 +108,10 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        legenda_ordinario = extract(infos, Keys.legenda_ordinario)
-        legenda_ferie = extract(infos, Keys.legenda_ferie)
-        legenda_reperibilita = extract(infos, Keys.legenda_reperibilita)
-        legenda_rol = extract(infos, Keys.legenda_rol)
+        legenda_ordinario = extract(infos, ColumnHeader.legenda_ordinario)
+        legenda_ferie = extract(infos, ColumnHeader.legenda_ferie)
+        legenda_reperibilita = extract(infos, ColumnHeader.legenda_reperibilita)
+        legenda_rol = extract(infos, ColumnHeader.legenda_rol)
 
         self.assertEqual(legenda_ordinario, Decimal('70'))
         self.assertEqual(legenda_ferie, Decimal('72'))
@@ -123,11 +123,11 @@ class TestPdfReader(TestCase):
         pdf_reader = PdfReader(info_file, MTIME_READER)
         infos = pdf_reader.read_infos()
 
-        legenda_ordinario = extract(infos, Keys.legenda_ordinario)
-        legenda_straordinario = extract(infos, Keys.legenda_straordinario)
-        legenda_ferie = extract(infos, Keys.legenda_ferie)
-        legenda_reperibilita = extract(infos, Keys.legenda_reperibilita)
-        legenda_rol = extract(infos, Keys.legenda_rol)
+        legenda_ordinario = extract(infos, ColumnHeader.legenda_ordinario)
+        legenda_straordinario = extract(infos, ColumnHeader.legenda_straordinario)
+        legenda_ferie = extract(infos, ColumnHeader.legenda_ferie)
+        legenda_reperibilita = extract(infos, ColumnHeader.legenda_reperibilita)
+        legenda_rol = extract(infos, ColumnHeader.legenda_rol)
 
         self.assertEqual(legenda_ordinario, Decimal('136'))
         self.assertEqual(legenda_straordinario, Decimal('2'))
@@ -143,5 +143,5 @@ class TestPdfReader(TestCase):
         self.assertEqual(info, date(2012, 9, 1))
 
 
-def extract(infos: Iterable[Info], key: Keys)-> Optional[Decimal]:
-    return next(info for info in infos if info.feature == key).howmuch
+def extract(infos: Iterable[Info], key: ColumnHeader)-> Optional[Decimal]:
+    return next(info for info in infos if info.header == key).howmuch
