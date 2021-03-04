@@ -16,5 +16,5 @@ class Workbook:
                      ) -> openpyxl.worksheet.worksheet.Worksheet:
         'create_sheet'
 
-    def save(self, info_file: typing.BinaryIO) -> None:
+    def save(self, filename: str) -> None:
         'save'

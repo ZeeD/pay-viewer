@@ -1,10 +1,13 @@
-'default keys'
-
+from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal
 from enum import Enum
 from enum import auto
+from typing import List
+from typing import Optional
 
 
-class Keys(Enum):
+class ColumnHeader(Enum):
     periodo = auto()
     livello_categoria = auto()
     n_scatti = auto()
@@ -29,3 +32,28 @@ class Keys(Enum):
     legenda_reperibilita = auto()
     legenda_rol = auto()
     detail = auto()
+
+
+@dataclass
+class Column:
+    header: ColumnHeader
+    howmuch: Optional[Decimal]
+
+
+@dataclass
+class AdditionalDetail:
+    prev: Optional[int]
+    fisc: Optional[int]
+    cod: int
+    descrizione: str
+    ore_o_giorni: Decimal
+    compenso_unitario: Decimal
+    trattenute: Decimal
+    competenze: Decimal
+
+
+@dataclass
+class Info:
+    when: date
+    columns: List[Column]
+    additional_details: List[AdditionalDetail]

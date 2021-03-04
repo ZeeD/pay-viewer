@@ -20,7 +20,7 @@ class TestHistoryReader(unittest.TestCase):
 
         expected = [pdf2xls.model.info.Info(datetime.date(1982, 5, 11),
                                             decimal.Decimal("1"),
-                                            pdf2xls.model.keys.Keys.minimo)]
+                                            pdf2xls.model.keys.ColumnHeader.minimo)]
 
         info_file = io.StringIO('{ "1982-05-11": { "minimo": 1 } }')
         mock_mtime_reader = mockito.mock(

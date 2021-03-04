@@ -3,9 +3,8 @@
 from datetime import date
 from decimal import Decimal
 from math import isnan
-from typing import BinaryIO
-from typing import Iterable
-from typing import Optional
+from typing import Iterator
+from typing import List
 from typing import Union
 from typing import cast
 
@@ -13,10 +12,10 @@ from pandas import DataFrame
 from pandas import options
 from tabula import read_pdf_with_template
 
-from ..model.info import Info
-from ..model.info import InfoDetail
-from ..model.keys import Keys
-from ..mtime.abcmtimerereader import ABCMtimeReader
+from ..model import AdditionalDetail
+from ..model import Column
+from ..model import ColumnHeader
+from ..model import Info
 from .abcreader import ABCReader
 
 TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'
@@ -25,21 +24,14 @@ TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'
 class PdfReader(ABCReader):
     'retrieve infos from .pdf'
 
-    def __init__(self, info_file: BinaryIO, mtime_reader: ABCMtimeReader):
-        super().__init__(info_file, mtime_reader)
-        self.cached_infos: Optional[Iterable[Info]] = None
-
-    def read_infos(self) -> Iterable[Info]:
+    def read_infos(self) -> List[Info]:
         'read from a file'
-
-        if self.cached_infos:
-            return self.cached_infos
 
         for name in dir(options.display):
             if 'max' in name:
                 setattr(options.display, name, 1000)
 
-        tables = read_pdf_with_template(cast(BinaryIO, self.info_file),
+        tables = read_pdf_with_template(self.name,
                                         TEMPLATE_PATH,
                                         pandas_options={'header': None},
                                         pages=1,
@@ -96,36 +88,39 @@ class PdfReader(ABCReader):
                                       table_legenda_values,
                                       'RL')
 
-        details = extract_details(table_details)
+        additional_details = extract_details(table_details)
 
-        self.cached_infos = ([Info(when, minimo, Keys.minimo),
-                              Info(when, scatti, Keys.scatti),
-                              Info(when, superm, Keys.superm),
-                              Info(when, sup_ass, Keys.sup_ass),
-                              Info(when, edr, Keys.edr),
-                              Info(when, totale_retributivo,
-                                   Keys.totale_retributivo),
-                              Info(when, netto_da_pagare,
-                                   Keys.netto_da_pagare),
-                              Info(when, ferie_a_prec, Keys.ferie_a_prec),
-                              Info(when, ferie_spett, Keys.ferie_spett),
-                              Info(when, ferie_godute, Keys.ferie_godute),
-                              Info(when, ferie_saldo, Keys.ferie_saldo),
-                              Info(when, par_a_prec, Keys.par_a_prec),
-                              Info(when, par_spett, Keys.par_spett),
-                              Info(when, par_godute, Keys.par_godute),
-                              Info(when, par_saldo, Keys.par_saldo),
-                              Info(when, legenda_ordinario,
-                                   Keys.legenda_ordinario),
-                              Info(when, legenda_straordinario,
-                                   Keys.legenda_straordinario),
-                              Info(when, legenda_ferie, Keys.legenda_ferie),
-                              Info(when, legenda_reperibilita,
-                                   Keys.legenda_reperibilita),
-                              Info(when, legenda_rol, Keys.legenda_rol)] +
-                             [Info(when, None, Keys.detail, detail)
-                              for detail in details])
-        return self.cached_infos
+        info = Info(when=when,
+                    columns=[
+                        Column(ColumnHeader.minimo, minimo),
+                        Column(ColumnHeader.scatti, scatti),
+                        Column(ColumnHeader.superm, superm),
+                        Column(ColumnHeader.sup_ass, sup_ass),
+                        Column(ColumnHeader.edr, edr),
+                        Column(ColumnHeader.totale_retributivo,
+                               totale_retributivo),
+                        Column(ColumnHeader.netto_da_pagare, netto_da_pagare),
+                        Column(ColumnHeader.ferie_a_prec, ferie_a_prec),
+                        Column(ColumnHeader.ferie_spett, ferie_spett),
+                        Column(ColumnHeader.ferie_godute, ferie_godute),
+                        Column(ColumnHeader.ferie_saldo, ferie_saldo),
+                        Column(ColumnHeader.par_a_prec, par_a_prec),
+                        Column(ColumnHeader.par_spett, par_spett),
+                        Column(ColumnHeader.par_godute, par_godute),
+                        Column(ColumnHeader.par_saldo, par_saldo),
+                        Column(ColumnHeader.legenda_ordinario,
+                               legenda_ordinario),
+                        Column(ColumnHeader.legenda_straordinario,
+                               legenda_straordinario),
+                        Column(ColumnHeader.legenda_ferie, legenda_ferie),
+                        Column(ColumnHeader.legenda_reperibilita,
+                               legenda_reperibilita),
+                        Column(ColumnHeader.legenda_rol, legenda_rol)
+                    ],
+                    additional_details=list(additional_details))
+
+        # there is only an info object in a pdf
+        return [info]
 
 
 def extract_periodo(table: DataFrame) -> date:
@@ -255,26 +250,36 @@ def extract_legenda(table_keys: DataFrame, table_values: DataFrame, key: str) ->
     return Decimal(0)
 
 
-def extract_details(table: DataFrame) -> Iterable[InfoDetail]:
+def extract_details(table: DataFrame) -> Iterator[AdditionalDetail]:
     for row in table.itertuples(False, None):
         if len(row) == 8:
-            yield InfoDetail(prev=None if isnan(row[0]) else int(row[0]),
-                             fisc=None if isnan(row[1]) else int(row[1]),
-                             cod=row[2],
-                             descrizione=row[3],
-                             ore_o_giorni=extract(row[4]),
-                             compenso_unitario=extract(row[5]),
-                             trattenute=extract(row[6]),
-                             competenze=extract(row[7]))
+            yield AdditionalDetail(prev=(None
+                                         if isnan(row[0])
+                                         else int(row[0])),
+                                   fisc=(None
+                                         if isnan(row[1])
+                                         else int(row[1])),
+                                   cod=row[2],
+                                   descrizione=row[3],
+                                   ore_o_giorni=extract(row[4]),
+                                   compenso_unitario=extract(row[5]),
+                                   trattenute=extract(row[6]),
+                                   competenze=extract(row[7]))
         else:
-            if len(row) == 9 and isnan(row[4]) and all(isnan(e) for e in table[4]):
-                yield InfoDetail(prev=None if isnan(row[0]) else int(row[0]),
-                                 fisc=None if isnan(row[1]) else int(row[1]),
-                                 cod=row[2],
-                                 descrizione=row[3],
-                                 ore_o_giorni=extract(row[5]),
-                                 compenso_unitario=extract(row[6]),
-                                 trattenute=extract(row[7]),
-                                 competenze=extract(row[8]))
+            if (len(row) == 9
+                and isnan(row[4])
+                    and all(isnan(e) for e in table[4])):
+                yield AdditionalDetail(prev=(None
+                                             if isnan(row[0])
+                                             else int(row[0])),
+                                       fisc=(None
+                                             if isnan(row[1])
+                                             else int(row[1])),
+                                       cod=row[2],
+                                       descrizione=row[3],
+                                       ore_o_giorni=extract(row[5]),
+                                       compenso_unitario=extract(row[6]),
+                                       trattenute=extract(row[7]),
+                                       competenze=extract(row[8]))
             else:
                 raise Exception(row)

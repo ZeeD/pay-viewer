@@ -18,7 +18,7 @@ class TestHistoryWriter(unittest.TestCase):
 
         info_file = io.BytesIO()
 
-        feature = pdf2xls.model.keys.Keys.minimo
+        feature = pdf2xls.model.keys.ColumnHeader.minimo
         infos = [pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
                                               decimal.Decimal("1"))]
 

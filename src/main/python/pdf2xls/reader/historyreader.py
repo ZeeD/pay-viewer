@@ -3,30 +3,71 @@
 from datetime import date
 from decimal import Decimal
 from json import load
-from typing import Iterable
-from typing import TextIO
+from typing import List
+from typing import Optional
+from typing import TypedDict
 
-from ..model.info import Info
-from ..model.keys import Keys
-from ..mtime.abcmtimerereader import ABCMtimeReader
+from ..model import AdditionalDetail
+from ..model import Column
+from ..model import ColumnHeader
+from ..model import Info
 from .abcreader import ABCReader
 
 
+class RawColumn(TypedDict):
+    header: str
+    howmuch: Optional[str]
+
+
+class RawAdditionalDetail(TypedDict):
+    prev: Optional[int]
+    fisc: Optional[int]
+    cod: int
+    descrizione: str
+    ore_o_giorni: str
+    compenso_unitario: str
+    trattenute: str
+    competenze: str
+
+
+class RawInfo(TypedDict):
+    when: str
+    columns: List[RawColumn]
+    additional_details: List[RawAdditionalDetail]
+
+
+def _column(raw_column: RawColumn) -> Column:
+    return Column(header=ColumnHeader[raw_column['header']],
+                  howmuch=(None
+                           if raw_column['howmuch'] is None
+                           else Decimal(raw_column['howmuch'])))
+
+
+def _additional_detail(raw_additional_detail: RawAdditionalDetail) -> AdditionalDetail:
+    return AdditionalDetail(prev=raw_additional_detail['prev'],
+                            fisc=raw_additional_detail['fisc'],
+                            cod=raw_additional_detail['cod'],
+                            descrizione=raw_additional_detail['descrizione'],
+                            ore_o_giorni=Decimal(
+                                raw_additional_detail['ore_o_giorni']),
+                            compenso_unitario=Decimal(
+                                raw_additional_detail['compenso_unitario']),
+                            trattenute=Decimal(
+                                raw_additional_detail['trattenute']),
+                            competenze=Decimal(raw_additional_detail['competenze']))
+
+
+def _info(raw_info: RawInfo) -> Info:
+    return Info(when=date.fromisoformat(raw_info['when']),
+                columns=[_column(raw_column)
+                         for raw_column in raw_info['columns']],
+                additional_details=[_additional_detail(raw_additional_detail)
+                                    for raw_additional_detail in raw_info['additional_details']])
+
+
 class HistoryReader(ABCReader):
-    'retrieve old infos'
-
-    def __init__(self, info_file: TextIO, mtime_reader: ABCMtimeReader) -> None:
-        super().__init__(info_file, mtime_reader)
-
-    def read_infos(self) -> Iterable[Info]:
+    def read_infos(self) -> List[Info]:
         'read from a file'
 
-        jsonizable = load(self.info_file)
-        table = {date.fromisoformat(k1): {Keys[k2]: (None
-                                                     if v2 is None
-                                                     else Decimal(v2))
-                                          for k2, v2 in v1.items()}
-                 for k1, v1 in jsonizable.items()}
-        for when, feature_howmuch in table.items():
-            for feature, howmuch in feature_howmuch.items():
-                yield Info(when, howmuch, feature)
+        with open(self.name, 'r') as fp:
+            return [_info(raw_info) for raw_info in load(fp)]

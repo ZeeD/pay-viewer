@@ -1,33 +1,47 @@
 'history writer'
 
 from json import dump
-from typing import TextIO
-from typing import cast
+from typing import List
 
-from ..model.keys import Keys
+from ..model import AdditionalDetail
+from ..model import Column
+from ..model import Info
+from ..reader.historyreader import RawAdditionalDetail
+from ..reader.historyreader import RawColumn
+from ..reader.historyreader import RawInfo
 from .abcwriter import ABCWriter
-from .abcwriter import InfoPoints
+
+
+def _raw_column(column: Column) -> RawColumn:
+    return {
+        'header': column.header.name,
+        'howmuch': (None if column.howmuch is None else str(column.howmuch)),
+    }
+
+
+def _raw_additional_details(additional_detail: AdditionalDetail) -> RawAdditionalDetail:
+    return {
+        'prev': additional_detail.prev,
+        'fisc': additional_detail.fisc,
+        'cod': additional_detail.cod,
+        'descrizione': additional_detail.descrizione,
+        'ore_o_giorni': str(additional_detail.ore_o_giorni),
+        'compenso_unitario': str(additional_detail.compenso_unitario),
+        'trattenute': str(additional_detail.trattenute),
+        'competenze': str(additional_detail.competenze)
+    }
+
+
+def _raw_info(info: Info) -> RawInfo:
+    return {
+        'when': info.when.isoformat(),
+        'columns': [_raw_column(column) for column in info.columns],
+        'additional_details': [_raw_additional_details(additional_detail)
+                               for additional_detail in info.additional_details]
+    }
 
 
 class HistoryWriter(ABCWriter):
-    'write infos on an .json'
-
-    def __init__(self, info_file: TextIO) -> None:
-        super().__init__(info_file)
-
-    def write_feature_infos(self, feature: Keys, infos: InfoPoints) -> None:
-        'keep track of the stuff to write'
-
-        for info_point in infos:
-            self.table[info_point.when][feature.name] = info_point.howmuch
-
-    def close(self) -> None:
-        'atomically write all the infos'
-
-        # convert keys into strings
-        jsonizable = {str(k1): {k2: None if v2 is None else str(v2)
-                                for k2, v2 in v1.items()}
-                      for k1, v1 in self.table.items()}
-
-        dump(jsonizable, cast(TextIO, self.info_file))
-        self.info_file.close()
+    def write_infos(self, infos: List[Info]) -> None:
+        with open(self.name, 'w') as fp:
+            dump([_raw_info(info) for info in infos], fp)

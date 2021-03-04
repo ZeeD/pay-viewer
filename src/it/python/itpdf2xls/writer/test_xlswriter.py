@@ -28,15 +28,15 @@ class TestXlsWriter(unittest.TestCase):
         outfile = resourceXls('testWriteOneRow')
 
         writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
-        writer.write_feature_infos(pdf2xls.model.keys.Keys.minimo, [
+        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.minimo, [
             pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                          decimal.Decimal('1'))
         ])
-        writer.write_feature_infos(pdf2xls.model.keys.Keys.totale_retributivo, [
+        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.totale_retributivo, [
             pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                          decimal.Decimal('2'))
         ])
-        writer.write_feature_infos(pdf2xls.model.keys.Keys.sup_ass, [
+        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.sup_ass, [
             pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                          decimal.Decimal('2'))
         ])
@@ -48,7 +48,7 @@ class TestXlsWriter(unittest.TestCase):
         outfile = resourceXls('testWriteOneColumn')
 
         writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
-        writer.write_feature_infos(pdf2xls.model.keys.Keys.minimo, [
+        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.minimo, [
             pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
                                          decimal.Decimal('1')),
             pdf2xls.model.info.InfoPoint(datetime.date(2019, 2, 1),
