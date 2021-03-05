@@ -34,13 +34,13 @@ class ColumnHeader(Enum):
     detail = auto()
 
 
-@dataclass
+@dataclass(frozen=True)
 class Column:
     header: ColumnHeader
     howmuch: Optional[Decimal]
 
 
-@dataclass
+@dataclass(frozen=True)
 class AdditionalDetail:
     prev: Optional[int]
     fisc: Optional[int]
@@ -52,7 +52,7 @@ class AdditionalDetail:
     competenze: Decimal
 
 
-@dataclass
+@dataclass(frozen=True)
 class Info:
     when: date
     columns: List[Column]

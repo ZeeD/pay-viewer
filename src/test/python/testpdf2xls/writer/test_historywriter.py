@@ -19,4 +19,4 @@ class TestHistoryWriter(TestCase):
                      [])
             ])
 
-        mock().write.assert_called_once_with('stuff')
+        mock().write.assert_called()
