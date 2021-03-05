@@ -1,59 +1,42 @@
-'test module xlswriter'
+from datetime import date
+from decimal import Decimal
+from unittest import TestCase
 
-import datetime
-import decimal
-import unittest
-
-import pdf2xls.model.info
-import pdf2xls.model.keys
-import pdf2xls.writer.xlswriter
+from pdf2xls.model import AdditionalDetail
+from pdf2xls.model import Column
+from pdf2xls.model import ColumnHeader
+from pdf2xls.model import Info
+from pdf2xls.writer.xlswriter import XlsWriter
 
 from .. import resourceXls
 
 
-class TestXlsWriter(unittest.TestCase):
+class TestXlsWriter(TestCase):
     'test the XlsWriter methods'
 
     def testWriteZeroRows(self) -> None:
-        'read_infos'
+        XlsWriter(resourceXls('testWriteZeroRows')).write_infos([])
 
-        outfile = resourceXls('testWriteZeroRows')
-
-        writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
-        writer.close()
-
-    def testWriteOneRow(self) -> None:
-        'read_infos'
-
-        outfile = resourceXls('testWriteOneRow')
-
-        writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
-        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.minimo, [
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
-                                         decimal.Decimal('1'))
+    def testWriteOneInfoMultipleColumns(self) -> None:
+        XlsWriter(resourceXls('testWriteOneRow')).write_infos([
+            Info(date(2019, 1, 1),
+                 [Column(ColumnHeader.minimo, Decimal('1')),
+                  Column(ColumnHeader.edr, Decimal('2'))],
+                 [AdditionalDetail(None, None, 123, 'descr1', Decimal('3'), Decimal('4'), Decimal('5'), Decimal('6')),
+                  AdditionalDetail(None, None, 456, 'descr2', Decimal(
+                      '7'), Decimal('8'), Decimal('9'), Decimal('0')),
+                  ])
         ])
-        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.totale_retributivo, [
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
-                                         decimal.Decimal('2'))
-        ])
-        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.sup_ass, [
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
-                                         decimal.Decimal('2'))
-        ])
-        writer.close()
 
-    def testWriteOneColumn(self) -> None:
-        'read_infos'
-
-        outfile = resourceXls('testWriteOneColumn')
-
-        writer = pdf2xls.writer.xlswriter.XlsWriter(outfile)
-        writer.write_feature_infos(pdf2xls.model.keys.ColumnHeader.minimo, [
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 1, 1),
-                                         decimal.Decimal('1')),
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 2, 1),
-                                         decimal.Decimal('2')),
-            pdf2xls.model.info.InfoPoint(datetime.date(2019, 3, 1),
-                                         decimal.Decimal('3'))
+    def testWriteMultipleInfosDifferentColumns(self) -> None:
+        XlsWriter(resourceXls('testWriteOneColumn')).write_infos([
+            Info(date(2019, 1, 1),
+                 [Column(ColumnHeader.minimo, Decimal('4'))],
+                 []),
+            Info(date(2019, 2, 1),
+                 [Column(ColumnHeader.edr, Decimal('5'))],
+                 []),
+            Info(date(2019, 3, 1),
+                 [Column(ColumnHeader.n_scatti, Decimal('6'))],
+                 [])
         ])
-        writer.close()
