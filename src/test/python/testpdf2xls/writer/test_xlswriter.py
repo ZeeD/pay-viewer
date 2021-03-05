@@ -1,32 +1,22 @@
-'test module test_xlswriter'
+from datetime import date
+from decimal import Decimal
+from unittest import TestCase
+from unittest.mock import patch
 
-import datetime
-import decimal
-import io
-import unittest
+from pdf2xls.model import Column
+from pdf2xls.model import ColumnHeader
+from pdf2xls.model import Info
+from pdf2xls.writer.xlswriter import XlsWriter
 
-import pdf2xls.model.info
-import pdf2xls.model.keys
-import pdf2xls.writer.xlswriter
-
-
-class TestXlsWriter(unittest.TestCase):
-    'test class xlswriter.XlsWriter'
-
+class TestXlsWriter(TestCase):
     def testWriteInfos(self) -> None:
-        'history stream is just a json'
+        with patch('pdf2xls.writer.xlswriter.Workbook') as mock:
+            XlsWriter('dummy').write_infos([
+                Info(date(1982, 5, 11),
+                     [Column(
+                         ColumnHeader.minimo, Decimal("1"))],
+                     [])
+            ])
 
-        info_file = io.BytesIO()
-
-        feature = pdf2xls.model.keys.ColumnHeader.minimo
-        infos = [pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
-                                              decimal.Decimal("1"))]
-
-        xls_writer = pdf2xls.writer.xlswriter.XlsWriter(info_file)
-        xls_writer.write_feature_infos(feature, infos)
-        xls_writer.close()
-
-        info_file.seek(0)
-        actual = info_file.read()
-
-        self.assertTrue(actual is not None)
+        mock.assert_called_once_with(write_only=True)
+        mock().save.assert_called_once_with('dummy')
