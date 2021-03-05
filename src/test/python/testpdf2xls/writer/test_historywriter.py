@@ -1,32 +1,22 @@
-'test module history_xlswriter'
+from datetime import date
+from decimal import Decimal
+from unittest import TestCase
 
-import datetime
-import decimal
-import io
-import unittest
+from pdf2xls.model import Column
+from pdf2xls.model import ColumnHeader
+from pdf2xls.model import Info
+from pdf2xls.writer.historywriter import HistoryWriter
 
-import pdf2xls.model.info
-import pdf2xls.model.keys
-import pdf2xls.writer.xlswriter
+from .. import stub_open
 
 
-class TestHistoryWriter(unittest.TestCase):
-    'test class historywriter.HistoryWriter'
-
+class TestHistoryWriter(TestCase):
     def testWriteInfos(self) -> None:
-        'testWriteInfos'
+        with stub_open('') as mock:
+            HistoryWriter('dummy').write_infos([
+                Info(date(1982, 5, 11),
+                     [Column(ColumnHeader.minimo, Decimal("1"))],
+                     [])
+            ])
 
-        info_file = io.BytesIO()
-
-        feature = pdf2xls.model.keys.ColumnHeader.minimo
-        infos = [pdf2xls.model.info.InfoPoint(datetime.date(1982, 5, 11),
-                                              decimal.Decimal("1"))]
-
-        xls_writer = pdf2xls.writer.xlswriter.XlsWriter(info_file)
-        xls_writer.write_feature_infos(feature, infos)
-        xls_writer.close()
-
-        info_file.seek(0)
-        actual = info_file.read()
-
-        self.assertTrue(actual is not None)
+        mock().write.assert_called_once_with('stuff')

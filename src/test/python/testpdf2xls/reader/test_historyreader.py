@@ -1,31 +1,24 @@
-'test module test_historyreader'
+from datetime import date
+from decimal import Decimal
+from unittest import TestCase
 
-import datetime
-import decimal
-import io
-import unittest
+from pdf2xls.model import Column
+from pdf2xls.model import ColumnHeader
+from pdf2xls.model import Info
+from pdf2xls.reader.historyreader import HistoryReader
 
-import mockito
-import pdf2xls.model.info
-import pdf2xls.model.keys
-import pdf2xls.mtime.abcmtimerereader
-import pdf2xls.reader.historyreader
+from .. import stub_open
 
 
-class TestHistoryReader(unittest.TestCase):
-    'test class test_historyreader.HistoryReader'
-
+class TestHistoryReader(TestCase):
     def testReadInfos(self) -> None:
-        'history stream is just a json'
+        with stub_open('''[{"when": "1982-05-11",
+                            "columns": [{"header": "minimo",
+                                         "howmuch": "1"}]}]'''):
+            [actual] = HistoryReader('dummy').read_infos()
 
-        expected = [pdf2xls.model.info.Info(datetime.date(1982, 5, 11),
-                                            decimal.Decimal("1"),
-                                            pdf2xls.model.keys.ColumnHeader.minimo)]
+        expected = Info(date(1982, 5, 11),
+                        [Column(ColumnHeader.minimo, Decimal("1"))],
+                        [])
 
-        info_file = io.StringIO('{ "1982-05-11": { "minimo": 1 } }')
-        mock_mtime_reader = mockito.mock(
-            pdf2xls.mtime.abcmtimerereader.ABCMtimeReader)  # type: ignore
-        history_reader = pdf2xls.reader.historyreader.HistoryReader(
-            info_file, mock_mtime_reader)
-        infos = list(history_reader.read_infos())
-        self.assertEqual(infos, expected)
+        self.assertEqual(actual, expected)
