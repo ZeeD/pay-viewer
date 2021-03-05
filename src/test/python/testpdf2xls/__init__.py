@@ -8,5 +8,4 @@ from unittest.mock import patch
 @contextmanager
 def stub_open(content: str) -> Iterator[MagicMock]:
     with patch('builtins.open', mock_open(read_data=content)) as mock:
-        print(type(mock))
         yield mock

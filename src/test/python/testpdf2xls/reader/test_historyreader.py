@@ -14,7 +14,8 @@ class TestHistoryReader(TestCase):
     def testReadInfos(self) -> None:
         with stub_open('''[{"when": "1982-05-11",
                             "columns": [{"header": "minimo",
-                                         "howmuch": "1"}]}]'''):
+                                         "howmuch": "1"}],
+                            "additional_details": []}]'''):
             [actual] = HistoryReader('dummy').read_infos()
 
         expected = Info(date(1982, 5, 11),
