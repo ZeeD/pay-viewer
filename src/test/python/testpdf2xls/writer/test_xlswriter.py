@@ -8,6 +8,7 @@ from pdf2xls.model import ColumnHeader
 from pdf2xls.model import Info
 from pdf2xls.writer.xlswriter import XlsWriter
 
+
 class TestXlsWriter(TestCase):
     def testWriteInfos(self) -> None:
         with patch('pdf2xls.writer.xlswriter.Workbook') as mock:
