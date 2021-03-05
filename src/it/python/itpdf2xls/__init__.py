@@ -1,19 +1,16 @@
-'support for tests'
-
-import pathlib
-import typing
+from pathlib import Path
 
 
-def loadResourcePdf(year: int, month: int) -> typing.BinaryIO:
+def loadResourcePdf(year: int, month: int) -> str:
     'load a pdf from the resources path'
-    here = pathlib.Path(__file__).parent
+    here = Path(__file__).parent
     p = here / '..' / '..' / 'resources' / \
         f'{year:04}' / f'Cedolini_{year:04}_{month:02}.pdf'
-    return p.open('rb')
+    return str(p)
 
 
-def resourceXls(filename: str) -> typing.BinaryIO:
+def resourceXls(filename: str) -> str:
     'open a writable file to a xls from the resources path'
-    here = pathlib.Path(__file__).parent
+    here = Path(__file__).parent
     p = here / '..' / '..' / 'resources' / 'outxls' / f'{filename}.xlsx'
-    return p.open('wb')
+    return str(p)
