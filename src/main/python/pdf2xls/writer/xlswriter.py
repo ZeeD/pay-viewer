@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from typing import Dict
-from typing import Iterable
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -12,7 +11,6 @@ from openpyxl.cell import Cell
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
-from pdf2xls.model import AdditionalDetail
 
 from ..model import ColumnHeader
 from ..model import Info
@@ -59,42 +57,54 @@ class XlsWriter(ABCWriter):
     def write_infos(self, infos: List[Info]) -> None:
         'atomically write all the infos'
 
-        # collect all details of all infos:
-        details = {additional_detail.descrizione
-                   for info in infos
-                   for additional_detail in info.additional_details}
+        def clean(descrizione: str) -> str:
+            for prefix in ('AD.COM.LE DA TR. NEL ',
+                           'AD.REG.LE DA TR. NEL ',
+                           'TICKET PASTO'):
+                if descrizione.startswith(prefix):
+                    return f'{prefix}*'
 
-        # there are 1 + len(keys)-1 + len(set(details)) columns
+            return descrizione
+
+        # collect all details of all infos:
+        details = list(sorted({clean(additional_detail.descrizione)
+                               for info in infos
+                               for additional_detail in info.additional_details}))
+
+        # there are 1 + len(keys)-1 + len(details) columns
 
         header: List[Tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
-        for key in ColumnHeader:
-            if key is not ColumnHeader.detail:
-                header.append((key.name, NUMBER_FORMAT_TEXT))
+        for column_header in ColumnHeader:
+            if column_header is not ColumnHeader.detail:
+                header.append((column_header.name, NUMBER_FORMAT_TEXT))
             else:
                 for detail in details:
                     header.append((detail, NUMBER_FORMAT_TEXT))
 
         rows: List[List[Tuple[E, str]]] = [header]
 
-        order = {e: i for i, e in enumerate(ColumnHeader)}
         for info in infos:
-            row: List[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
-            # sort columns by Key "order"
-            for column in sorted(info.columns, key=lambda c: order[c.header]):
-                row.append((column.howmuch,
-                            VALUE_NUMBER_FORMAT[column.header]))
-
+            # group columns by column_header
+            columns = {column.header: column
+                       for column in info.columns}
             # group additional_details by descrizione
-            additional_details: Dict[str, AdditionalDetail] = {}
-            for ad in info.additional_details:
-                additional_details[ad.descrizione] = ad
+            additional_details = {clean(additional_detail.descrizione): additional_detail
+                                  for additional_detail in info.additional_details}
 
-            for detail in details:
-                maybe_ad = additional_details.get(detail)
-                # cosa esportare nell'xls?
-                row.append((None, NUMBER_FORMAT_TEXT)
-                           if maybe_ad is None
-                           else (maybe_ad.competenze, NUMBER_FORMAT_NUMBER))
+            row: List[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
+            for column_header in ColumnHeader:
+                if column_header is not ColumnHeader.detail:
+                    row.append((columns[column_header].howmuch,
+                                VALUE_NUMBER_FORMAT[column_header])
+                               if column_header in columns
+                               else (None, NUMBER_FORMAT_TEXT))
+                else:
+                    for detail in details:
+                        # cosa esportare nell'xls?
+                        row.append((additional_details[detail].competenze - additional_details[detail].trattenute,
+                                    NUMBER_FORMAT_NUMBER)
+                                   if detail in additional_details
+                                   else (None, NUMBER_FORMAT_TEXT))
             rows.append(row)
 
         widths: Dict[str, int] = {}
@@ -103,8 +113,6 @@ class XlsWriter(ABCWriter):
                 column_letter = get_column_letter(i)
                 widths[column_letter] = max(widths.get(column_letter, 0),
                                             2 * len(str(cell[0])))
-
-        print(f'output of {len(rows)}x{len(rows[0])} cells')
 
         workbook = Workbook(write_only=True)
         try:
@@ -115,15 +123,10 @@ class XlsWriter(ABCWriter):
                 sheet.column_dimensions[column_letter].width = width
             # then add the data
             for row in rows:
-                sheet.append([self._cell(sheet, *cell) for cell in row])
+                sheet.append([self._cell(sheet, value, number_format)
+                              for value, number_format in row])
         finally:
             workbook.save(self.name)
-
-    def _row(self, e: E, fmt: str, it: Iterable[Tuple[E, str]]) -> List[Tuple[E, str]]:
-        row = []
-        row.append((e, fmt))
-        row.extend(it)
-        return row
 
     def _cell(self, sheet: Worksheet, value: E, number_format: str) -> Cell:
         cell = Cell(sheet, value=value)
