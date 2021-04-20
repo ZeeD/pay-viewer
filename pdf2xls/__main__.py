@@ -3,12 +3,12 @@ from os.path import getmtime
 from sys import argv
 from typing import List
 
-from pdf2xls.model import Info
-from pdf2xls.reader.abcreader import ABCReader
-from pdf2xls.reader.historyreader import HistoryReader
-from pdf2xls.reader.pdfreader import PdfReader
-from pdf2xls.writer.historywriter import HistoryWriter
-from pdf2xls.writer.xlswriter import XlsWriter
+from .model import Info
+from .reader.abcreader import ABCReader
+from .reader.historyreader import HistoryReader
+from .reader.pdfreader import PdfReader
+from .writer.historywriter import HistoryWriter
+from .writer.xlswriter import XlsWriter
 
 
 def _create_json_from_pdf(pdf_file_name: str) -> None:
@@ -44,7 +44,8 @@ def main() -> None:
     '''
 
     infos: List[Info] = []
-    for arg in argv[1:] or [f'{__file__}/../../resources/20*/*.pdf']:  # fallback
+    for arg in argv[1:] or [
+            f'{__file__}/../../resources/20*/*.pdf']:  # fallback
         for name in glob(arg):
             infos.extend(get_reader(name).read_infos())
 

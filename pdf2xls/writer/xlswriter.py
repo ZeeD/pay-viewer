@@ -101,10 +101,12 @@ class XlsWriter(ABCWriter):
                 else:
                     for detail in details:
                         # cosa esportare nell'xls?
-                        row.append((additional_details[detail].competenze - additional_details[detail].trattenute,
-                                    NUMBER_FORMAT_NUMBER)
-                                   if detail in additional_details
-                                   else (None, NUMBER_FORMAT_TEXT))
+                        row.append(
+                            (additional_details[detail].competenze -
+                             additional_details[detail].trattenute,
+                                NUMBER_FORMAT_NUMBER) if detail in additional_details else (
+                                None,
+                                NUMBER_FORMAT_TEXT))
             rows.append(row)
 
         widths: Dict[str, int] = {}

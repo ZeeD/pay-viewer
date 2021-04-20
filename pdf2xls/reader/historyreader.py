@@ -43,18 +43,21 @@ def _column(raw_column: RawColumn) -> Column:
                            else Decimal(raw_column['howmuch'])))
 
 
-def _additional_detail(raw_additional_detail: RawAdditionalDetail) -> AdditionalDetail:
-    return AdditionalDetail(prev=raw_additional_detail['prev'],
-                            fisc=raw_additional_detail['fisc'],
-                            cod=raw_additional_detail['cod'],
-                            descrizione=raw_additional_detail['descrizione'],
-                            ore_o_giorni=Decimal(
-                                raw_additional_detail['ore_o_giorni']),
-                            compenso_unitario=Decimal(
-                                raw_additional_detail['compenso_unitario']),
-                            trattenute=Decimal(
-                                raw_additional_detail['trattenute']),
-                            competenze=Decimal(raw_additional_detail['competenze']))
+def _additional_detail(
+        raw_additional_detail: RawAdditionalDetail) -> AdditionalDetail:
+    return AdditionalDetail(
+        prev=raw_additional_detail['prev'],
+        fisc=raw_additional_detail['fisc'],
+        cod=raw_additional_detail['cod'],
+        descrizione=raw_additional_detail['descrizione'],
+        ore_o_giorni=Decimal(
+            raw_additional_detail['ore_o_giorni']),
+        compenso_unitario=Decimal(
+            raw_additional_detail['compenso_unitario']),
+        trattenute=Decimal(
+            raw_additional_detail['trattenute']),
+        competenze=Decimal(
+            raw_additional_detail['competenze']))
 
 
 def _info(raw_info: RawInfo) -> Info:

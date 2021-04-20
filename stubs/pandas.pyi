@@ -1,9 +1,9 @@
-from typing import Iterable, Any
+from typing import Any
+from typing import Iterable
 from typing import Iterator
-from typing import Protocol
+from typing import Optional
 from typing import Tuple
 from typing import Union
-
 
 class At:
     def __getitem__(self, other: Tuple[int, int]) -> Union[str, float]:
@@ -31,7 +31,7 @@ class DataFrame:
 class Options:
     class Display:
         ...
-    display: Options.Display()
+    display: 'Options.Display'
 
 
 options = Options()

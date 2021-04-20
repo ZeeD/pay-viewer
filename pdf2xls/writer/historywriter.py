@@ -19,7 +19,8 @@ def _raw_column(column: Column) -> RawColumn:
     }
 
 
-def _raw_additional_details(additional_detail: AdditionalDetail) -> RawAdditionalDetail:
+def _raw_additional_details(
+        additional_detail: AdditionalDetail) -> RawAdditionalDetail:
     return {
         'prev': additional_detail.prev,
         'fisc': additional_detail.fisc,
