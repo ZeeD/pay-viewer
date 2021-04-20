@@ -17,8 +17,9 @@ from ..model import Column
 from ..model import ColumnHeader
 from ..model import Info
 from .abcreader import ABCReader
+from pathlib import Path
 
-TEMPLATE_PATH = f'{__file__}/../../../../resources/tabula-template.json'
+TEMPLATE_PATH = str(Path(__file__).parent.parent.parent / 'resources' / 'tabula-template.json')
 
 
 class PdfReader(ABCReader):
@@ -243,7 +244,10 @@ def extract_par_saldo(table: DataFrame) -> Decimal:
         return Decimal(0)
 
 
-def extract_legenda(table_keys: DataFrame, table_values: DataFrame, key: str) -> Decimal:
+def extract_legenda(
+        table_keys: DataFrame,
+        table_values: DataFrame,
+        key: str) -> Decimal:
     for i, row in table_keys.itertuples():
         if row.startswith(f'{key}='):
             return extract(table_values.iloc[i, 0])

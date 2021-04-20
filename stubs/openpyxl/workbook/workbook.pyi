@@ -2,9 +2,7 @@
 
 import typing
 
-
 import openpyxl.worksheet.worksheet
-
 
 class Workbook:
 

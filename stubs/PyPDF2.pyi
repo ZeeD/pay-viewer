@@ -2,7 +2,6 @@
 
 import typing
 
-
 class Page:
 
     def extractText(self) -> str:

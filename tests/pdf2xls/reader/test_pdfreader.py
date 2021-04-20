@@ -15,7 +15,7 @@ from .. import loadResourcePdf
 class TestPdfReader(TestCase):
     'test class test_pdfreader.PdfReader'
 
-    def __init__(self, methodName: str='runTest'):
+    def __init__(self, methodName: str = 'runTest'):
         super().__init__(methodName)
         self.maxDiff = None
 
@@ -119,7 +119,7 @@ class TestPdfReader(TestCase):
         self.assertEqual(info.when, date(2012, 9, 1))
 
 
-def extract(infos: List[Info], key: ColumnHeader)-> Optional[Decimal]:
+def extract(infos: List[Info], key: ColumnHeader) -> Optional[Decimal]:
     for info in infos:
         for column in info.columns:
             if column.header is key:
