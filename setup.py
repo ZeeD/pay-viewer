@@ -4,7 +4,7 @@ from setuptools import setup
 setup(name='pdf2xls',
       version='0.1',
       description='pdf2xls',
-      url='',
+      url='https://github.com/ZeeD/pdf2xls',
       author='Vito De Tullio',
       author_email='vito.detullio@gmail.com',
       license='GPL3',
