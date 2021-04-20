@@ -8,6 +8,7 @@ from pdf2xls.model import Info
 from pdf2xls.reader.historyreader import HistoryReader
 
 from .. import stub_open
+from pathlib import Path
 
 
 class TestHistoryReader(TestCase):
@@ -16,7 +17,7 @@ class TestHistoryReader(TestCase):
                             "columns": [{"header": "minimo",
                                          "howmuch": "1"}],
                             "additional_details": []}]'''):
-            [actual] = HistoryReader('dummy').read_infos()
+            [actual] = HistoryReader(Path()).read_infos()
 
         expected = Info(date(1982, 5, 11),
                         [Column(ColumnHeader.minimo, Decimal("1"))],

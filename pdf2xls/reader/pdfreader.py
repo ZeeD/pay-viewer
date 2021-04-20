@@ -19,7 +19,7 @@ from ..model import Info
 from .abcreader import ABCReader
 from pathlib import Path
 
-TEMPLATE_PATH = str(Path(__file__).parent.parent.parent / 'resources' / 'tabula-template.json')
+TEMPLATE_PATH = Path(__file__).parent.parent.parent / 'resources' / 'tabula-template.json'
 
 
 class PdfReader(ABCReader):

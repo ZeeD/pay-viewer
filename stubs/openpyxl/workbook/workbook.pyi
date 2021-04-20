@@ -3,6 +3,7 @@
 import typing
 
 import openpyxl.worksheet.worksheet
+from pathlib import Path
 
 class Workbook:
 
@@ -14,5 +15,5 @@ class Workbook:
                      ) -> openpyxl.worksheet.worksheet.Worksheet:
         'create_sheet'
 
-    def save(self, filename: str) -> None:
+    def save(self, filename: Path) -> None:
         'save'

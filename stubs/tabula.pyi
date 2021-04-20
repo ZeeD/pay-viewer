@@ -5,9 +5,10 @@ from typing import List
 from typing import Union
 
 from pandas import DataFrame
+from pathlib import Path
 
-def read_pdf_with_template(input_path: Union[str, BinaryIO],
-                           template_path: str,
+def read_pdf_with_template(input_path: Union[Path, BinaryIO],
+                           template_path: Path,
                            *,
                            java_options: List[str]=[],
                            pandas_options: Dict[str, Any]={},

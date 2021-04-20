@@ -1,14 +1,12 @@
-'removejsons'
-
-import glob
-import os
+from os import remove
+from pathlib import Path
 
 
 def main() -> None:
-    '''usage: removejsons'''
+    root = Path(__file__).parent.parent
 
-    for file_name in glob.glob(f'{__file__}/../../resources/20*/*.pdf.json'):
-        os.remove(file_name)
+    for file_name in (root / 'resources').glob('20*/*.pdf.json'):
+        remove(file_name)
 
 
 if __name__ == '__main__':
