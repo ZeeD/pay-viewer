@@ -1,7 +1,6 @@
-from glob import glob
 from os.path import getmtime
-from sys import argv
 from typing import List
+from pathlib import Path
 
 from .model import Info
 from .reader.abcreader import ABCReader
@@ -11,21 +10,21 @@ from .writer.historywriter import HistoryWriter
 from .writer.xlswriter import XlsWriter
 
 
-def _create_json_from_pdf(pdf_file_name: str) -> None:
+def _create_json_from_pdf(pdf_file_name: Path) -> None:
     infos = PdfReader(pdf_file_name).read_infos()
-    HistoryWriter(f'{pdf_file_name}.json').write_infos(infos)
+    HistoryWriter(pdf_file_name.with_suffix('.pdf.json')).write_infos(infos)
 
 
-def get_reader(pdf_file_name: str) -> ABCReader:
+def get_reader(pdf_file_name: Path) -> ABCReader:
     try:
-        history_mtime = getmtime(f'{pdf_file_name}.json')
+        history_mtime = getmtime(pdf_file_name.with_suffix('.pdf.json'))
     except FileNotFoundError:
         _create_json_from_pdf(pdf_file_name)
     else:
         if history_mtime < getmtime(pdf_file_name):
             _create_json_from_pdf(pdf_file_name)
 
-    return HistoryReader(f'{pdf_file_name}.json')
+    return HistoryReader(pdf_file_name.with_suffix('.pdf.json'))
 
 
 def main() -> None:
@@ -43,13 +42,13 @@ def main() -> None:
     *   store into XLSX
     '''
 
-    infos: List[Info] = []
-    for arg in argv[1:] or [
-            f'{__file__}/../../resources/20*/*.pdf']:  # fallback
-        for name in glob(arg):
-            infos.extend(get_reader(name).read_infos())
+    root = Path(__file__).parent.parent
 
-    XlsWriter(f'{__file__}/../../../../output.xlsx').write_infos(infos)
+    infos: List[Info] = []
+    for name in (root / 'resources').glob('*/*.pdf'):
+        infos.extend(get_reader(name).read_infos())
+
+    XlsWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
 
 
 if __name__ == '__main__':

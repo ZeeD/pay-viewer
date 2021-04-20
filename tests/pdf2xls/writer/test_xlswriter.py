@@ -7,12 +7,13 @@ from pdf2xls.model import Column
 from pdf2xls.model import ColumnHeader
 from pdf2xls.model import Info
 from pdf2xls.writer.xlswriter import XlsWriter
+from pathlib import Path
 
 
 class TestXlsWriter(TestCase):
     def testWriteInfos(self) -> None:
         with patch('pdf2xls.writer.xlswriter.Workbook') as mock:
-            XlsWriter('dummy').write_infos([
+            XlsWriter(Path()).write_infos([
                 Info(date(1982, 5, 11),
                      [Column(
                          ColumnHeader.minimo, Decimal("1"))],
