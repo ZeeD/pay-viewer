@@ -3,4 +3,4 @@ node_modules/
 *.egg-info
 .mypy_cache/
 bin/
-
+!bin/tabula.bat
