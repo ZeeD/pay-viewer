@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
@@ -7,7 +8,6 @@ from pdf2xls.model import Column
 from pdf2xls.model import ColumnHeader
 from pdf2xls.model import Info
 from pdf2xls.writer.xlswriter import XlsWriter
-from pathlib import Path
 
 
 class TestXlsWriter(TestCase):

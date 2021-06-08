@@ -1,9 +1,9 @@
 'stub for openpyxl'
 
 import typing
+from pathlib import Path
 
 import openpyxl.worksheet.worksheet
-from pathlib import Path
 
 class Workbook:
 
