@@ -1,9 +1,9 @@
 from abc import ABC
 from abc import abstractmethod
+from pathlib import Path
 from typing import List
 
 from ..model import Info
-from pathlib import Path
 
 
 class ABCWriter(ABC):

@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from unittest import TestCase
 
 from pdf2xls.model import Column
@@ -8,7 +9,6 @@ from pdf2xls.model import Info
 from pdf2xls.reader.historyreader import HistoryReader
 
 from .. import stub_open
-from pathlib import Path
 
 
 class TestHistoryReader(TestCase):

@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 from typing import BinaryIO
 from typing import Dict
@@ -5,7 +6,6 @@ from typing import List
 from typing import Union
 
 from pandas import DataFrame
-from pathlib import Path
 
 def read_pdf_with_template(input_path: Union[Path, BinaryIO],
                            template_path: Path,

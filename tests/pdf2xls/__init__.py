@@ -15,7 +15,8 @@ def stub_open(content: str) -> Iterator[MagicMock]:
 def loadResourcePdf(year: int, month: int) -> Path:
     'load a pdf from the resources path'
     here = Path(__file__).parent
-    p = here / '..' / 'resources' / f'{year:04}' / f'Cedolini_{year:04}_{month:02}.pdf'
+    p = here / '..' / 'resources' / \
+        f'{year:04}' / f'Cedolini_{year:04}_{month:02}.pdf'
     return p
 
 
