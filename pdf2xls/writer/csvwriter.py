@@ -1,7 +1,10 @@
 from csv import DictWriter
+from datetime import date
+from decimal import Decimal
 from typing import Dict
 from typing import Final
 from typing import List
+from typing import Union
 
 from ..model import ColumnHeader
 from ..model import Info
@@ -20,12 +23,12 @@ def fieldnames(infos: List[Info]) -> List[str]:
                          for ad in info.additional_details})))
 
 
-def rows(infos: List[Info]) -> List[Dict[str, str]]:
-    return [{**{MONTH: info.when.isoformat()},
-             **{c.header.name: str(c.howmuch)
+def rows(infos: List[Info]) -> List[Dict[str, Union[date, Decimal]]]:
+    return [{**{MONTH: info.when},
+             **{c.header.name: c.howmuch
                 for c in info.columns
                 if c.howmuch is not None},
-             **{ad.descrizione: str(ad.competenze - ad.trattenute)
+             **{ad.descrizione: ad.competenze - ad.trattenute
                 for ad in info.additional_details}}
             for info in infos]
 
