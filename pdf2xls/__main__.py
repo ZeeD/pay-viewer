@@ -50,7 +50,7 @@ def main() -> None:
         infos.extend(get_reader(name).read_infos())
 
     XlsWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
-    CsvWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
+    CsvWriter(root / 'resources' / 'output.csv').write_infos(infos)
 
 
 if __name__ == '__main__':
