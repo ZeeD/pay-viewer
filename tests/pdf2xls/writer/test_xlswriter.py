@@ -21,4 +21,4 @@ class TestXlsWriter(TestCase):
             ])
 
         mock.assert_called_once_with(write_only=True)
-        mock().save.assert_called_once_with('dummy')
+        mock().save.assert_called_once_with(Path('.'))
