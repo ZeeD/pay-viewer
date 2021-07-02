@@ -13,12 +13,15 @@ setup(name='pdf2xls',
       install_requires=[
           'pandas',
           'tabula-py',
-          'openpyxl'
+          'openpyxl',
+          'PySide6'
       ],
       entry_points={
           'console_scripts': [
               'pdf2xls=pdf2xls.__main__:main',
               'removejsons=removejsons.__main__:main'
           ],
-          'gui_scripts': [],
+          'gui_scripts': [
+              'viewer=viewer.__main__:main'
+          ],
       })

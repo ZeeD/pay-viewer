@@ -61,12 +61,12 @@ class TestCsvWriter(TestCase):
         self.assertListEqual(expected, actual)
 
     def test_rows(self) -> None:
-        expected = [{'month': '1982-05-11',
-                     'minimo': '1',
-                     'descrizione 1': '1'},
-                    {'month': '1989-07-27',
-                     'legenda_ferie': '4',
-                     'descrizione 2': '10'}]
+        expected = [{'month': date(1982, 5, 11),
+                     'minimo': Decimal('1'),
+                     'descrizione 1': Decimal('1')},
+                    {'month': date(1989, 7, 27),
+                     'legenda_ferie': Decimal('4'),
+                     'descrizione 2': Decimal('10')}]
         actual = rows(INFOS)
         self.assertListEqual(expected, actual)
 
