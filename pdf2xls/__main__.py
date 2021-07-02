@@ -6,6 +6,7 @@ from .model import Info
 from .reader.abcreader import ABCReader
 from .reader.historyreader import HistoryReader
 from .reader.pdfreader import PdfReader
+from .writer.csvwriter import CsvWriter
 from .writer.historywriter import HistoryWriter
 from .writer.xlswriter import XlsWriter
 
@@ -49,6 +50,7 @@ def main() -> None:
         infos.extend(get_reader(name).read_infos())
 
     XlsWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
+    CsvWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
 
 
 if __name__ == '__main__':
