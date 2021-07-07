@@ -1,27 +1,31 @@
 from decimal import Decimal
 from typing import List
 
-from PySide2.QtCharts import QtCharts
-from PySide2.QtCore import QPointF
-from PySide2.QtCore import Qt
-from PySide2.QtWidgets import QGraphicsSceneMouseEvent
-from PySide2.QtWidgets import QGraphicsSceneWheelEvent
-from PySide2.QtWidgets import QWidget
+from PySide6.QtCharts import QBarCategoryAxis
+from PySide6.QtCharts import QBarSet
+from PySide6.QtCharts import QChart
+from PySide6.QtCharts import QChartView
+from PySide6.QtCharts import QStackedBarSeries
+from PySide6.QtCore import QPointF, QObject, Slot
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Signal
+from PySide6.QtWidgets import QCheckBox
+from PySide6.QtWidgets import QGraphicsSceneMouseEvent
+from PySide6.QtWidgets import QGraphicsSceneWheelEvent
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QGroupBox
+from PySide6.QtWidgets import QWidget
 
 from .model import Rows
 
 
-def new_bar_set(category: str, values: List[Decimal]) -> QtCharts.QBarSet:
-    ret = QtCharts.QBarSet(category)
+def new_bar_set(category: str, values: List[Decimal]) -> QBarSet:
+    ret = QBarSet(category)
     ret.append(values)
     return ret
 
 
-def build_series(rows: Rows) -> QtCharts.QStackedBarSeries:
-    categories = list(sorted({value.category
-                              for row in rows
-                              for value in row.values}))
-
+def build_series(rows: Rows, categories: list[str]) -> QStackedBarSeries:
     bar_sets = [new_bar_set(category,
                             [value.value
                              for row in rows
@@ -29,26 +33,27 @@ def build_series(rows: Rows) -> QtCharts.QStackedBarSeries:
                              if value.category == category])
                 for category in categories]
 
-    series = QtCharts.QStackedBarSeries()
+    series = QStackedBarSeries()
     for bar_set in bar_sets:
         series.append(bar_set)
     return series
 
 
-class Chart(QtCharts.QChart):
-    def __init__(self, rows: Rows):
+class Chart(QChart):
+    def __init__(self, rows: Rows, categories: list[str]):
         super().__init__()
 
-        series = build_series(rows)
+        series = build_series(rows, categories)
         self.addSeries(series)
 
-        axis_x = QtCharts.QBarCategoryAxis()
+        axis_x = QBarCategoryAxis()
         axis_x.append([row.date.isoformat() for row in rows])
         self.createDefaultAxes()
         self.setAxisX(axis_x, series)
 
         self.legend().setVisible(True)
-        self.legend().setAlignment(Qt.AlignBottom)
+        self.legend().setAlignment(Qt.AlignRight)
+        self.legend().setShowToolTips(True)
 
     def wheelEvent(self, event: QGraphicsSceneWheelEvent) -> None:
         super().wheelEvent(event)
@@ -86,9 +91,55 @@ class Chart(QtCharts.QChart):
         self.scroll(x_prev - x_curr, y_curr - y_prev)
 
 
-class ChartView(QtCharts.QChartView):
-    def __init__(self, parent: QWidget, rows: Rows):
-        super().__init__(Chart(rows), parent)
+class ChartView(QChartView):
+    def __init__(self, parent: QWidget, rows: Rows, categories: list[str]):
+        super().__init__(Chart(rows, categories), parent)
+        self.rows = rows
+        self.categories = categories
 
     def load(self, rows: Rows) -> None:
-        self.setChart(Chart(rows))
+        self.setChart(Chart(rows, self.categories))
+        self.rows = rows
+
+    @Slot(list)
+    def setCategories(self, categories: list[str]) -> None:
+        self.setChart(Chart(self.rows, categories))
+        self.categories = categories
+
+
+
+class FilledGroupBox(QGroupBox):
+    columns = 20
+    categories_changed = Signal(list)
+
+    def __init__(self, parent: QWidget, categories: list[str]):
+        super().__init__(parent)
+
+        layout = QGridLayout(self)
+
+        row = -1
+        for i, category in enumerate(categories):
+            column = i % FilledGroupBox.columns
+            if column == 0:
+                row += 1
+            checkbox = QCheckBox(category, self)
+            checkbox.setChecked(True)
+            checkbox.stateChanged.connect(self._trigger_categories_changed)
+            layout.addWidget(checkbox, row, column)
+
+        self.setLayout(layout)
+
+    def _trigger_categories_changed(self, _: int) -> None:
+        categories: list[str] = []
+
+        layout: QGridLayout = self.layout()
+        for row in range(layout.rowCount()):
+            for column in range(layout.columnCount()):
+                item = layout.itemAtPosition(row, column)
+                if not item:
+                    continue
+                checkbox: QCheckBox = item.widget()
+                if checkbox.isChecked():
+                    categories.append(checkbox.text())
+
+        self.categories_changed.emit(categories)

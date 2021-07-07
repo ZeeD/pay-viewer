@@ -5,14 +5,15 @@ from typing import Final
 from typing import Iterator
 
 from pkg_resources import resource_filename
-from PySide2.QtCore import QItemSelection
-from PySide2.QtUiTools import QUiLoader
-from PySide2.QtWidgets import QApplication
-from PySide2.QtWidgets import QErrorMessage
-from PySide2.QtWidgets import QFileDialog
-from PySide2.QtWidgets import QMainWindow
+from PySide6.QtCore import QItemSelection
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QErrorMessage
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QMainWindow
 
 from .chartview import ChartView
+from .chartview import FilledGroupBox
 from .model import loader
 
 VIEWER_UI_PATH: Final = resource_filename('viewer', 'viewer.ui')
@@ -52,8 +53,17 @@ def main_window(file_name: Path) -> Iterator[QMainWindow]:
 
     # window.lineEdit.textChanged.connect(view_model.filter_changed)
 
-    chart_view = ChartView(window, data)
+    categories = list(sorted({value.category
+                              for row in data
+                              for value in row.values}))
+
+    filled_group_box = FilledGroupBox(window, categories)
+    window.tab_2.layout().addWidget(filled_group_box)
+
+    chart_view = ChartView(window, data, categories)
     window.tab_2.layout().addWidget(chart_view)
+
+    filled_group_box.categories_changed.connect(chart_view.setCategories)
 
     window.actionOpen.triggered.connect(update_data)
 
