@@ -9,6 +9,7 @@ from .reader.pdfreader import PdfReader
 from .writer.csvwriter import CsvWriter
 from .writer.historywriter import HistoryWriter
 from .writer.xlswriter import XlsWriter
+from .cli import parse_args
 
 
 def _create_json_from_pdf(pdf_file_name: Path) -> None:
@@ -43,14 +44,14 @@ def main() -> None:
     *   store into XLSX
     '''
 
-    root = Path(__file__).parent.parent
+    ns = parse_args()
 
     infos: List[Info] = []
-    for name in (root / 'resources').glob('*/*.pdf'):
+    for name in ns.pdf_file:
         infos.extend(get_reader(name).read_infos())
 
-    XlsWriter(root / 'resources' / 'output.xlsx').write_infos(infos)
-    CsvWriter(root / 'resources' / 'output.csv').write_infos(infos)
+    XlsWriter(ns.output_dir / 'output.xlsx').write_infos(infos)
+    CsvWriter(ns.output_dir / 'output.csv').write_infos(infos)
 
 
 if __name__ == '__main__':
