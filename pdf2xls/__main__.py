@@ -10,6 +10,7 @@ from .writer.csvwriter import CsvWriter
 from .writer.historywriter import HistoryWriter
 from .writer.xlswriter import XlsWriter
 from .cli import parse_args
+from .mainui import main_ui
 
 
 def _create_json_from_pdf(pdf_file_name: Path) -> None:
@@ -29,7 +30,7 @@ def get_reader(pdf_file_name: Path) -> ABCReader:
     return HistoryReader(pdf_file_name.with_suffix('.pdf.json'))
 
 
-def main() -> None:
+def old_main() -> None:
     '''usage: pdf2xml *.pdf
     * create an 'output.xlsx' file
     * create a '*.pdf.json' for each input
@@ -53,6 +54,8 @@ def main() -> None:
     XlsWriter(ns.output_dir / 'output.xlsx').write_infos(infos)
     CsvWriter(ns.output_dir / 'output.csv').write_infos(infos)
 
+
+main = main_ui
 
 if __name__ == '__main__':
     main()

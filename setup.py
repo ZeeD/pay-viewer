@@ -24,4 +24,7 @@ setup(name='pdf2xls',
           'gui_scripts': [
               'viewer=viewer.__main__:main'
           ],
+      },
+      package_data={
+          '': ['mainui.ui']
       })
