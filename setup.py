@@ -14,7 +14,8 @@ setup(name='pdf2xls',
           'pandas',
           'tabula-py',
           'openpyxl',
-          'PySide6'
+          'PySide6',
+          'selenium'
       ],
       entry_points={
           'console_scripts': [
@@ -26,5 +27,5 @@ setup(name='pdf2xls',
           ],
       },
       package_data={
-          '': ['mainui.ui']
+          '': ['mainui.ui', 'secrets.ini']
       })
