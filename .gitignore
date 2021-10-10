@@ -4,3 +4,5 @@
 /resources/*
 !/resources/tabula-template.json
 __pycache__
+/secrets.ini
+/geckodriver.log
