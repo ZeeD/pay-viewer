@@ -45,13 +45,12 @@ def get_year_months(last: date) -> Iterable[tuple[int, int]]:
             return date(d.year + 1, 1, 1)
         return date(d.year, d.month + 1, 1)
 
-    # TODO - compreso?
     d = last
     while True:
+        d = next_month(d)
         yield (d.year, d.month)
         if d.month == 12:
             yield (d.year, 13)
-        d = next_month(d)
 
 
 def firefox_profile(dtemp: str) -> FirefoxProfile:
