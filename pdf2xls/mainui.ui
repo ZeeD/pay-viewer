@@ -31,10 +31,10 @@
    </property>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
-    <addaction name="actionOpen_folder"/>
-    <addaction name="actionFetch_new_data"/>
+    <addaction name="actionUpdate"/>
+    <addaction name="actionSettings"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -44,9 +44,14 @@
     <string>Open folder</string>
    </property>
   </action>
-  <action name="actionFetch_new_data">
+  <action name="actionUpdate">
    <property name="text">
-    <string>Fetch new data</string>
+    <string>&amp;Update</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>&amp;Settings</string>
    </property>
   </action>
  </widget>
