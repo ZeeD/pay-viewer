@@ -1,21 +1,26 @@
-from dataclasses import dataclass
 from configparser import ConfigParser
+from dataclasses import dataclass
 from datetime import date
+from os import listdir
+from shutil import rmtree
 from tempfile import mkdtemp
+from typing import Iterable
 
+from PySide6.QtCore import QSettings
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support.expected_conditions import (
-    presence_of_element_located, element_to_be_clickable, new_window_is_opened
-)
-from typing import Iterable
-from selenium.webdriver.support.ui import Select
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from shutil import rmtree
-from os import listdir
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support.expected_conditions import \
+    element_to_be_clickable
+from selenium.webdriver.support.expected_conditions import new_window_is_opened
+from selenium.webdriver.support.expected_conditions import \
+    presence_of_element_located
+from selenium.webdriver.support.ui import Select
+from selenium.webdriver.support.ui import WebDriverWait
+
+from .constants import SETTINGS_DATA_PATH
 
 GECKODRIVER_PATH = 'bin/geckodriver-v0.30.0-win64/geckodriver.exe'
 SECRETS_PATH = 'secrets.ini'
@@ -69,12 +74,18 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
     return profile
 
 
-def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int) -> None:
-    print(f'mv_pdf_from_tmp_to_data - inside {dtemp} there is {listdir(dtemp)}')
-    print(f'mv {listdir(dtemp)[0]} Cedolini_{year}_{month:02}.pdf')
+def mv_pdf_from_tmp_to_data(dtemp: str,
+                            year: int,
+                            month: int,
+                            settings: QSettings
+                            ) -> None:
+    print(
+        f'mv_pdf_from_tmp_to_data - inside {dtemp} there is {listdir(dtemp)}')
+    print(
+        f'mv {listdir(dtemp)[0]} {settings.value(SETTINGS_DATA_PATH)}/{year}/Cedolini_{year}_{month:02}.pdf')
 
 
-def try_fetch_new_data(last: date) -> bool:
+def try_fetch_new_data(last: date, settings: QSettings) -> bool:
     secrets = get_secrets()
     dtemp = mkdtemp()
     with webdriver.Firefox(executable_path=GECKODRIVER_PATH,
@@ -158,7 +169,7 @@ def try_fetch_new_data(last: date) -> bool:
                 # the popup will auto-close, a new one with the .pdf is opened
                 set_pdf_wh()
                 # now the a pdf should be present in dtemp
-                mv_pdf_from_tmp_to_data(dtemp, year, month)
+                mv_pdf_from_tmp_to_data(dtemp, year, month, settings)
             finally:
                 driver.switch_to.window(whs['documenti'])
     rmtree(dtemp)

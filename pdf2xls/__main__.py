@@ -1,33 +1,11 @@
-from os.path import getmtime
-from pathlib import Path
 from typing import List
 
-from .model import Info
-from .reader.abcreader import ABCReader
-from .reader.historyreader import HistoryReader
-from .reader.pdfreader import PdfReader
-from .writer.csvwriter import CsvWriter
-from .writer.historywriter import HistoryWriter
-from .writer.xlswriter import XlsWriter
 from .cli import parse_args
+from .loader import get_reader
 from .mainui import main_ui
-
-
-def _create_json_from_pdf(pdf_file_name: Path) -> None:
-    infos = PdfReader(pdf_file_name).read_infos()
-    HistoryWriter(pdf_file_name.with_suffix('.pdf.json')).write_infos(infos)
-
-
-def get_reader(pdf_file_name: Path) -> ABCReader:
-    try:
-        history_mtime = getmtime(pdf_file_name.with_suffix('.pdf.json'))
-    except FileNotFoundError:
-        _create_json_from_pdf(pdf_file_name)
-    else:
-        if history_mtime < getmtime(pdf_file_name):
-            _create_json_from_pdf(pdf_file_name)
-
-    return HistoryReader(pdf_file_name.with_suffix('.pdf.json'))
+from .model import Info
+from .writer.csvwriter import CsvWriter
+from .writer.xlswriter import XlsWriter
 
 
 def old_main() -> None:
