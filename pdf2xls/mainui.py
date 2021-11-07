@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List
+from typing import cast
 
 from PySide6.QtCore import QSettings
 from PySide6.QtGui import QStandardItemModel
@@ -7,6 +7,7 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QWidget
+from os import listdir
 
 from .automation import try_fetch_new_data
 from .constants import MAINUI_UI_PATH
@@ -20,17 +21,21 @@ from .viewmodel import SortFilterViewModel
 
 def new_model(settings: QSettings) -> QStandardItemModel:
     def load_current_data() -> None:
-        infos = load(settings.value(SETTINGS_DATA_PATH))
+        infos = load(cast(str, settings.value(SETTINGS_DATA_PATH)))
         model.load(infos)
 
     def update() -> None:
-        print('update', settings.value(SETTINGS_DATA_PATH))
-        last = date(2021, 8, 1)
+        data_path = cast(str, settings.value(SETTINGS_DATA_PATH))
+        max_year = max(listdir(data_path))
+        last_pdf = max(fn for fn in listdir(f'{data_path}/{max_year}')
+                       if fn.endswith('.pdf'))
+        year, month = map(int, last_pdf.split('.', 1)[0].split('_', 2)[1:])
+        last = date(year, month, 1)
         new_data = try_fetch_new_data(last, settings)
         if new_data:
             load_current_data()
 
-    model = SortFilterViewModel(None, [])
+    model = SortFilterViewModel([])
     load_current_data()
 
     model.update = update
