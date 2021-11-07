@@ -5,6 +5,7 @@ from os import listdir
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Iterable
+from shutil import move
 
 from PySide6.QtCore import QSettings
 from selenium import webdriver
@@ -79,10 +80,9 @@ def mv_pdf_from_tmp_to_data(dtemp: str,
                             month: int,
                             settings: QSettings
                             ) -> None:
-    print(
-        f'mv_pdf_from_tmp_to_data - inside {dtemp} there is {listdir(dtemp)}')
-    print(
-        f'mv {listdir(dtemp)[0]} {settings.value(SETTINGS_DATA_PATH)}/{year}/Cedolini_{year}_{month:02}.pdf')
+    data_path = settings.value(SETTINGS_DATA_PATH)
+    move(f'{dtemp}/{listdir(dtemp)[0]}',
+         f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
 
 def try_fetch_new_data(last: date, settings: QSettings) -> bool:
