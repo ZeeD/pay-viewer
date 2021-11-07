@@ -53,9 +53,12 @@ class ViewModel(QAbstractTableModel):
 
         if role == Qt.DisplayRole:
             if column == 0:
-                return self._infos[row].when
+                return str(self._infos[row].when)
             if column < 1 + len(ColumnHeader):
-                return self._infos[row].columns[column - 1].howmuch
+                info = self._infos[row]
+                c = info.columns[column - 1]
+                ret = str(c.howmuch)
+                return ret
             return f'TODO {row}x{column}'
 
         # if role == Qt.BackgroundRole:
@@ -68,12 +71,13 @@ class ViewModel(QAbstractTableModel):
         #
         #     return QBrush(QColor(red, green, blue, 127))
 
-        # if role == Qt.UserRole:
-        #     return cast(
-        #         T_FIELDS,
-        #         getattr(
-        #             self._data[row],
-        #             FIELD_NAMES[column]))
+        if role == Qt.UserRole:
+            print('WTF?')
+            # return cast(
+            #     T_FIELDS,
+            #     getattr(
+            #         self._data[row],
+            #         FIELD_NAMES[column]))
 
         return None
 
@@ -109,8 +113,8 @@ class ViewModel(QAbstractTableModel):
 
 
 class SortFilterViewModel(QSortFilterProxyModel):
-    def __init__(self, parent: QObject, infos: List[Info]) -> None:
-        super().__init__(parent)
+    def __init__(self, infos: List[Info]) -> None:
+        super().__init__()
         self.setSourceModel(ViewModel(self, infos))
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
         self.setSortCaseSensitivity(Qt.CaseInsensitive)
