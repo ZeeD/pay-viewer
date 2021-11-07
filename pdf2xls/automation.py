@@ -162,6 +162,10 @@ def try_fetch_new_data(last: date, settings: QSettings) -> bool:
             try:
                 # a popup is opened
                 set_popup_wh()
+                # set to download the "original", not the "copy" (?)
+                wait.until(element_to_be_clickable(
+                    (By.CSS_SELECTOR, '[name=originale][value="1"]')
+                )).click()
                 # fetch the pdf
                 wait.until(element_to_be_clickable(
                     (By.CSS_SELECTOR, '.new_button.ButtonSP')
