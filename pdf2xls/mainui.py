@@ -26,7 +26,7 @@ def new_model(settings: QSettings) -> QStandardItemModel:
 
     def update() -> None:
         data_path = cast(str, settings.value(SETTINGS_DATA_PATH))
-        max_year = max(listdir(data_path))
+        max_year = max(fn for fn in listdir(data_path) if '.' not in fn)
         last_pdf = max(fn for fn in listdir(f'{data_path}/{max_year}')
                        if fn.endswith('.pdf'))
         year, month = map(int, last_pdf.split('.', 1)[0].split('_', 2)[1:])
