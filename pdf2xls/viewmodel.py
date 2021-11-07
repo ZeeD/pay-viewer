@@ -122,10 +122,9 @@ class SortFilterViewModel(QSortFilterProxyModel):
         regex = self.filterRegularExpression()
         source_model = self.sourceModel()
         column_count = source_model.columnCount(source_parent)
-        return any(regex.match(source_model.data(index)).hasMatch() # hasPartialMatch()
-                   for index in (source_model.index(source_row,
-                                                    i,
-                                                    source_parent)
+
+        return any(regex.match(str(source_model.data(index))).hasMatch()
+                   for index in (source_model.index(source_row, i, source_parent)
                                  for i in range(column_count)))
 
     def filter_changed(self, text: str) -> None:
