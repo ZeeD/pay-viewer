@@ -13,6 +13,14 @@ from PySide6.QtCore import Qt
 from .model import Info, ColumnHeader
 
 
+def by_column(info: Info, i: int) -> Optional[Decimal]:
+    column_header = ColumnHeader(i)
+    for column in info.columns:
+        if column.header == column_header:
+            return column.howmuch
+    return None
+
+
 class ViewModel(QAbstractTableModel):
     def __init__(self, parent: QObject, infos: List[Info]):
         super().__init__(parent)
@@ -55,9 +63,7 @@ class ViewModel(QAbstractTableModel):
             if column == 0:
                 return str(self._infos[row].when)
             if column < 1 + len(ColumnHeader):
-                info = self._infos[row]
-                c = info.columns[column - 1]
-                ret = str(c.howmuch)
+                ret = str(by_column(self._infos[row], column))
                 return ret
             return f'TODO {row}x{column}'
 
