@@ -1,4 +1,5 @@
 from datetime import date
+from os import listdir
 from typing import cast
 
 from PySide6.QtCore import QSettings
@@ -7,7 +8,6 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QWidget
-from os import listdir
 
 from .automation import try_fetch_new_data
 from .constants import MAINUI_UI_PATH
