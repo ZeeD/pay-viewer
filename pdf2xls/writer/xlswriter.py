@@ -69,7 +69,8 @@ class XlsWriter(ABCWriter):
         # collect all details of all infos:
         details = list(sorted({clean(additional_detail.descrizione)
                                for info in infos
-                               for additional_detail in info.additional_details}))
+                               for additional_detail in
+                               info.additional_details}))
 
         # there are 1 + len(keys)-1 + len(details) columns
 
@@ -88,8 +89,10 @@ class XlsWriter(ABCWriter):
             columns = {column.header: column
                        for column in info.columns}
             # group additional_details by descrizione
-            additional_details = {clean(additional_detail.descrizione): additional_detail
-                                  for additional_detail in info.additional_details}
+            additional_details = {clean(additional_detail.descrizione):
+                                  additional_detail
+                                  for additional_detail in
+                                  info.additional_details}
 
             row: List[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
             for column_header in ColumnHeader:
@@ -104,9 +107,9 @@ class XlsWriter(ABCWriter):
                         row.append(
                             (additional_details[detail].competenze -
                              additional_details[detail].trattenute,
-                                NUMBER_FORMAT_NUMBER) if detail in additional_details else (
-                                None,
-                                NUMBER_FORMAT_TEXT))
+                                NUMBER_FORMAT_NUMBER)
+                            if detail in additional_details
+                            else (None, NUMBER_FORMAT_TEXT))
             rows.append(row)
 
         widths: Dict[str, int] = {}

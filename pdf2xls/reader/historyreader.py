@@ -65,12 +65,13 @@ def _info(raw_info: RawInfo) -> Info:
                 columns=[_column(raw_column)
                          for raw_column in raw_info['columns']],
                 additional_details=[_additional_detail(raw_additional_detail)
-                                    for raw_additional_detail in raw_info['additional_details']])
+                                    for raw_additional_detail in
+                                    raw_info['additional_details']])
 
 
 class HistoryReader(ABCReader):
     def read_infos(self) -> List[Info]:
         'read from a file'
 
-        with open(self.name, 'r') as fp:
+        with open(self.name, 'r', encoding='utf-8') as fp:
             return [_info(raw_info) for raw_info in load(fp)]

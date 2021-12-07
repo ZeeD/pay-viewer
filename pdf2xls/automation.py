@@ -2,10 +2,10 @@ from configparser import ConfigParser
 from dataclasses import dataclass
 from datetime import date
 from os import listdir
+from shutil import move
 from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Iterable
-from shutil import move
 
 from PySide6.QtCore import QSettings
 from selenium import webdriver
@@ -101,8 +101,8 @@ def try_fetch_new_data(last: date, settings: QSettings) -> bool:
         wait.until(presence_of_element_located(
             (By.TAG_NAME, 'app-header-menu-user-profile')))
 
-        # TODO: check if is better to use https://www.myareaf2a.com/home/documents/personal
-        
+        # TODO: check https://www.myareaf2a.com/home/documents/personal
+
         # click on 'Apri tutti i documenti personali'
         driver.find_element(By.CSS_SELECTOR, '.apps-button').click()
         driver.find_element(By.CSS_SELECTOR, '.applicationButton').click()

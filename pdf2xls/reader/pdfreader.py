@@ -43,7 +43,7 @@ class PdfReader(ABCReader):
         table_money = tables[1]
         table_details = tables[2]
         table_netto_pagare = tables[3]
-        table_dati_fiscali = tables[4]
+        # table_dati_fiscali = tables[4]
         table_ferie = tables[5]
         try:
             table_legenda_keys = tables[6]

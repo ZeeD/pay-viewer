@@ -3,14 +3,17 @@ from decimal import Decimal
 from typing import List
 from typing import Optional
 from typing import Union
+from typing import cast
 
-from PySide6.QtCore import QAbstractTableModel, QRegularExpression
+from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
 
-from .model import Info, ColumnHeader
+from .model import ColumnHeader
+from .model import Info
 
 
 def by_column(info: Info, i: int) -> Optional[Decimal]:
@@ -39,8 +42,8 @@ class ViewModel(QAbstractTableModel):
     def headerData(self,
                    section: int,
                    orientation: Qt.Orientation,
-                   role: int = Qt.DisplayRole) -> Optional[str]:
-        if role != Qt.DisplayRole:
+                   role: int = cast(int, Qt.DisplayRole)) -> Optional[str]:
+        if role != cast(int, Qt.DisplayRole):
             return None
 
         if orientation != Qt.Horizontal:
@@ -54,12 +57,12 @@ class ViewModel(QAbstractTableModel):
 
     def data(self,
              index: QModelIndex,
-             role: int = Qt.DisplayRole
+             role: int = cast(int, Qt.DisplayRole)
              ) -> Optional[Union[str, date, Decimal]]:
         column = index.column()
         row = index.row()
 
-        if role == Qt.DisplayRole:
+        if role == cast(int, Qt.DisplayRole):
             if column == 0:
                 return str(self._infos[row].when)
             if column < 1 + len(ColumnHeader):
@@ -77,7 +80,7 @@ class ViewModel(QAbstractTableModel):
         #
         #     return QBrush(QColor(red, green, blue, 127))
 
-        if role == Qt.UserRole:
+        if role == cast(int, Qt.UserRole):
             print('WTF?')
             # return cast(
             #     T_FIELDS,
@@ -134,7 +137,9 @@ class SortFilterViewModel(QSortFilterProxyModel):
         column_count = source_model.columnCount(source_parent)
 
         return any(regex.match(str(source_model.data(index))).hasMatch()
-                   for index in (source_model.index(source_row, i, source_parent)
+                   for index in (source_model.index(source_row,
+                                                    i,
+                                                    source_parent)
                                  for i in range(column_count)))
 
     def filter_changed(self, text: str) -> None:
