@@ -7,7 +7,6 @@ from shutil import rmtree
 from tempfile import mkdtemp
 from typing import Iterable
 
-from PySide6.QtCore import QSettings
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -21,7 +20,7 @@ from selenium.webdriver.support.expected_conditions import \
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from .constants import SETTINGS_DATA_PATH
+from .settings import Settings
 
 GECKODRIVER_PATH = 'bin/geckodriver-v0.30.0-win64/geckodriver.exe'
 SECRETS_PATH = 'secrets.ini'
@@ -78,14 +77,14 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
 def mv_pdf_from_tmp_to_data(dtemp: str,
                             year: int,
                             month: int,
-                            settings: QSettings
+                            settings: Settings
                             ) -> None:
-    data_path = settings.value(SETTINGS_DATA_PATH)
+    data_path = settings.data_path
     move(f'{dtemp}/{listdir(dtemp)[0]}',
          f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
 
-def try_fetch_new_data(last: date, settings: QSettings) -> bool:
+def try_fetch_new_data(last: date, settings: Settings) -> bool:
     secrets = get_secrets()
     dtemp = mkdtemp()
     with webdriver.Firefox(executable_path=GECKODRIVER_PATH,

@@ -35,6 +35,7 @@
     </property>
     <addaction name="actionUpdate"/>
     <addaction name="actionSettings"/>
+    <addaction name="actionCleanup"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -52,6 +53,11 @@
   <action name="actionSettings">
    <property name="text">
     <string>&amp;Settings</string>
+   </property>
+  </action>
+  <action name="actionCleanup">
+   <property name="text">
+    <string>&amp;Cleanup</string>
    </property>
   </action>
  </widget>

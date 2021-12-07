@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from typing import List
+
 from typing import Optional
 from typing import Union
 from typing import cast
@@ -25,19 +25,20 @@ def by_column(info: Info, i: int) -> Optional[Decimal]:
 
 
 class ViewModel(QAbstractTableModel):
-    def __init__(self, parent: QObject, infos: List[Info]):
+    def __init__(self, parent: QObject, infos: list[Info]):
         super().__init__(parent)
         self._set_infos(infos)
 
-    def _set_infos(self, infos: List[Info]) -> None:
+    def _set_infos(self, infos: list[Info]) -> None:
         self._infos = infos
 
     def rowCount(self, _parent: QModelIndex = QModelIndex()) -> int:
         return len(self._infos)
 
     def columnCount(self, _parent: QModelIndex = QModelIndex()) -> int:
-        return 1 + len(ColumnHeader) - 1 + max(len(info.additional_details)
-                                               for info in self._infos)
+        return 1 + len(ColumnHeader) - 1 + max((len(info.additional_details)
+                                                for info in self._infos),
+                                               default=0)
 
     def headerData(self,
                    section: int,
@@ -113,7 +114,7 @@ class ViewModel(QAbstractTableModel):
         finally:
             self.layoutChanged()
 
-    def load(self, infos: List[Info]) -> None:
+    def load(self, infos: list[Info]) -> None:
         self.beginResetModel()
         try:
             self._set_infos(infos)
@@ -122,7 +123,7 @@ class ViewModel(QAbstractTableModel):
 
 
 class SortFilterViewModel(QSortFilterProxyModel):
-    def __init__(self, infos: List[Info]) -> None:
+    def __init__(self, infos: list[Info]) -> None:
         super().__init__()
         self.setSourceModel(ViewModel(self, infos))
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
@@ -167,5 +168,5 @@ class SortFilterViewModel(QSortFilterProxyModel):
     #
     #     statusbar.showMessage(f'⅀ = {bigsum}')
 
-    def load(self, infos: List[Info]) -> None:
+    def load(self, infos: list[Info]) -> None:
         self.sourceModel().load(infos)

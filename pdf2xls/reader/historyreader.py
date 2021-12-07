@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from json import load
-from typing import List
 from typing import Optional
 from typing import TypedDict
 
@@ -32,8 +31,8 @@ class RawAdditionalDetail(TypedDict):
 
 class RawInfo(TypedDict):
     when: str
-    columns: List[RawColumn]
-    additional_details: List[RawAdditionalDetail]
+    columns: list[RawColumn]
+    additional_details: list[RawAdditionalDetail]
 
 
 def _column(raw_column: RawColumn) -> Column:
@@ -70,7 +69,7 @@ def _info(raw_info: RawInfo) -> Info:
 
 
 class HistoryReader(ABCReader):
-    def read_infos(self) -> List[Info]:
+    def read_infos(self) -> list[Info]:
         'read from a file'
 
         with open(self.name, 'r', encoding='utf-8') as fp:

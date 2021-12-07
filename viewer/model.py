@@ -2,7 +2,6 @@ from csv import reader
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from typing import List
 from typing import NamedTuple
 
 
@@ -11,7 +10,7 @@ class Value(NamedTuple):
     value: Decimal
 
 
-Values = List[Value]
+Values = list[Value]
 
 
 class Row(NamedTuple):
@@ -19,7 +18,7 @@ class Row(NamedTuple):
     values: Values
 
 
-Rows = List[Row]
+Rows = list[Row]
 
 
 def loader(file_name: Path) -> Rows:

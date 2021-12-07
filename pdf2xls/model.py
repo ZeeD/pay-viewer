@@ -3,7 +3,7 @@ from datetime import date
 from decimal import Decimal
 from enum import Enum
 from enum import auto
-from typing import List
+
 from typing import Optional
 
 
@@ -55,5 +55,9 @@ class AdditionalDetail:
 @dataclass(frozen=True)
 class Info:
     when: date
-    columns: List[Column]
-    additional_details: List[AdditionalDetail]
+    columns: list[Column]
+    additional_details: list[AdditionalDetail]
+
+    @classmethod
+    def column_names(cls) -> list[str]:
+        return []
