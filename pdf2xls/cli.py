@@ -1,4 +1,5 @@
-from argparse import ArgumentParser, Namespace
+from argparse import ArgumentParser
+from argparse import Namespace
 from pathlib import Path
 
 PDF2XLS_DATA_ROOT = Path(__file__).parent.parent.parent / 'pdf2xls-data'

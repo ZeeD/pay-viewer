@@ -5,6 +5,7 @@ from pathlib import Path
 
 import openpyxl.worksheet.worksheet
 
+
 class Workbook:
 
     def __init__(self, write_only: bool) -> None:

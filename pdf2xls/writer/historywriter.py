@@ -38,11 +38,12 @@ def _raw_info(info: Info) -> RawInfo:
         'when': info.when.isoformat(),
         'columns': [_raw_column(column) for column in info.columns],
         'additional_details': [_raw_additional_details(additional_detail)
-                               for additional_detail in info.additional_details]
+                               for additional_detail in
+                               info.additional_details]
     }
 
 
 class HistoryWriter(ABCWriter):
     def write_infos(self, infos: List[Info]) -> None:
-        with open(self.name, 'w') as fp:
+        with open(self.name, 'w', encoding='utf-8') as fp:
             dump([_raw_info(info) for info in infos], fp)

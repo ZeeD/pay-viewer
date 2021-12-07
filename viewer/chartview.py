@@ -1,14 +1,19 @@
-from decimal import Decimal
-from typing import List
+from typing import Callable
+from typing import Generic
+from typing import Protocol
+from typing import Sequence
+from typing import TypeVar
+from typing import cast
 
 from PySide6.QtCharts import QBarCategoryAxis
 from PySide6.QtCharts import QBarSet
 from PySide6.QtCharts import QChart
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QStackedBarSeries
-from PySide6.QtCore import QPointF, QObject, Slot
+from PySide6.QtCore import QPointF
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Signal
+from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QGraphicsSceneMouseEvent
 from PySide6.QtWidgets import QGraphicsSceneWheelEvent
@@ -19,7 +24,7 @@ from PySide6.QtWidgets import QWidget
 from .model import Rows
 
 
-def new_bar_set(category: str, values: List[Decimal]) -> QBarSet:
+def new_bar_set(category: str, values: Sequence[float]) -> QBarSet:
     ret = QBarSet(category)
     ret.append(values)
     return ret
@@ -27,7 +32,7 @@ def new_bar_set(category: str, values: List[Decimal]) -> QBarSet:
 
 def build_series(rows: Rows, categories: list[str]) -> QStackedBarSeries:
     bar_sets = [new_bar_set(category,
-                            [value.value
+                            [float(value.value)
                              for row in rows
                              for value in row.values
                              if value.category == category])
@@ -52,7 +57,7 @@ class Chart(QChart):
         self.setAxisX(axis_x, series)
 
         self.legend().setVisible(True)
-        self.legend().setAlignment(Qt.AlignRight)
+        self.legend().setAlignment(cast(Qt.Alignment, Qt.AlignRight))
         self.legend().setShowToolTips(True)
 
     def wheelEvent(self, event: QGraphicsSceneWheelEvent) -> None:
@@ -107,10 +112,18 @@ class ChartView(QChartView):
         self.categories = categories
 
 
+TPSignal = TypeVar('TPSignal')
+
+
+class PSignal(Protocol, Generic[TPSignal]):
+    def emit(self, _arg: TPSignal) -> None: ...
+
+    def connect(self, _slot: Callable[[TPSignal], None]) -> None: ...
+
 
 class FilledGroupBox(QGroupBox):
     columns = 20
-    categories_changed = Signal(list)
+    categories_changed = cast(PSignal[list[str]], Signal(list))
 
     def __init__(self, parent: QWidget, categories: list[str]):
         super().__init__(parent)
