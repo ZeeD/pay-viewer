@@ -1,7 +1,6 @@
 'history writer'
 
 from json import dump
-from typing import List
 
 from ..model import AdditionalDetail
 from ..model import Column
@@ -44,6 +43,6 @@ def _raw_info(info: Info) -> RawInfo:
 
 
 class HistoryWriter(ABCWriter):
-    def write_infos(self, infos: List[Info]) -> None:
+    def write_infos(self, infos: list[Info]) -> None:
         with open(self.name, 'w', encoding='utf-8') as fp:
             dump([_raw_info(info) for info in infos], fp)

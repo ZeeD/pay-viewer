@@ -5,7 +5,6 @@ from decimal import Decimal
 from math import isnan
 from pathlib import Path
 from typing import Iterator
-from typing import List
 from typing import Union
 from typing import cast
 
@@ -26,7 +25,7 @@ TEMPLATE_PATH = Path(__file__).parent.parent.parent / \
 class PdfReader(ABCReader):
     'retrieve infos from .pdf'
 
-    def read_infos(self) -> List[Info]:
+    def read_infos(self) -> list[Info]:
         'read from a file'
 
         for name in dir(options.display):

@@ -1,6 +1,5 @@
 from datetime import date
 from decimal import Decimal
-from typing import List
 from typing import Optional
 from unittest import TestCase
 
@@ -119,7 +118,7 @@ class TestPdfReader(TestCase):
         self.assertEqual(info.when, date(2012, 9, 1))
 
 
-def extract(infos: List[Info], key: ColumnHeader) -> Optional[Decimal]:
+def extract(infos: list[Info], key: ColumnHeader) -> Optional[Decimal]:
     for info in infos:
         for column in info.columns:
             if column.header is key:

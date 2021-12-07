@@ -1,9 +1,7 @@
 from csv import DictWriter
 from datetime import date
 from decimal import Decimal
-from typing import Dict
 from typing import Final
-from typing import List
 from typing import Union
 
 from ..model import ColumnHeader
@@ -23,7 +21,7 @@ def clean(descrizione: str) -> str:
     return descrizione
 
 
-def fieldnames(infos: List[Info]) -> List[str]:
+def fieldnames(infos: list[Info]) -> list[str]:
     return ([MONTH] +
             [column_header.name
              for column_header in ColumnHeader
@@ -33,7 +31,7 @@ def fieldnames(infos: List[Info]) -> List[str]:
                          for ad in info.additional_details})))
 
 
-def rows(infos: List[Info]) -> List[Dict[str, Union[date, Decimal]]]:
+def rows(infos: list[Info]) -> list[dict[str, Union[date, Decimal]]]:
     return [{**{MONTH: info.when},
              **{c.header.name: c.howmuch
                 for c in info.columns
@@ -44,7 +42,7 @@ def rows(infos: List[Info]) -> List[Dict[str, Union[date, Decimal]]]:
 
 
 class CsvWriter(ABCWriter):
-    def write_infos(self, infos: List[Info]) -> None:
+    def write_infos(self, infos: list[Info]) -> None:
         with open(self.name, 'w', newline='') as file:
             writer = DictWriter(file, fieldnames=fieldnames(infos))
             writer.writeheader()

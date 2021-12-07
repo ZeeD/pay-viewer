@@ -2,8 +2,6 @@
 
 from datetime import date
 from decimal import Decimal
-from typing import Dict
-from typing import List
 from typing import Tuple
 from typing import Union
 
@@ -54,7 +52,7 @@ VALUE_NUMBER_FORMAT = {
 class XlsWriter(ABCWriter):
     'write infos on an .xls'
 
-    def write_infos(self, infos: List[Info]) -> None:
+    def write_infos(self, infos: list[Info]) -> None:
         'atomically write all the infos'
 
         def clean(descrizione: str) -> str:
@@ -74,7 +72,7 @@ class XlsWriter(ABCWriter):
 
         # there are 1 + len(keys)-1 + len(details) columns
 
-        header: List[Tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
+        header: list[Tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
         for column_header in ColumnHeader:
             if column_header is not ColumnHeader.detail:
                 header.append((column_header.name, NUMBER_FORMAT_TEXT))
@@ -82,7 +80,7 @@ class XlsWriter(ABCWriter):
                 for detail in details:
                     header.append((detail, NUMBER_FORMAT_TEXT))
 
-        rows: List[List[Tuple[E, str]]] = [header]
+        rows: list[list[Tuple[E, str]]] = [header]
 
         for info in infos:
             # group columns by column_header
@@ -94,7 +92,7 @@ class XlsWriter(ABCWriter):
                                   for additional_detail in
                                   info.additional_details}
 
-            row: List[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
+            row: list[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
             for column_header in ColumnHeader:
                 if column_header is not ColumnHeader.detail:
                     row.append((columns[column_header].howmuch,
@@ -112,7 +110,7 @@ class XlsWriter(ABCWriter):
                             else (None, NUMBER_FORMAT_TEXT))
             rows.append(row)
 
-        widths: Dict[str, int] = {}
+        widths: dict[str, int] = {}
         for row in rows:
             for i, cell in enumerate(row, start=1):
                 column_letter = get_column_letter(i)
