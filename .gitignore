@@ -6,3 +6,4 @@
 __pycache__
 /secrets.ini
 /geckodriver.log
+/build/
