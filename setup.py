@@ -18,14 +18,10 @@ setup(name='pdf2xls',
           'selenium'
       ],
       entry_points={
-          'console_scripts': [
-              'pdf2xls=pdf2xls.__main__:main',
-              'removejsons=removejsons.__main__:main'
-          ],
           'gui_scripts': [
-              'viewer=viewer.__main__:main'
+              'pdf2xls=pdf2xls.__main__:main',
           ],
       },
       package_data={
-          '': ['mainui.ui', 'secrets.ini']
+          '': ['mainui.ui', 'settingsui.ui']
       })
