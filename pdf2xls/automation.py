@@ -1,5 +1,3 @@
-from configparser import ConfigParser
-from dataclasses import dataclass
 from datetime import date
 from os import listdir
 from shutil import move
@@ -20,25 +18,7 @@ from selenium.webdriver.support.expected_conditions import \
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 
-from .settings import Settings
-
-GECKODRIVER_PATH = 'bin/geckodriver-v0.30.0-win64/geckodriver.exe'
-SECRETS_PATH = 'secrets.ini'
-
-
-@dataclass
-class Secrets:
-    username: str
-    password: str
-
-
-def get_secrets() -> Secrets:
-    config = ConfigParser()
-    with open(SECRETS_PATH, encoding='utf-8') as secrets_file:
-        config.read_file(secrets_file)
-    myareaf2a = config['myareaf2a']
-    return Secrets(username=myareaf2a['username'],
-                   password=myareaf2a['password'])
+from .constants import GECKODRIVER_PATH
 
 
 def get_year_months(last: date) -> Iterable[tuple[int, int]]:
@@ -74,18 +54,19 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
     return profile
 
 
-def mv_pdf_from_tmp_to_data(dtemp: str,
-                            year: int,
-                            month: int,
-                            settings: Settings
-                            ) -> None:
-    data_path = settings.data_path
+def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
+                            data_path: str) -> None:
     move(f'{dtemp}/{listdir(dtemp)[0]}',
          f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
 
-def try_fetch_new_data(last: date, settings: Settings) -> bool:
-    secrets = get_secrets()
+def try_fetch_new_data(username: str, password: str, data_path: str) -> bool:
+    max_year = max(fn for fn in listdir(data_path) if '.' not in fn)
+    last_pdf = max(fn for fn in listdir(f'{data_path}/{max_year}')
+                   if fn.endswith('.pdf'))
+    year, month = map(int, last_pdf.split('.', 1)[0].split('_', 2)[1:])
+    last = date(year, month, 1)
+
     dtemp = mkdtemp()
     with webdriver.Firefox(executable_path=GECKODRIVER_PATH,
                            firefox_profile=firefox_profile(dtemp)) as driver:
@@ -93,8 +74,8 @@ def try_fetch_new_data(last: date, settings: Settings) -> bool:
 
         # do login
         driver.get('https://login.myareaf2a.com/login/user')
-        driver.find_element(By.ID, 'mat-input-0').send_keys(secrets.username)
-        driver.find_element(By.ID, 'mat-input-1').send_keys(secrets.password +
+        driver.find_element(By.ID, 'mat-input-0').send_keys(username)
+        driver.find_element(By.ID, 'mat-input-1').send_keys(password +
                                                             Keys.RETURN)
         # wait for logged hp
         wait.until(presence_of_element_located(
@@ -174,7 +155,7 @@ def try_fetch_new_data(last: date, settings: Settings) -> bool:
                 # the popup will auto-close, a new one with the .pdf is opened
                 set_pdf_wh()
                 # now the a pdf should be present in dtemp
-                mv_pdf_from_tmp_to_data(dtemp, year, month, settings)
+                mv_pdf_from_tmp_to_data(dtemp, year, month, data_path)
             finally:
                 driver.switch_to.window(whs['documenti'])
     rmtree(dtemp)
