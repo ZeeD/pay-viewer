@@ -1,6 +1,5 @@
 from datetime import date
 from decimal import Decimal
-from os import listdir
 from typing import Optional
 from typing import Union
 from typing import cast
@@ -178,11 +177,8 @@ class SortFilterViewModel(QSortFilterProxyModel):
     def update(self, *, only_local: bool, force_pdf: bool) -> None:
         data_path = self.settings.data_path
 
-        if only_local:
-            new_data = True
-        else:
-            new_data = try_fetch_new_data(self.settings.username,
-                                          self.settings.password,
-                                          data_path)
-        if new_data:
-            self.load(load(data_path, force=force_pdf))
+        if not only_local:
+            try_fetch_new_data(self.settings.username, self.settings.password,
+                               data_path)
+
+        self.load(load(data_path, force=force_pdf))
