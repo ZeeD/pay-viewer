@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from math import isnan
-from pathlib import Path
 from typing import Iterator
 from typing import Union
 from typing import cast
@@ -12,14 +11,12 @@ from pandas import DataFrame
 from pandas import options
 from tabula import read_pdf_with_template
 
+from ..constants import TEMPLATE_PATH
 from ..model import AdditionalDetail
 from ..model import Column
 from ..model import ColumnHeader
 from ..model import Info
 from .abcreader import ABCReader
-
-TEMPLATE_PATH = Path(__file__).parent.parent.parent / \
-    'resources' / 'tabula-template.json'
 
 
 class PdfReader(ABCReader):

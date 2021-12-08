@@ -23,5 +23,7 @@ setup(name='pdf2xls',
           ],
       },
       package_data={
-          '': ['mainui.ui', 'settingsui.ui']
+          '': ['mainui.ui',
+               'settingsui.ui',
+               'tabula-template.json']
       })
