@@ -110,11 +110,11 @@ class ViewModel(QAbstractTableModel):
 
             return e
 
-        self.layoutAboutToBeChanged()
+        self.layoutAboutToBeChanged.emit()
         try:
             self._infos.sort(key=key, reverse=order == Qt.DescendingOrder)
         finally:
-            self.layoutChanged()
+            self.layoutChanged.emit()
 
     def load(self, infos: list[Info]) -> None:
         self.beginResetModel()
