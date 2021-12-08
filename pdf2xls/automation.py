@@ -85,6 +85,9 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
         d.get('https://www.myareaf2a.com/home/documents/personal')
         wait.until(presence_of_element_located((By.TAG_NAME, 'mat-row')))
 
+        def change_year(year: int) -> int:
+            raise NotImplementedError()
+
         def download_for_month(month: int) -> None:
             text = f'{month:02d}'
             for row in d.find_elements_by_tag_name('mat-row'):
@@ -96,10 +99,10 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
                 return
             raise ValueError()
 
-        last_year = date.today().year
+        previous_year = date.today().year
         for year, month in get_last_local(data_path).get_year_months():
-            if year != last_year:
-                ...  # TODO: change year
+            if year != previous_year:
+                previous_year = change_year(year)
 
             try:
                 download_for_month(month)
