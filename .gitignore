@@ -1,9 +1,6 @@
-/.mypy_cache/
-/.pytest_cache/
+.mypy_cache/
+.pytest_cache/
 *.egg-info/
-/resources/*
-!/resources/tabula-template.json
-__pycache__
-/secrets.ini
-/geckodriver.log
-/build/
+geckodriver.log
+build/
+__pycache__/
