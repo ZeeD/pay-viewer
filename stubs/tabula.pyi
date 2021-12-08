@@ -7,7 +7,7 @@ from pandas import DataFrame
 
 
 def read_pdf_with_template(input_path: Union[Path, BinaryIO],
-                           template_path: Path,
+                           template_path: Union[Path, str],
                            *,
                            java_options: list[str] = [],
                            pandas_options: dict[str, Any] = {},
