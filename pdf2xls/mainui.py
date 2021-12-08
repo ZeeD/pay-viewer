@@ -36,9 +36,11 @@ def new_settingsui(settings: Settings) -> QWidget:
 def new_mainui(model: QStandardItemModel,
                settingsui: QWidget,
                settings: Settings) -> QWidget:
-    def model_update_helper(*, only_local: bool = False) -> None:
+    def model_update_helper(*,
+                            only_local: bool = False,
+                            force_pdf: bool = True) -> None:
         try:
-            model.update(only_local=only_local, force_pdf=False)
+            model.update(only_local=only_local, force_pdf=force_pdf)
         except NoHistoryException:
             resp = QMessageBox.question(mainui, 'pdf2xls', 'Should load pdf?')
             if resp == QMessageBox.StandardButton.Yes:
@@ -57,8 +59,8 @@ def new_mainui(model: QStandardItemModel,
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
     settingsui.accepted.connect(model.update)
 
-    # on startup load only from local
-    model_update_helper(only_local=True)
+    # on startup load only from local, and ask if you really want
+    model_update_helper(only_local=True, force_pdf=False)
 
     return mainui
 
