@@ -1,6 +1,6 @@
 from datetime import date
 from decimal import Decimal
-
+from os import listdir
 from typing import Optional
 from typing import Union
 from typing import cast
@@ -12,8 +12,11 @@ from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
 
+from .automation import try_fetch_new_data
+from .loader import load
 from .model import ColumnHeader
 from .model import Info
+from .settings import Settings
 
 
 def by_column(info: Info, i: int) -> Optional[Decimal]:
@@ -123,9 +126,10 @@ class ViewModel(QAbstractTableModel):
 
 
 class SortFilterViewModel(QSortFilterProxyModel):
-    def __init__(self, infos: list[Info]) -> None:
+    def __init__(self, settings: Settings) -> None:
         super().__init__()
-        self.setSourceModel(ViewModel(self, infos))
+        self.settings = settings
+        self.setSourceModel(ViewModel(self, []))
         self.setFilterCaseSensitivity(Qt.CaseInsensitive)
         self.setSortCaseSensitivity(Qt.CaseInsensitive)
         self.setDynamicSortFilter(True)
@@ -170,3 +174,15 @@ class SortFilterViewModel(QSortFilterProxyModel):
 
     def load(self, infos: list[Info]) -> None:
         self.sourceModel().load(infos)
+
+    def update(self, *, only_local: bool, force_pdf: bool) -> None:
+        data_path = self.settings.data_path
+
+        if only_local:
+            new_data = True
+        else:
+            new_data = try_fetch_new_data(self.settings.username,
+                                          self.settings.password,
+                                          data_path)
+        if new_data:
+            self.load(load(data_path, force=force_pdf))
