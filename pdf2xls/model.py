@@ -3,7 +3,6 @@ from datetime import date
 from decimal import Decimal
 from enum import Enum
 from enum import auto
-
 from typing import Optional
 
 
@@ -58,6 +57,45 @@ class Info:
     columns: list[Column]
     additional_details: list[AdditionalDetail]
 
-    @classmethod
-    def column_names(cls) -> list[str]:
-        return []
+
+def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
+    headers: list[str] = ['when']
+    data: list[list[str]] = []
+
+    indexes: dict[str, int] = {}
+
+    for info in infos:
+        row = ['0'] * len(headers)
+
+        # when
+        row[0] = str(info.when)
+
+        # columns
+        for columns in info.columns:
+            key = columns.header.name
+            value = str(columns.howmuch)
+            if key in indexes:
+                row[indexes[key]] = value
+            else:
+                indexes[key] = len(headers)
+                headers.append(key)
+                for other_row in data:
+                    other_row.append('0')
+                row.append(value)
+
+        # additional_details
+        for additional_detail in info.additional_details:
+            key = str(additional_detail.cod)
+            value = str(additional_detail.compenso_unitario)
+            if key in indexes:
+                row[indexes[key]] = value
+            else:
+                indexes[key] = len(headers)
+                headers.append(additional_detail.descrizione)  # first one
+                for other_row in data:
+                    other_row.append('0')
+                row.append(value)
+
+        data.append(row)
+
+    return headers, data
