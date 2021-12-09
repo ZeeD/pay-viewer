@@ -10,11 +10,14 @@ from PySide6.QtCore import QObject
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QBrush
+from PySide6.QtGui import QColor
 
 from .automation import try_fetch_new_data
 from .loader import load
 from .model import ColumnHeader
 from .model import Info
+from .model import parse_infos
 from .settings import Settings
 
 
@@ -26,21 +29,27 @@ def by_column(info: Info, i: int) -> Optional[Decimal]:
     return None
 
 
+def max_min_this(data: list[list[str]],
+                 row: int, column: int) -> tuple[Decimal, Decimal, Decimal]:
+    ds = [Decimal(date.fromisoformat(row[0]).toordinal())
+          for row in data] if column == 0 else [Decimal(row[column])
+                                                for row in data]
+    return max(ds), min(ds), ds[row]
+
+
 class ViewModel(QAbstractTableModel):
     def __init__(self, parent: QObject, infos: list[Info]):
         super().__init__(parent)
         self._set_infos(infos)
 
     def _set_infos(self, infos: list[Info]) -> None:
-        self._infos = infos
+        self._headers, self._data = parse_infos(infos)
 
     def rowCount(self, _parent: QModelIndex = QModelIndex()) -> int:
-        return len(self._infos)
+        return len(self._data)
 
     def columnCount(self, _parent: QModelIndex = QModelIndex()) -> int:
-        return 1 + len(ColumnHeader) - 1 + max((len(info.additional_details)
-                                                for info in self._infos),
-                                               default=0)
+        return len(self._headers)
 
     def headerData(self,
                    section: int,
@@ -52,67 +61,89 @@ class ViewModel(QAbstractTableModel):
         if orientation != Qt.Horizontal:
             return None
 
-        if section == 0:
-            return 'month'
-        if section < 1 + len(ColumnHeader):
-            return ColumnHeader(section).name
-        return f'TODO {section}'
+        return self._headers[section]
 
     def data(self,
              index: QModelIndex,
              role: int = cast(int, Qt.DisplayRole)
-             ) -> Optional[Union[str, date, Decimal]]:
+             ) -> Union[str, Qt.Alignment, None]:
         column = index.column()
         row = index.row()
 
         if role == cast(int, Qt.DisplayRole):
-            if column == 0:
-                return str(self._infos[row].when)
-            if column < 1 + len(ColumnHeader):
-                ret = str(by_column(self._infos[row], column))
-                return ret
-            return f'TODO {row}x{column}'
+            return self._data[row][column]
 
-        # if role == Qt.BackgroundRole:
-        #     abs_value = _abs(self._data[row])
-        #     perc = float((abs_value - self._min) / (self._max - self._min))
-        #
-        #     red = int((1 - perc) * 255)  # 0..1 ->  255..0
-        #     green = int(perc * 255)  # 0..1 -> 0..255
-        #     blue = int((.5 - abs(perc - .5)) * 511)  # 0..0.5..1 -> 0..255..0
-        #
-        #     return QBrush(QColor(red, green, blue, 127))
+        if role == cast(int, Qt.DecorationRole):
+            return None
 
-        if role == cast(int, Qt.UserRole):
-            print('WTF?')
-            # return cast(
-            #     T_FIELDS,
-            #     getattr(
-            #         self._data[row],
-            #         FIELD_NAMES[column]))
+        if role == cast(int, Qt.ToolTipRole):
+            return self._data[row][column]
 
+        if role == cast(int, Qt.StatusTipRole):
+            return None
+
+        if role == cast(int, Qt.FontRole):
+            return None
+
+        if role == cast(int, Qt.TextAlignmentRole):
+            return cast(Qt.Alignment, Qt.AlignCenter)
+
+        if role == cast(int, Qt.BackgroundRole):
+            max_, min_, this = max_min_this(self._data, row, column)
+            perc = float((this - min_) / (max_ - min_)) if max_ != min_ else .5
+
+            red = int((1 - perc) * 255)  # 0..1 ->  255..0
+            green = int(perc * 255)  # 0..1 -> 0..255
+            blue = int((.5 - abs(perc - .5)) * 511)  # 0..0.5..1 -> 0..255..0
+
+            return QBrush(QColor(red, green, blue, 127))
+
+            return None
+
+        if role == cast(int, Qt.ForegroundRole):
+            return None
+
+        if role == cast(int, Qt.CheckStateRole):
+            return None
+
+        if role == cast(int, Qt.SizeHintRole):
+            return None
+
+        # DisplayRole 0
+        # DecorationRole 1
+        # EditRole 2
+        # ToolTipRole 3
+        # StatusTipRole 4
+        # WhatsThisRole 5
+        # FontRole 6
+        # TextAlignmentRole 7
+        # BackgroundRole 8
+        # ForegroundRole 9
+        # CheckStateRole 10
+        # AccessibleTextRole 11
+        # AccessibleDescriptionRole 12
+        # SizeHintRole 13
+        # InitialSortOrderRole 14
+        # DisplayPropertyRole 27
+        # DecorationPropertyRole 28
+        # ToolTipPropertyRole 29
+        # StatusTipPropertyRole 30
+        # WhatsThisPropertyRole 31
+        # UserRole 256
+
+        print(f'{role=!r}')
         return None
 
     def sort(self,
              index: int,
              order: Qt.SortOrder = Qt.AscendingOrder) -> None:
-        def key(info: Info) -> Union[date, Decimal, str]:
-            e: Optional[Union[str, date, Decimal]]
-            if index == 0:
-                e = info.when
-            elif index < 1 + len(ColumnHeader):
-                e = info.columns[index - 1].howmuch
-            else:
-                e = f'TODO {index}'
-
-            if e is None:
-                return Decimal(0)
-
-            return e
+        def key(row: list[str]) -> Union[date, Decimal]:
+            raw = row[index]
+            return date.fromisoformat(raw) if index == 0 else Decimal(raw)
 
         self.layoutAboutToBeChanged.emit()
         try:
-            self._infos.sort(key=key, reverse=order == Qt.DescendingOrder)
+            self._data.sort(key=key, reverse=order == Qt.DescendingOrder)
         finally:
             self.layoutChanged.emit()
 
