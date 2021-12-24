@@ -20,7 +20,7 @@ VIEWER_UI_PATH: Final = resource_filename('viewer', 'viewer.ui')
 
 
 @contextmanager
-def main_window(file_name: Path) -> Iterator[QMainWindow]:
+def main_window(data_path: Path) -> Iterator[QMainWindow]:
 
     def update_status_bar(_selected: QItemSelection,
                           _deselected: QItemSelection) -> None:
@@ -44,7 +44,7 @@ def main_window(file_name: Path) -> Iterator[QMainWindow]:
 
     window = QUiLoader().load(VIEWER_UI_PATH)
 
-    data = loader(file_name)
+    data = loader(data_path)
 
     # view_model = SortFilterViewModel(window, data)
     # window.tableView.setModel(view_model)
