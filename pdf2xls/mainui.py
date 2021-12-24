@@ -7,6 +7,7 @@ from PySide6.QtWidgets import QWidget
 
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
+from .freezetableview import FreezeTableView
 from .loader import NoHistoryException
 from .removejsons import remove_jsons
 from .settings import Settings
@@ -51,6 +52,10 @@ def new_mainui(model: QStandardItemModel,
         QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
 
     mainui = QUiLoader().load(MAINUI_UI_PATH)
+    # replace tableView
+    mainui.tableView = FreezeTableView(mainui.tableView.parent(), model)
+    mainui.setCentralWidget(mainui.tableView)
+    # replace tableView
     mainui.tableView.setModel(model)
     mainui.show()
 
