@@ -1,8 +1,10 @@
-from csv import reader
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
+from typing import Iterator
 from typing import NamedTuple
+
+from pdf2xls.loader import load
 
 
 class Value(NamedTuple):
@@ -21,12 +23,12 @@ class Row(NamedTuple):
 Rows = list[Row]
 
 
-def loader(file_name: Path) -> Rows:
-    with open(file_name, newline='', encoding='utf-8') as file:
-        (_, *categories), *rows = reader(file)
-
-    return [Row(date.fromisoformat(month),
-                [Value(category, Decimal(value))
-                 for (category, value) in zip(categories, values)
-                 if value])
-            for (month, *values) in rows]
+def loader(data_path: Path) -> Rows:
+    def helper() -> Iterator[Row]:
+        for info in load(str(data_path)):
+            yield Row(date=info.when,
+                      values=[Value(category=column.header.name,
+                                    value=column.howmuch)
+                              for column in info.columns
+                              if column.howmuch is not None])
+    return list(helper())
