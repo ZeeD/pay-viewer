@@ -3,9 +3,9 @@
 from datetime import date
 from decimal import Decimal
 from math import isnan
+from typing import cast
 from typing import Iterator
 from typing import Union
-from typing import cast
 
 from pandas import DataFrame
 from pandas import options

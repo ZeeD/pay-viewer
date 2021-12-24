@@ -1,8 +1,8 @@
 from datetime import date
 from decimal import Decimal
+from typing import cast
 from typing import Optional
 from typing import Union
-from typing import cast
 
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QModelIndex
@@ -31,9 +31,9 @@ def by_column(info: Info, i: int) -> Optional[Decimal]:
 
 def max_min_this(data: list[list[str]],
                  row: int, column: int) -> tuple[Decimal, Decimal, Decimal]:
-    ds = [Decimal(date.fromisoformat(row[0]).toordinal())
-          for row in data] if column == 0 else [Decimal(row[column])
-                                                for row in data]
+    ds = [Decimal(date.fromisoformat(datum[0]).toordinal())
+          for datum in data] if column == 0 else [Decimal(datum[column])
+                                                  for datum in data]
     return max(ds), min(ds), ds[row]
 
 
