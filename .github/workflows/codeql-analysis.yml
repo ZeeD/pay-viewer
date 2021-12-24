@@ -1,5 +1,5 @@
 name: Code scanning - action
-true:
+on:
     push: null
     pull_request: null
     schedule:
