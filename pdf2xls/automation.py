@@ -24,7 +24,11 @@ class Date(NamedTuple):
     month: int
 
     def next(self) -> Date:
-        if self.month == 13:    # (year, 13) is the extra month's salary
+        if self.month == 11:    # (year, 13) is extra month's salary
+            return Date(self.year, 13)
+        if self.month == 13:    # (year, 13) happens before (year, 12)
+            return Date(self.year, 12)
+        if self.month == 12:
             return Date(self.year + 1, 1)
         return Date(self.year, self.month + 1)
 
@@ -59,6 +63,7 @@ def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
              f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
     except IndexError:
         print(f'{dtemp=}, {year=}, {month=}, {data_path=}')
+        print(f'{listdir(dtemp)=}')
         raise
 
 
