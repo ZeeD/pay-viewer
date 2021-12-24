@@ -1,5 +1,3 @@
-from typing import Optional
-
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import Qt

@@ -1,9 +1,9 @@
 from typing import Callable
+from typing import cast
 from typing import Generic
 from typing import Protocol
 from typing import Sequence
 from typing import TypeVar
-from typing import cast
 
 from PySide6.QtCharts import QBarCategoryAxis
 from PySide6.QtCharts import QBarSet
