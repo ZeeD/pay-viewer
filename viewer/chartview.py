@@ -1,9 +1,5 @@
-from typing import Callable
 from typing import cast
-from typing import Generic
-from typing import Protocol
 from typing import Sequence
-from typing import TypeVar
 
 from PySide6.QtCharts import QBarCategoryAxis
 from PySide6.QtCharts import QBarSet
@@ -112,18 +108,9 @@ class ChartView(QChartView):
         self.categories = categories
 
 
-TPSignal = TypeVar('TPSignal')
-
-
-class PSignal(Protocol, Generic[TPSignal]):
-    def emit(self, _arg: TPSignal) -> None: ...
-
-    def connect(self, _slot: Callable[[TPSignal], None]) -> None: ...
-
-
 class FilledGroupBox(QGroupBox):
     columns = 20
-    categories_changed = cast(PSignal[list[str]], Signal(list))
+    categories_changed = Signal(list)
 
     def __init__(self, parent: QWidget, categories: list[str]):
         super().__init__(parent)
@@ -155,4 +142,4 @@ class FilledGroupBox(QGroupBox):
                 if checkbox.isChecked():
                     categories.append(checkbox.text())
 
-        self.categories_changed.emit(categories)
+        self.categories_changed.emit(categories)  # type: ignore
