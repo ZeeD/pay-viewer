@@ -1,6 +1,17 @@
+from typing import Final
+
 from pkg_resources import resource_filename
 
-MAINUI_UI_PATH = resource_filename('pdf2xls', 'resources/mainui.ui')
-SETTINGSUI_UI_PATH = resource_filename('pdf2xls', 'resources/settingsui.ui')
-TEMPLATE_PATH = resource_filename('pdf2xls', 'resources/tabula-template.json')
-GECKODRIVER_PATH = resource_filename('pdf2xls', 'resources/geckodriver.exe')
+
+def _resource(filename: str) -> str:
+    return resource_filename('pdf2xls', f'resources/{filename}')
+
+
+MAINUI_UI_PATH: Final = _resource('mainui.ui')
+SETTINGSUI_UI_PATH: Final = _resource('settingsui.ui')
+TEMPLATE_PATH: Final = _resource('tabula-template.json')
+GECKODRIVER_PATH: Final = _resource('geckodriver.exe')
+
+SETTINGS_USERNAME: Final = 'username'
+SETTINGS_PASSWORD: Final = 'password'
+SETTINGS_DATA_PATH: Final = 'dataPath'

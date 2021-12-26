@@ -1,4 +1,6 @@
-from PySide6.QtGui import QStandardItemModel
+from PySide6.QtCore import QItemSelection
+from PySide6.QtGui import QKeySequence
+from PySide6.QtGui import QShortcut
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QFileDialog
@@ -34,12 +36,12 @@ def new_settingsui(settings: Settings) -> QWidget:
     return settingsui
 
 
-def new_mainui(model: QStandardItemModel,
-               settingsui: QWidget,
-               settings: Settings) -> QWidget:
-    def model_update_helper(*,
-                            only_local: bool = False,
-                            force_pdf: bool = True) -> None:
+def new_mainui(settings: Settings,
+               model: SortFilterViewModel,
+               settingsui: QWidget) -> QWidget:
+    def update_helper(*,
+                      only_local: bool = False,
+                      force_pdf: bool = True) -> None:
         try:
             model.update(only_local=only_local, force_pdf=force_pdf)
         except NoHistoryException:
@@ -47,36 +49,50 @@ def new_mainui(model: QStandardItemModel,
             if resp == QMessageBox.StandardButton.Yes:
                 model.update(only_local=only_local, force_pdf=True)
 
+    def update_status_bar(_selected: QItemSelection,
+                          _deselected: QItemSelection) -> None:
+        model.selectionChanged(selection_model, mainui.statusBar())
+
     def remove_jsons_helper() -> None:
         remove_jsons(settings.data_path)
         QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
 
     mainui = QUiLoader().load(MAINUI_UI_PATH)
     # replace tableView
-    mainui.tableView = FreezeTableView(mainui.tableView.parent(), model)
-    mainui.setCentralWidget(mainui.tableView)
+    tableView = FreezeTableView(mainui.tableView.parent(), model)
+    mainui.gridLayout_2.replaceWidget(mainui.tableView, tableView)
+    mainui.tableView = tableView
     # replace tableView
     mainui.tableView.setModel(model)
-    mainui.show()
+    selection_model = mainui.tableView.selectionModel()
+    selection_model.selectionChanged.connect(update_status_bar)
 
-    mainui.actionUpdate.triggered.connect(model_update_helper)
+    mainui.lineEdit.textChanged.connect(model.filterChanged)
+
+    mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
     settingsui.accepted.connect(model.update)
 
+    QShortcut(QKeySequence(mainui.tr('Ctrl+F')),
+              mainui).activated.connect(mainui.lineEdit.setFocus)
+    QShortcut(QKeySequence(mainui.tr('Esc')),
+              mainui).activated.connect(lambda: mainui.lineEdit.setText())
+
     # on startup load only from local, and ask if you really want
-    model_update_helper(only_local=True, force_pdf=False)
+    update_helper(only_local=True, force_pdf=False)
 
     return mainui
 
 
-def main() -> int:
+def main() -> None:
     app = QApplication([__file__])
 
     settings = Settings()
     model = SortFilterViewModel(settings)
     settingsui = new_settingsui(settings)
-    mainui = new_mainui(model, settingsui, settings)
-    mainui = mainui
+    mainui = new_mainui(settings, model, settingsui)
 
-    return app.exec_()
+    mainui.show()
+
+    raise SystemExit(app.exec())

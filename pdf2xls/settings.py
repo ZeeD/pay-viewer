@@ -2,9 +2,9 @@ from typing import cast
 
 from PySide6.QtCore import QSettings
 
-SETTINGS_USERNAME = 'username'
-SETTINGS_PASSWORD = 'password'
-SETTINGS_DATA_PATH = 'dataPath'
+from .constants import SETTINGS_DATA_PATH
+from .constants import SETTINGS_PASSWORD
+from .constants import SETTINGS_USERNAME
 
 
 class Settings:

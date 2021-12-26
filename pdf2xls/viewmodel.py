@@ -4,7 +4,7 @@ from typing import cast
 from typing import Optional
 from typing import Union
 
-from PySide6.QtCore import QAbstractTableModel
+from PySide6.QtCore import QAbstractTableModel, QItemSelectionModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QRegularExpression
@@ -19,6 +19,7 @@ from .model import ColumnHeader
 from .model import Info
 from .model import parse_infos
 from .settings import Settings
+from PySide6.QtWidgets import QStatusBar
 
 
 def by_column(info: Info, i: int) -> Optional[Decimal]:
@@ -66,7 +67,7 @@ class ViewModel(QAbstractTableModel):
     def data(self,
              index: QModelIndex,
              role: int = cast(int, Qt.DisplayRole)
-             ) -> Union[str, Qt.Alignment, None]:
+             ) -> Union[str, Qt.Alignment, None, date, Decimal]:
         column = index.column()
         row = index.row()
 
@@ -108,6 +109,14 @@ class ViewModel(QAbstractTableModel):
 
         if role == cast(int, Qt.SizeHintRole):
             return None
+
+        if role == cast(int, Qt.UserRole):
+            # TODO: avoid losing types
+            value = self._data[row][column]
+            if column == 0:
+                return value
+            else:
+                return Decimal(value) if value is not None else None
 
         # DisplayRole 0
         # DecorationRole 1
@@ -177,33 +186,26 @@ class SortFilterViewModel(QSortFilterProxyModel):
                                                     source_parent)
                                  for i in range(column_count)))
 
-    def filter_changed(self, text: str) -> None:
-        self.setFilterFixedString(QRegularExpression.escape(text))
+    def filterChanged(self, text: str) -> None:
+        text = QRegularExpression.escape(text)
+        options = cast(QRegularExpression.PatternOptions,
+                       QRegularExpression.CaseInsensitiveOption)
+        self.setFilterRegularExpression(QRegularExpression(text, options))
 
     def sort(self,
              column: int,
-             order: Qt.SortOrder = Qt.AscendingOrder
-             ) -> None:
+             order: Qt.SortOrder = Qt.AscendingOrder) -> None:
         self.sourceModel().sort(column, order)
 
-    # def selection_changed(self,
-    #                       selection_model: QItemSelectionModel,
-    #                       statusbar: QStatusBar) -> None:
-    #
-    #     addebiti_index = FIELD_NAMES.index('addebiti')
-    #     accrediti_index = FIELD_NAMES.index('accrediti')
-    #
-    #     bigsum = 0
-    #     for column, iop in ((addebiti_index, isub), (accrediti_index, iadd)):
-    #         for index in selection_model.selectedRows(column):
-    #             data = index.data(Qt.UserRole)
-    #             if data is not None:
-    #                 bigsum = iop(bigsum, data)
-    #
-    #     statusbar.showMessage(f'⅀ = {bigsum}')
+    def selectionChanged(self,
+                         selection_model: QItemSelectionModel,
+                         statusbar: QStatusBar) -> None:
+        bigsum = ''
+        for index in cast(list[QModelIndex], selection_model.selectedRows(0)):
+            data = index.data(cast(int, Qt.UserRole))
+            bigsum = data
 
-    def load(self, infos: list[Info]) -> None:
-        self.sourceModel().load(infos)
+        statusbar.showMessage(f'⅀ = {bigsum}')
 
     def update(self, *, only_local: bool, force_pdf: bool) -> None:
         data_path = self.settings.data_path
@@ -212,4 +214,4 @@ class SortFilterViewModel(QSortFilterProxyModel):
             try_fetch_new_data(self.settings.username, self.settings.password,
                                data_path)
 
-        self.load(load(data_path, force=force_pdf))
+        self.sourceModel().load(load(data_path, force=force_pdf))
