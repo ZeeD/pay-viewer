@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-# from .viewmodel import SortFilterViewModel
 from pathlib import Path
 from typing import Final
 from typing import Iterator
@@ -63,7 +62,7 @@ def main_window(data_path: Path) -> Iterator[QMainWindow]:
     chart_view = ChartView(window, data, categories)
     window.tab_2.layout().addWidget(chart_view)
 
-    filled_group_box.categories_changed.connect(chart_view.setCategories)
+    filled_group_box.categoriesChanged.connect(chart_view.setCategories)
 
     window.actionOpen.triggered.connect(update_data)
 
