@@ -9,6 +9,7 @@ from PySide6.QtWidgets import QWidget
 
 from .chartview import ChartView
 from .chartview import FilledGroupBox
+from .chartwidget.chartwidget import ChartWidget
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
 from .freezetableview import FreezeTableView
@@ -63,7 +64,7 @@ def new_mainui(settings: Settings,
 
     # replace tableView
     tableView = FreezeTableView(mainui.tableView.parent(), model)
-    mainui.gridLayout_2.replaceWidget(mainui.tableView, tableView)
+    mainui.gridLayout_1.replaceWidget(mainui.tableView, tableView)
     mainui.tableView = tableView
     # replace tableView
 
@@ -78,6 +79,11 @@ def new_mainui(settings: Settings,
     chart_view = ChartView(mainui, model)
     mainui.tab_2.layout().addWidget(chart_view)
     # chart
+
+    # chart 3
+    chart_widget = ChartWidget(model, mainui)
+    mainui.tab_3.layout().addWidget(chart_widget)
+    # chart 3
 
     mainui.lineEdit.textChanged.connect(model.filterChanged)
 

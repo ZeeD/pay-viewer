@@ -24,7 +24,7 @@
        <attribute name="title">
         <string>Tab 1</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_2">
+       <layout class="QGridLayout" name="gridLayout_1">
         <item row="0" column="0">
          <widget class="QTableView" name="tableView">
           <property name="sizeAdjustPolicy">
@@ -75,6 +75,12 @@
        <attribute name="title">
         <string>Tab 2</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_2"/>
+      </widget>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Tab 3</string>
+       </attribute>
        <layout class="QGridLayout" name="gridLayout_3"/>
       </widget>
      </widget>
@@ -87,7 +93,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
