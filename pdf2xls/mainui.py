@@ -7,6 +7,8 @@ from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QWidget
 
+from .chartview import ChartView
+from .chartview import FilledGroupBox
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
 from .freezetableview import FreezeTableView
@@ -58,14 +60,24 @@ def new_mainui(settings: Settings,
         QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
 
     mainui = QUiLoader().load(MAINUI_UI_PATH)
+
     # replace tableView
     tableView = FreezeTableView(mainui.tableView.parent(), model)
     mainui.gridLayout_2.replaceWidget(mainui.tableView, tableView)
     mainui.tableView = tableView
     # replace tableView
+
     mainui.tableView.setModel(model)
     selection_model = mainui.tableView.selectionModel()
     selection_model.selectionChanged.connect(update_status_bar)
+
+    # chart
+    filled_group_box = FilledGroupBox(mainui, model)
+    mainui.tab_2.layout().addWidget(filled_group_box)
+
+    chart_view = ChartView(mainui, model)
+    mainui.tab_2.layout().addWidget(chart_view)
+    # chart
 
     mainui.lineEdit.textChanged.connect(model.filterChanged)
 

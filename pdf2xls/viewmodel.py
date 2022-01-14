@@ -4,7 +4,8 @@ from typing import cast
 from typing import Optional
 from typing import Union
 
-from PySide6.QtCore import QAbstractTableModel, QItemSelectionModel
+from PySide6.QtCore import QAbstractTableModel
+from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QObject
 from PySide6.QtCore import QRegularExpression
@@ -12,6 +13,7 @@ from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QColor
+from PySide6.QtWidgets import QStatusBar
 
 from .automation import try_fetch_new_data
 from .loader import load
@@ -19,7 +21,6 @@ from .model import ColumnHeader
 from .model import Info
 from .model import parse_infos
 from .settings import Settings
-from PySide6.QtWidgets import QStatusBar
 
 
 def by_column(info: Info, i: int) -> Optional[Decimal]:
@@ -45,6 +46,7 @@ class ViewModel(QAbstractTableModel):
 
     def _set_infos(self, infos: list[Info]) -> None:
         self._headers, self._data = parse_infos(infos)
+        self._infos = infos
 
     def rowCount(self, _parent: QModelIndex = QModelIndex()) -> int:
         return len(self._data)
@@ -215,3 +217,11 @@ class SortFilterViewModel(QSortFilterProxyModel):
                                data_path)
 
         self.sourceModel().load(load(data_path, force=force_pdf))
+
+    def get_categories(self) -> list[str]:
+        view_model = cast(ViewModel, self.sourceModel())
+        return view_model._headers
+
+    def get_rows(self) -> list[Info]:
+        view_model = cast(ViewModel, self.sourceModel())
+        return view_model._infos

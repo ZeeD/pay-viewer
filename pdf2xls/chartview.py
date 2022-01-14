@@ -17,7 +17,8 @@ from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QGroupBox
 from PySide6.QtWidgets import QWidget
 
-from .model import Rows
+from .model import Info
+from .viewmodel import SortFilterViewModel
 
 
 def new_bar_set(category: str, values: Sequence[float]) -> QBarSet:
@@ -26,12 +27,14 @@ def new_bar_set(category: str, values: Sequence[float]) -> QBarSet:
     return ret
 
 
-def build_series(rows: Rows, categories: list[str]) -> QStackedBarSeries:
+def build_series(rows: list[Info], categories: list[str]) -> QStackedBarSeries:
     bar_sets = [new_bar_set(category,
-                            [float(value.value)
-                             for row in rows
-                             for value in row.values
-                             if value.category == category])
+                            [float(column.howmuch)
+                             if column.howmuch is not None
+                             else 0.
+                             for info in rows
+                             for column in info.columns
+                             if column.header.name == category])
                 for category in categories]
 
     series = QStackedBarSeries()
@@ -41,14 +44,14 @@ def build_series(rows: Rows, categories: list[str]) -> QStackedBarSeries:
 
 
 class Chart(QChart):
-    def __init__(self, rows: Rows, categories: list[str]):
+    def __init__(self, rows: list[Info], categories: list[str]):
         super().__init__()
 
         series = build_series(rows, categories)
         self.addSeries(series)
 
         axis_x = QBarCategoryAxis()
-        axis_x.append([row.date.isoformat() for row in rows])
+        axis_x.append([info.when.isoformat() for info in rows])
         self.createDefaultAxes()
         self.setAxisX(axis_x, series)
 
@@ -93,32 +96,39 @@ class Chart(QChart):
 
 
 class ChartView(QChartView):
-    def __init__(self, parent: QWidget, rows: Rows, categories: list[str]):
-        super().__init__(Chart(rows, categories), parent)
-        self.rows = rows
-        self.categories = categories
+    def __init__(self, parent: QWidget, model: SortFilterViewModel):
+        super().__init__(parent)
+        self.model = model
+        self.model.sourceModel().modelReset.connect(self.load)
 
-    def load(self, rows: Rows) -> None:
-        self.setChart(Chart(rows, self.categories))
-        self.rows = rows
+    def load(self) -> None:
+        self.rows = self.model.get_rows()
+        categories = self.model.get_categories()
+        self.setChart(Chart(self.rows, categories))
 
     @Slot(list)
     def setCategories(self, categories: list[str]) -> None:
         self.setChart(Chart(self.rows, categories))
-        self.categories = categories
 
 
 class FilledGroupBox(QGroupBox):
     columns = 20
     categories_changed = Signal(list)
 
-    def __init__(self, parent: QWidget, categories: list[str]):
+    def __init__(self, parent: QWidget, model: SortFilterViewModel):
         super().__init__(parent)
+        self.model = model
+        self.setLayout(QGridLayout(self))
+        self.model.sourceModel().modelReset.connect(self.load)
 
-        layout = QGridLayout(self)
+    def load(self) -> None:
+        layout: QGridLayout = self.layout()
+
+        for child in layout.children():
+            layout.removeWidget(child)
 
         row = -1
-        for i, category in enumerate(categories):
+        for i, category in enumerate(self.model.get_categories()):
             column = i % FilledGroupBox.columns
             if column == 0:
                 row += 1
@@ -126,8 +136,6 @@ class FilledGroupBox(QGroupBox):
             checkbox.setChecked(True)
             checkbox.stateChanged.connect(self._trigger_categories_changed)
             layout.addWidget(checkbox, row, column)
-
-        self.setLayout(layout)
 
     def _trigger_categories_changed(self, _: int) -> None:
         categories: list[str] = []
