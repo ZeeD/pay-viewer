@@ -73,11 +73,11 @@ def new_mainui(settings: Settings,
     selection_model.selectionChanged.connect(update_status_bar)
 
     # chart
-    filled_group_box = FilledGroupBox(mainui, model)
-    mainui.tab_2.layout().addWidget(filled_group_box)
-
-    chart_view = ChartView(mainui, model)
-    mainui.tab_2.layout().addWidget(chart_view)
+    # filled_group_box = FilledGroupBox(mainui, model)
+    # mainui.tab_2.layout().addWidget(filled_group_box)
+    #
+    # chart_view = ChartView(mainui, model)
+    # mainui.tab_2.layout().addWidget(chart_view)
     # chart
 
     # chart 3
