@@ -14,9 +14,9 @@ class Chart(QChart):
         super().__init__(parent)
         self.model = model
         self.model.sourceModel().modelReset.connect(self.source_model_reset)
-        self.setup_ui()
+        self.init()
 
-    def setup_ui(self) -> None:
+    def init(self) -> None:
         ...
 
     @Slot()
