@@ -114,10 +114,10 @@ class ViewModel(QAbstractTableModel):
 
         if role == cast(int, Qt.UserRole):
             # TODO: avoid losing types
-            value = self._data[row][column]
             if column == 0:
-                return value
+                return self._infos[row].when
             else:
+                value = self._data[row][column]
                 return Decimal(value) if value is not None else None
 
         # DisplayRole 0
