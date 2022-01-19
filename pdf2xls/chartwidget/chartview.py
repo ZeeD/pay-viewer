@@ -1,4 +1,5 @@
-from typing import Optional
+from datetime import date
+from typing import Optional, cast
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCore import Slot
@@ -13,14 +14,8 @@ class ChartView(QChartView):
                  model: SortFilterViewModel,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
-        self.model = model
-        self.model.sourceModel().modelReset.connect(self.source_model_reset)
-        self.init()
+        self.setChart(Chart(model))
 
-    def init(self) -> None:
-        chart = Chart(self.model)
-        self.setChart(chart)
-
-    @Slot()
-    def source_model_reset(self) -> None:
-        ...
+    @Slot(date)
+    def start_date_changed(self, start_date: date) -> None:
+        cast(Chart, self.chart()).start_date_changed(start_date)
