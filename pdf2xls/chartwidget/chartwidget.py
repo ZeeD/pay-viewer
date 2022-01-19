@@ -1,6 +1,5 @@
 from typing import Optional
 
-from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
@@ -16,18 +15,13 @@ class ChartWidget(QWidget):
                  model: SortFilterViewModel,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
-        self.model = model
-        self.model.sourceModel().modelReset.connect(self.source_model_reset)
-        self.init()
 
-    def init(self) -> None:
         layout = QVBoxLayout(self)
-        chart_view = ChartView(self.model, self)
-        chart_slider = ChartSlider(self.model, self)
+        chart_view = ChartView(model, self)
+        chart_slider = ChartSlider(model, self)
         layout.addWidget(chart_view)
         layout.addWidget(chart_slider)
         self.setLayout(layout)
 
-    @Slot()
-    def source_model_reset(self) -> None:
-        ...
+        chart_slider.start_date_changed.connect(  # type: ignore
+            chart_view.start_date_changed)
