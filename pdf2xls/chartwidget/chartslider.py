@@ -28,10 +28,9 @@ class ChartSlider(QSlider):
         self.model = model
         self.model.sourceModel().modelReset.connect(self.source_model_reset)
         self.setOrientation(Qt.Horizontal)
-        self.setTickInterval(0)
+        self.setTickInterval(1)
         self.setTickPosition(QSlider.NoTicks)
         self.setSingleStep(1)
-        self.setPageStep(30)
 
         def _start_date_changed(days: int) -> None:
             self.start_date_changed.emit(days2date(days))  # type: ignore
