@@ -21,59 +21,67 @@ from ..model import ColumnHeader
 from ..model import Info
 from ..viewmodel import SortFilterViewModel
 from .chart import Chart
-from .chartslider import date2days
-from .chartslider import days2date
+from .common import date2days
+from .common import date2QDateTime
+from .common import days2date
 
 
 @dataclass
 class SeriesModel:
-    series: QAbstractSeries
+    series: list[QAbstractSeries]
     x_min: QDateTime
     x_max: QDateTime
     y_min: float
     y_max: float
 
 
-def date2QDateTime(d: date, *, epoch: date = date(1970, 1, 1)) -> QDateTime:
-    return QDateTime.fromSecsSinceEpoch(int((d - epoch).total_seconds()))
-
-
-def date2millis(d: date, *, epoch: date = date(1970, 1, 1)) -> float:
-    return (d - epoch).total_seconds() * 1000
-
-
 def series(infos: list[Info]) -> SeriesModel:
-    series = QLineSeries()
-    series.setName('netto_da_pagare')
+    column_headers = [
+        ColumnHeader.minimo,
+        ColumnHeader.scatti,
+        ColumnHeader.superm,
+        ColumnHeader.sup_ass,
+        ColumnHeader.edr,
+        ColumnHeader.totale_retributivo,
+        ColumnHeader.netto_da_pagare,
+    ]
+    series: list[QAbstractSeries] = []
+    for column_header in column_headers:
+        serie = QLineSeries()
+        serie.setName(column_header.name)
+        series.append(serie)
+
     x_min = date.max
     x_max = date.min
     y_min = Decimal('inf')
     y_max = Decimal(0)
 
-    # focus on netto_da_pagare column
-    def netto_da_pagare(info: Info) -> Decimal:
+    def get_howmuch(info: Info, column_header: ColumnHeader) -> Decimal:
         for column in info.columns:
-            if column.header is ColumnHeader.netto_da_pagare:
+            if column.header is column_header:
                 if column.howmuch is None:
-                    raise NotImplementedError(f'{info}')
+                    raise NotImplementedError(f'{info=}, {column_header=}')
                 return column.howmuch
-        raise NotImplementedError(f'{info}')
+        raise NotImplementedError(f'{info=}, {column_header=}')
 
     for info in infos:
         when = info.when
-        howmuch = netto_da_pagare(info)
-
-        series.append(date2days(when), float(howmuch))
+        howmuchs = []
+        for serie, column_header in zip(series, column_headers):
+            howmuch = get_howmuch(info, column_header)
+            howmuchs.append(howmuch)
+            serie.append(date2days(when), float(howmuch))
 
         # update {x,y}_{min,max}
         if when < x_min:
             x_min = when
         if when > x_max:
             x_max = when
-        if howmuch < y_min:
-            y_min = howmuch
-        if howmuch > y_max:
-            y_max = howmuch
+        for howmuch in howmuchs:
+            if howmuch < y_min:
+                y_min = howmuch
+            if howmuch > y_max:
+                y_max = howmuch
 
     return SeriesModel(series,
                        date2QDateTime(x_min), date2QDateTime(x_max),
@@ -118,20 +126,21 @@ class ChartView(QChartView):
         chart = Chart()
         chart.replace_series(series_model.series)
 
-        # axis_x = QDateTimeAxis(self)
-        # axis_x.setRange(series_model.x_min, series_model.x_max)
-        # axis_x.setTickCount(8)
         axis_x = DateTimeAxis(series_model.x_min, series_model.x_max)
         chart.addAxis(axis_x, cast(Qt.Alignment, Qt.AlignBottom))
-        series_model.series.attachAxis(axis_x)
+        for serie in series_model.series:
+            serie.attachAxis(axis_x)
 
         axis_y = QValueAxis(self)
+        chart.addAxis(axis_y, cast(Qt.Alignment, Qt.AlignLeft))
+        for serie in series_model.series:
+            serie.attachAxis(axis_y)
         axis_y.setTickType(QValueAxis.TicksDynamic)
         axis_y.setTickAnchor(0.)
         axis_y.setMinorTickCount(9)
         axis_y.setTickInterval(tick_interval(series_model.y_max))
-        chart.addAxis(axis_y, cast(Qt.Alignment, Qt.AlignLeft))
-        series_model.series.attachAxis(axis_y)
+        axis_y.setMin(series_model.y_min)
+        axis_y.setMax(series_model.y_max)
 
         self.setChart(chart)
         self._axis_x = axis_x

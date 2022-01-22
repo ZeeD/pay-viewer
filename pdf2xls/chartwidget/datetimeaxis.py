@@ -1,10 +1,14 @@
-from typing import Optional, cast, Iterator
+from datetime import date
+from datetime import datetime
+from typing import cast
+from typing import Iterator
+from typing import Optional
 
 from PySide6.QtCharts import QCategoryAxis
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QObject
-from datetime import date, datetime
-from .chartslider import date2days
+
+from .common import date2days
 
 
 def first_january(d: date, *, before: bool = True) -> date:
@@ -56,7 +60,6 @@ class DateTimeAxis(QCategoryAxis):
 
         for step in (1, 3, 4, 6, 12, 24, 36, 48):
             days = list(create_days(self.min_date, self.max_date, step=step))
-            print(f'{step=}, {len(days)}, [{days[0]},...,{days[-1]}]')
             if len(days) < 200:  # TODO find good split
                 for day in days:
                     self.append(f'{day:%Y-%m-%d}', date2days(day))
