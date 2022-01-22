@@ -21,6 +21,7 @@ class Chart(QChart):
 
         self.zoomIn(QRectF(x, y, w, h))
 
-    def replace_series(self, series: QAbstractSeries) -> None:
+    def replace_series(self, series: list[QAbstractSeries]) -> None:
         self.removeAllSeries()
-        self.addSeries(series)
+        for serie in series:
+            self.addSeries(serie)

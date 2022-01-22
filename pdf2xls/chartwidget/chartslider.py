@@ -1,21 +1,16 @@
-from datetime import date, timedelta
+from datetime import date
 from typing import cast
 from typing import Optional
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Signal
 from PySide6.QtCore import Slot
 from PySide6.QtWidgets import QSlider
 from PySide6.QtWidgets import QWidget
 
 from ..viewmodel import SortFilterViewModel
-
-
-def date2days(d: date, *, epoch: date = date(1970, 1, 1)) -> int:
-    return (d - epoch).days
-
-
-def days2date(days: int, *, epoch: date = date(1970, 1, 1)) -> date:
-    return epoch + timedelta(days=days)
+from .common import date2days
+from .common import days2date
 
 
 class ChartSlider(QSlider):
