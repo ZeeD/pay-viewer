@@ -91,7 +91,17 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
         wait.until(presence_of_element_located((By.TAG_NAME, 'mat-row')))
 
         def change_year(year: int) -> int:
-            raise NotImplementedError()
+            # open year dropdown
+            d.find_element(By.CSS_SELECTOR,
+                           '.mat-form-field-type-mat-select').click()
+            # select year
+            for mat_option in d.find_elements(By.CSS_SELECTOR,
+                                              '.mat-select-panel mat-option'):
+                if mat_option.text == str(year):
+                    mat_option.click()
+                    return year
+
+            raise ValueError()
 
         def download_for_month(month: int) -> None:
             text = f'{month:02d}'
@@ -107,7 +117,10 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
         previous_year = date.today().year
         for year, month in get_last_local(data_path).get_year_months():
             if year != previous_year:
-                previous_year = change_year(year)
+                try:
+                    previous_year = change_year(year)
+                except ValueError:
+                    break
 
             try:
                 download_for_month(month)
