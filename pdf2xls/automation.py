@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import date
 from os import listdir
+from os import makedirs
 from shutil import move
 from tempfile import TemporaryDirectory
 from typing import Iterable
@@ -58,13 +59,9 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
 
 def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
                             data_path: str) -> None:
-    try:
-        move(f'{dtemp}/{listdir(dtemp)[0]}',
-             f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
-    except IndexError:
-        print(f'{dtemp=}, {year=}, {month=}, {data_path=}')
-        print(f'{listdir(dtemp)=}')
-        raise
+    makedirs(f'{data_path}/{year}', exist_ok=True)
+    move(f'{dtemp}/{listdir(dtemp)[0]}',
+         f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
 
 def get_last_local(data_path: str) -> Date:
