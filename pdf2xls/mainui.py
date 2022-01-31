@@ -7,8 +7,6 @@ from PySide6.QtWidgets import QFileDialog
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QWidget
 
-from .chartview import ChartView
-from .chartview import FilledGroupBox
 from .chartwidget.chartwidget import ChartWidget
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
@@ -90,7 +88,7 @@ def new_mainui(settings: Settings,
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
-    settingsui.accepted.connect(model.update)
+    settingsui.accepted.connect(update_helper)
 
     QShortcut(QKeySequence(mainui.tr('Ctrl+F')),
               mainui).activated.connect(mainui.lineEdit.setFocus)
