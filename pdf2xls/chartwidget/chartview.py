@@ -12,18 +12,19 @@ from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QWidget
-
-from pdf2xls.chartwidget.datetimeaxis import DateTimeAxis
-from pdf2xls.viewmodel import ViewModel
 
 from ..model import ColumnHeader
 from ..model import Info
 from ..viewmodel import SortFilterViewModel
+from ..viewmodel import ViewModel
 from .chart import Chart
+from .charthover import ChartHover
 from .common import date2days
 from .common import date2QDateTime
 from .common import days2date
+from .datetimeaxis import DateTimeAxis
 
 
 @dataclass
@@ -104,9 +105,11 @@ class ChartView(QChartView):
                  model: SortFilterViewModel,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
+        self.setMouseTracking(True)
         self._model: ViewModel = model.sourceModel()
         self._model.modelReset.connect(self.model_reset)
         self._axis_x: Optional[QAbstractAxis] = None
+        self.chart_hover = ChartHover()
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
@@ -144,3 +147,32 @@ class ChartView(QChartView):
 
         self.setChart(chart)
         self._axis_x = axis_x
+
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        chart = self.chart()
+        if chart is not None:
+            event_pos = event.pos()
+            event_value = chart.mapToValue(event_pos)
+            event_when = days2date(event_value.x())
+            event_year_month = (event_when.year, event_when.month)
+
+            howmuchs = {'': Decimal(event_value.y())}
+            for series in chart.series():
+                for point in series.points():
+                    point_when = days2date(point.x())
+                    if event_year_month == (point_when.year, point_when.month):
+                        howmuch = Decimal(f'{point.y():.2f}')
+                        break
+                else:
+                    break
+                howmuchs[series.name()] = howmuch
+
+            self.move_hover(event_pos.x(), howmuchs)
+
+        super().mouseMoveEvent(event)
+
+    def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
+        if len(howmuchs) == 1:
+            self.chart_hover.hide()
+            return
+        self.chart_hover.show()

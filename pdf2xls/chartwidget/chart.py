@@ -7,6 +7,12 @@ from PySide6.QtCharts import QAbstractSeries
 
 
 class Chart(QChart):
+    def __init__(self) -> None:
+        super().__init__()
+        self.setAcceptHoverEvents(True)
+        self.legend().hide()
+        self._series: list[QAbstractSeries] = []
+
     def x_zoom(self, x_min: date, x_max: date, start_date: date) -> None:
         self.zoomReset()
 
@@ -23,5 +29,10 @@ class Chart(QChart):
 
     def replace_series(self, series: list[QAbstractSeries]) -> None:
         self.removeAllSeries()
+        self._series.clear()
         for serie in series:
             self.addSeries(serie)
+            self._series.append(serie)
+
+    def series(self) -> list[QAbstractSeries]:
+        return self._series
