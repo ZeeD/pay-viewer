@@ -14,8 +14,6 @@ class Chart(QChart):
         self._series: list[QAbstractSeries] = []
 
     def x_zoom(self, x_min: date, x_max: date, start_date: date) -> None:
-        self.zoomReset()
-
         area = self.plotArea()
         old_x = area.x()
         y = area.y()
