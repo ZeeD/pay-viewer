@@ -8,7 +8,7 @@ def date2days(d: date, *, epoch: date = date(1970, 1, 1)) -> int:
     return (d - epoch).days
 
 
-def days2date(days: int, *, epoch: date = date(1970, 1, 1)) -> date:
+def days2date(days: float, *, epoch: date = date(1970, 1, 1)) -> date:
     return epoch + timedelta(days=days)
 
 
