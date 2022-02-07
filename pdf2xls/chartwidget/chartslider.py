@@ -15,6 +15,7 @@ from .common import days2date
 
 class ChartSlider(QSlider):
     start_date_changed = Signal(date)
+    end_date_changed = Signal(date)
 
     def __init__(self,
                  model: SortFilterViewModel,
