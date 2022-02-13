@@ -5,6 +5,7 @@ from typing import Optional
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Signal
 from PySide6.QtCore import Slot
+from PySide6.QtQuickWidgets import QQuickWidget
 from PySide6.QtWidgets import QSlider
 from PySide6.QtWidgets import QWidget
 
@@ -13,28 +14,41 @@ from .common import date2days
 from .common import days2date
 
 
-class ChartSlider(QSlider):
+class ChartSlider(QQuickWidget):
     start_date_changed = Signal(date)
     end_date_changed = Signal(date)
+
+    def dump(self, status: QQuickWidget.Status) -> None:
+        print(status)
+        if status is QQuickWidget.Error:
+            for error in self.errors():
+                print(error)
 
     def __init__(self,
                  model: SortFilterViewModel,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
-        self.model = model
-        self.model.sourceModel().modelReset.connect(self.source_model_reset)
-        self.setOrientation(Qt.Horizontal)
-        self.setTickInterval(1)
-        self.setTickPosition(QSlider.NoTicks)
-        self.setSingleStep(1)
+        self.statusChanged.connect(self.dump)
 
-        def _start_date_changed(days: int) -> None:
-            self.start_date_changed.emit(days2date(days))  # type: ignore
-        self.valueChanged.connect(_start_date_changed)
+        self._model = model
+        self._model.sourceModel().modelReset.connect(self.source_model_reset)
+
+        # self.setOrientation(Qt.Horizontal)
+        # self.setTickInterval(1)
+        # self.setTickPosition(QSlider.NoTicks)
+        # self.setSingleStep(1)
+        #
+        # def _start_date_changed(days: int) -> None:
+        #     self.start_date_changed.emit(days2date(days))  # type: ignore
+        # self.valueChanged.connect(_start_date_changed)
+        #
+        # def _end_date_changed(days: int) -> None:
+        #     self.end_date_changed.emit(days2date(days))  # type: ignore
+        # self.valueChanged.connect(_end_date_changed)
 
     @Slot()
     def source_model_reset(self) -> None:
-        source_model = self.model.sourceModel()
+        source_model = self._model.sourceModel()
         dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
                                                cast(int, Qt.UserRole))
                              for row in range(0, source_model.rowCount())]
@@ -42,6 +56,6 @@ class ChartSlider(QSlider):
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])
 
-        self.setMinimum(minimum)
-        self.setMaximum(maximum - 1)  # let at least 1 day of span
-        self.setValue(minimum)
+        # self.setMinimum(minimum)
+        # self.setMaximum(maximum - 1)  # let at least 1 day of span
+        # self.setValue(minimum)
