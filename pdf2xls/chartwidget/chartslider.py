@@ -3,18 +3,22 @@ from typing import cast
 from typing import Optional
 
 from PySide6.QtCore import Qt
+from PySide6.QtCore import QUrl
 from PySide6.QtCore import Signal
 from PySide6.QtCore import Slot
+from PySide6.QtQuick import QQuickItem
+from PySide6.QtQuick import QQuickView
 from PySide6.QtQuickWidgets import QQuickWidget
-from PySide6.QtWidgets import QSlider
+from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
+from ..constants import CHARTSLIDER_QML_PATH
 from ..viewmodel import SortFilterViewModel
 from .common import date2days
 from .common import days2date
 
 
-class ChartSlider(QQuickWidget):
+class ChartSlider(QWidget):
     start_date_changed = Signal(date)
     end_date_changed = Signal(date)
 
@@ -28,23 +32,29 @@ class ChartSlider(QQuickWidget):
                  model: SortFilterViewModel,
                  parent: Optional[QWidget] = None):
         super().__init__(parent)
-        self.statusChanged.connect(self.dump)
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        self.view = QQuickView()
+        self.view.statusChanged.connect(self.dump)  # pylint: disable=no-member
+        self.view.setResizeMode(QQuickView.SizeRootObjectToView)
+        self.view.setSource(QUrl.fromLocalFile(CHARTSLIDER_QML_PATH))
+
+        self.range_slider: QQuickItem = self.view.rootObject()
+
+        container = QWidget.createWindowContainer(self.view)
+        container.setMinimumSize(100, 10)
+        layout.addWidget(container)
 
         self._model = model
         self._model.sourceModel().modelReset.connect(self.source_model_reset)
 
-        # self.setOrientation(Qt.Horizontal)
-        # self.setTickInterval(1)
-        # self.setTickPosition(QSlider.NoTicks)
-        # self.setSingleStep(1)
-        #
-        # def _start_date_changed(days: int) -> None:
-        #     self.start_date_changed.emit(days2date(days))  # type: ignore
-        # self.valueChanged.connect(_start_date_changed)
-        #
-        # def _end_date_changed(days: int) -> None:
-        #     self.end_date_changed.emit(days2date(days))  # type: ignore
-        # self.valueChanged.connect(_end_date_changed)
+        def _start_date_changed(days: int) -> None:
+            self.start_date_changed.emit(days2date(days))
+        self.range_slider.first_moved.connect(_start_date_changed)
+
+        def _end_date_changed(days: int) -> None:
+            self.end_date_changed.emit(days2date(days))
+        self.range_slider.second_moved.connect(_end_date_changed)
 
     @Slot()
     def source_model_reset(self) -> None:
@@ -56,6 +66,7 @@ class ChartSlider(QQuickWidget):
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])
 
-        # self.setMinimum(minimum)
-        # self.setMaximum(maximum - 1)  # let at least 1 day of span
+        self.range_slider.setProperty('from', minimum)  # type: ignore
+        # let at least 1 day of span
+        self.range_slider.setProperty('to', maximum - 1)  # type: ignore
         # self.setValue(minimum)
