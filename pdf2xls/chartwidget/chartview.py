@@ -109,10 +109,21 @@ class ChartView(QChartView):
         self._model: ViewModel = model.sourceModel()
         self._model.modelReset.connect(self.model_reset)
         self._axis_x: Optional[QAbstractAxis] = None
+        self._start_date: Optional[date] = None
+        self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
+        self._start_date = start_date
+        self._date_changed()
+
+    @Slot(date)
+    def end_date_changed(self, end_date: date) -> None:
+        self._end_date = end_date
+        self._date_changed()
+
+    def _date_changed(self) -> None:
         chart: Chart = self.chart()
         axis_x = self._axis_x
         if chart is None or axis_x is None:
@@ -120,7 +131,9 @@ class ChartView(QChartView):
 
         x_min = days2date(axis_x.min())
         x_max = days2date(axis_x.max())
-        chart.x_zoom(x_min, x_max, start_date)
+        start_date = self._start_date if self._start_date is not None else x_min
+        end_date = self._end_date if self._end_date is not None else x_max
+        chart.x_zoom(x_min, x_max, start_date, end_date)
 
     @Slot()
     def model_reset(self) -> None:

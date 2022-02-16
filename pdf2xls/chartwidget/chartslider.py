@@ -8,7 +8,6 @@ from PySide6.QtCore import Signal
 from PySide6.QtCore import Slot
 from PySide6.QtQuick import QQuickItem
 from PySide6.QtQuick import QQuickView
-from PySide6.QtQuickWidgets import QQuickWidget
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
@@ -22,10 +21,10 @@ class ChartSlider(QWidget):
     start_date_changed = Signal(date)
     end_date_changed = Signal(date)
 
-    def dump(self, status: QQuickWidget.Status) -> None:
+    def dump(self, status: QQuickView.Status) -> None:
         print(status)
-        if status is QQuickWidget.Error:
-            for error in self.errors():
+        if status is QQuickView.Error:
+            for error in self.view.errors():
                 print(error)
 
     def __init__(self,
@@ -67,6 +66,6 @@ class ChartSlider(QWidget):
         maximum = date2days(dates[-1])
 
         self.range_slider.setProperty('from', minimum)  # type: ignore
-        # let at least 1 day of span
-        self.range_slider.setProperty('to', maximum - 1)  # type: ignore
-        # self.setValue(minimum)
+        self.range_slider.setProperty('to', maximum)  # type: ignore
+        self.range_slider.set_first_value(minimum)
+        self.range_slider.set_second_value(maximum)
