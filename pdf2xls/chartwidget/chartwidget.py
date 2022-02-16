@@ -23,5 +23,5 @@ class ChartWidget(QWidget):
         layout.addWidget(chart_slider)
         self.setLayout(layout)
 
-        chart_slider.start_date_changed.connect(  # type: ignore
-            chart_view.start_date_changed)
+        chart_slider.start_date_changed.connect(chart_view.start_date_changed)
+        chart_slider.end_date_changed.connect(chart_view.end_date_changed)
