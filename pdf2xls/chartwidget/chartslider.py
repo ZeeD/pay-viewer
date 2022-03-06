@@ -22,7 +22,6 @@ class ChartSlider(QWidget):
     end_date_changed = Signal(date)
 
     def dump(self, status: QQuickView.Status) -> None:
-        print(status)
         if status is QQuickView.Error:
             for error in self.view.errors():
                 print(error)

@@ -185,7 +185,7 @@ class ChartView(QChartView):
         super().mouseMoveEvent(event)
 
     def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
-        print(f'{x=}, {howmuchs=}')
+        # print(f'{x=}, {howmuchs=}')
         if len(howmuchs) == 1:
             self.chart_hover.hide()
             return
