@@ -22,8 +22,12 @@ class Chart(QChart):
         old_w = area.width()
         h = area.height()
 
-        w = old_w * (x_max - start_date) / (x_max - x_min)
+        print(f'[{end_date}, {start_date}, {x_max}, {x_min}] [{end_date-start_date}, {x_max-x_min}]')
+
+        w = old_w * (end_date - start_date) / (x_max - x_min)
         x = old_x + old_w - w
+
+        print(f'{old_x:.2f} x {old_w:.2f}\n{x:.2f} x {w:.2f}\n')
 
         self.zoomIn(QRectF(x, y, w, h))
 

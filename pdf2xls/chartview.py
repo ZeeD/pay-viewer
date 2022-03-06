@@ -100,6 +100,7 @@ class ChartView(QChartView):
         super().__init__(parent)
         self.model = model
         self.model.sourceModel().modelReset.connect(self.load)
+        self.rows: list[Info] = []
 
     def load(self) -> None:
         self.rows = self.model.get_rows()
@@ -150,4 +151,4 @@ class FilledGroupBox(QGroupBox):
                 if checkbox.isChecked():
                     categories.append(checkbox.text())
 
-        self.categories_changed.emit(categories)  # type: ignore
+        self.categories_changed.emit(categories)
