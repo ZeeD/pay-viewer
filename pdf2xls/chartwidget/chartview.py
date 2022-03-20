@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
@@ -35,58 +37,58 @@ class SeriesModel:
     y_min: float
     y_max: float
 
+    @classmethod
+    def from_infos(cls, infos: list[Info]) -> SeriesModel:
+        column_headers = [
+            ColumnHeader.minimo,
+            ColumnHeader.scatti,
+            ColumnHeader.superm,
+            ColumnHeader.sup_ass,
+            ColumnHeader.edr,
+            ColumnHeader.totale_retributivo,
+            ColumnHeader.netto_da_pagare,
+        ]
+        series: list[QAbstractSeries] = []
+        for column_header in column_headers:
+            serie = QLineSeries()
+            serie.setName(column_header.name)
+            series.append(serie)
 
-def series(infos: list[Info]) -> SeriesModel:
-    column_headers = [
-        ColumnHeader.minimo,
-        ColumnHeader.scatti,
-        ColumnHeader.superm,
-        ColumnHeader.sup_ass,
-        ColumnHeader.edr,
-        ColumnHeader.totale_retributivo,
-        ColumnHeader.netto_da_pagare,
-    ]
-    series: list[QAbstractSeries] = []
-    for column_header in column_headers:
-        serie = QLineSeries()
-        serie.setName(column_header.name)
-        series.append(serie)
+        x_min = date.max
+        x_max = date.min
+        y_min = Decimal('inf')
+        y_max = Decimal(0)
 
-    x_min = date.max
-    x_max = date.min
-    y_min = Decimal('inf')
-    y_max = Decimal(0)
+        def get_howmuch(info: Info, column_header: ColumnHeader) -> Decimal:
+            for column in info.columns:
+                if column.header is column_header:
+                    if column.howmuch is None:
+                        raise NotImplementedError(f'{info=}, {column_header=}')
+                    return column.howmuch
+            raise NotImplementedError(f'{info=}, {column_header=}')
 
-    def get_howmuch(info: Info, column_header: ColumnHeader) -> Decimal:
-        for column in info.columns:
-            if column.header is column_header:
-                if column.howmuch is None:
-                    raise NotImplementedError(f'{info=}, {column_header=}')
-                return column.howmuch
-        raise NotImplementedError(f'{info=}, {column_header=}')
+        for info in infos:
+            when = info.when
+            howmuchs = []
+            for serie, column_header in zip(series, column_headers):
+                howmuch = get_howmuch(info, column_header)
+                howmuchs.append(howmuch)
+                serie.append(date2days(when), float(howmuch))
 
-    for info in infos:
-        when = info.when
-        howmuchs = []
-        for serie, column_header in zip(series, column_headers):
-            howmuch = get_howmuch(info, column_header)
-            howmuchs.append(howmuch)
-            serie.append(date2days(when), float(howmuch))
+            # update {x,y}_{min,max}
+            if when < x_min:
+                x_min = when
+            if when > x_max:
+                x_max = when
+            for howmuch in howmuchs:
+                if howmuch < y_min:
+                    y_min = howmuch
+                if howmuch > y_max:
+                    y_max = howmuch
 
-        # update {x,y}_{min,max}
-        if when < x_min:
-            x_min = when
-        if when > x_max:
-            x_max = when
-        for howmuch in howmuchs:
-            if howmuch < y_min:
-                y_min = howmuch
-            if howmuch > y_max:
-                y_max = howmuch
-
-    return SeriesModel(series,
-                       date2QDateTime(x_min), date2QDateTime(x_max),
-                       float(y_min), float(y_max))
+        return cls(series,
+                   date2QDateTime(x_min), date2QDateTime(x_max),
+                   float(y_min), float(y_max))
 
 
 def tick_interval(y_max: float, n: int = 10) -> float:
@@ -137,7 +139,7 @@ class ChartView(QChartView):
 
     @Slot()
     def model_reset(self) -> None:
-        series_model = series(self._model._infos)
+        series_model = SeriesModel.from_infos(self._model._infos)
 
         chart = Chart()
         chart.replace_series(series_model.series)
