@@ -66,7 +66,6 @@ def new_mainui(settings: Settings,
     mainui.tableView = tableView
     # replace tableView
 
-    mainui.tableView.setModel(model)
     selection_model = mainui.tableView.selectionModel()
     selection_model.selectionChanged.connect(update_status_bar)
 
