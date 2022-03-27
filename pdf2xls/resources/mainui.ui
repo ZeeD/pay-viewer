@@ -20,9 +20,9 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="xls">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>xls</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_1">
         <item row="0" column="0">
@@ -71,15 +71,9 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="chart">
        <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_2"/>
-      </widget>
-      <widget class="QWidget" name="tab_3">
-       <attribute name="title">
-        <string>Tab 3</string>
+        <string>chart</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3"/>
       </widget>

@@ -79,7 +79,7 @@ def new_mainui(settings: Settings,
 
     # chart 3
     chart_widget = ChartWidget(model, mainui)
-    mainui.tab_3.layout().addWidget(chart_widget)
+    mainui.chart.layout().addWidget(chart_widget)
     # chart 3
 
     mainui.lineEdit.textChanged.connect(model.filterChanged)
