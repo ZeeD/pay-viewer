@@ -11,6 +11,7 @@ MAINUI_UI_PATH: Final = _resource('mainui.ui')
 SETTINGSUI_UI_PATH: Final = _resource('settingsui.ui')
 CHARTSLIDER_QML_PATH: Final = _resource('chartslider.qml')
 CHARTHOVERUI_UI_PATH: Final = _resource('charthoverui.ui')
+FREEZE_TABLE_VIEW_UI_PATH: Final = _resource('freeze_table_view.ui')
 
 TEMPLATE_PATH: Final = _resource('tabula-template.json')
 GECKODRIVER_PATH: Final = _resource('geckodriver.exe')

@@ -1,96 +1,47 @@
-from PySide6.QtCore import QAbstractItemModel
-from PySide6.QtCore import QModelIndex
-from PySide6.QtCore import Qt
-from PySide6.QtCore import Slot
-from PySide6.QtGui import QResizeEvent
-from PySide6.QtWidgets import QAbstractItemView
-from PySide6.QtWidgets import QHeaderView
+from typing import Optional
+
+from PySide6.QtCore import QAbstractItemModel, QItemSelectionModel
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTableView
 from PySide6.QtWidgets import QWidget
 
+from .constants import FREEZE_TABLE_VIEW_UI_PATH
 
-class FreezeTableView(QTableView):
-    def __init__(self, parent: QWidget, model: QAbstractItemModel) -> None:
+
+class FreezeTableView(QWidget):
+    def __init__(self,
+                 parent: Optional[QWidget],
+                 model: QAbstractItemModel) -> None:
         super().__init__(parent)
-        super().setModel(model)
-        self.frozenTableView = QTableView(self)
-        self.init()
+        content = QUiLoader().load(FREEZE_TABLE_VIEW_UI_PATH)
+        self._left: QTableView = content.left
+        self._right: QTableView = content.right
+        self._model = model
 
-        self.horizontalHeader().sectionResized.connect(self.updateSectionWidth)
-        self.verticalHeader().sectionResized.connect(self.updateSectionHeight)
-        self.frozenTableView.verticalScrollBar().valueChanged.connect(
-            self.verticalScrollBar().setValue)
-        self.verticalScrollBar().valueChanged.connect(
-            self.frozenTableView.verticalScrollBar().setValue)
+        layout = QGridLayout(self)
+        layout.addWidget(content)
+        self.setLayout(layout)
 
-    def init(self) -> None:
-        ftw = self.frozenTableView
-        ftw.setModel(self.model())
-        ftw.setFocusPolicy(Qt.NoFocus)
-        ftw.verticalHeader().hide()
-        ftw.horizontalHeader().setSectionResizeMode(QHeaderView.Fixed)
-        self.viewport().stackUnder(ftw)
+        self._left.setModel(model)
+        self._right.setModel(model)
 
-        if self.selectionModel():
-            ftw.setSelectionModel(self.selectionModel())
-        if self.model():
-            for col in range(1, self.model().columnCount()):
-                ftw.setColumnHidden(col, True)
-        ftw.setColumnWidth(0, self.columnWidth(0))
-        ftw.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        ftw.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        ftw.show()
-        self.updateFrozenTableGeometry()
-        self.setHorizontalScrollMode(self.ScrollPerPixel)
-        self.setVerticalScrollMode(self.ScrollPerPixel)
-        ftw.setVerticalScrollMode(self.ScrollPerPixel)
+        # hide/show columns on model reset
+        self._model.modelReset.connect(self._reset_columns)
 
-    @Slot()
-    def updateSectionWidth(self,
-                           logicalIndex: int,
-                           _oldSize: int,
-                           newSize: int) -> None:
-        if logicalIndex == 0:
-            self.frozenTableView.setColumnWidth(0, newSize)
-            self.updateFronzenTableGeometry()
+        # link vertical scroll
+        self._right.verticalScrollBar().valueChanged.connect(
+            self._left.verticalScrollBar().setValue)
 
-    @Slot()
-    def updateSectionHeight(self,
-                            logicalIndex: int,
-                            _oldSize: int,
-                            newSize: int) -> None:
-        self.frozenTableView.setRowHeight(logicalIndex, newSize)
+        # share and expose selection model
+        self._selection_model = self._right.selectionModel()
+        self._left.setSelectionModel(self._selection_model)
 
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        super().resizeEvent(event)
-        self.updateFrozenTableGeometry()
+    def selectionModel(self) -> QItemSelectionModel:
+        return self._selection_model
 
-    def moveCursor(self,
-                   cursorAction: QAbstractItemView.CursorAction,
-                   modifiers: Qt.KeyboardModifiers) -> QModelIndex:
-        current = super().moveCursor(cursorAction, modifiers)
-        if (cursorAction == QAbstractItemView.CursorAction.MoveLeft and
-            current.column() > 0 and
-            self.visualRect(current).topLeft().x() <
-                self.frozenTableView.columnWidth(0)):
-            newValue = (self.horizontalScrollBar().value() +
-                        self.visualRect(current).topLeft().x() -
-                        self.frozenTableView.columnWidth(0))
-            self.horizontalScrollBar().setValue(newValue)
-
-        return current
-
-    def scrollTo(self,
-                 index: QModelIndex,
-                 hint: QAbstractItemView.ScrollHint
-                 = QAbstractItemView.ScrollHint.EnsureVisible) -> None:
-        if index.column() > 0:
-            super().scrollTo(index, hint)
-
-    def updateFrozenTableGeometry(self) -> None:
-        self.frozenTableView.setGeometry(self.verticalHeader().width()
-                                         + self.frameWidth(),
-                                         self.frameWidth(),
-                                         self.columnWidth(0),
-                                         self.viewport().height()
-                                         + self.horizontalHeader().height())
+    def _reset_columns(self) -> None:
+        # hide all-but-first column in left, first column in right
+        for col in range(self._model.columnCount()):
+            self._left.setColumnHidden(col, col != 0)
+            self._right.setColumnHidden(col, col == 0)
