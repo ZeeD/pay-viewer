@@ -1,9 +1,8 @@
 from datetime import date
 
+from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChart
 from PySide6.QtCore import QRectF
-
-from PySide6.QtCharts import QAbstractSeries
 
 
 class Chart(QChart):
@@ -22,7 +21,8 @@ class Chart(QChart):
         old_w = area.width()
         h = area.height()
 
-        print(f'[{end_date}, {start_date}, {x_max}, {x_min}] [{end_date-start_date}, {x_max-x_min}]')
+        print(f'[{end_date=}, {start_date=}, {x_max=}, {x_min=}]',
+              f'[{end_date-start_date=}, {x_max-x_min=}]')
 
         w = old_w * (end_date - start_date) / (x_max - x_min)
         x = old_x + old_w - w

@@ -12,9 +12,13 @@ from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QPoint
+from PySide6.QtCore import QRectF
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPen
 from PySide6.QtWidgets import QWidget
 
 from ..model import ColumnHeader
@@ -114,6 +118,7 @@ class ChartView(QChartView):
         self._start_date: Optional[date] = None
         self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
+        self.event_pos: Optional[QPoint] = None
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
@@ -164,10 +169,11 @@ class ChartView(QChartView):
         self._axis_x = axis_x
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
+        self.event_pos = event.pos()
+
         chart = self.chart()
         if chart is not None:
-            event_pos = event.pos()
-            event_value = chart.mapToValue(event_pos)
+            event_value = chart.mapToValue(self.event_pos)
             event_when = days2date(event_value.x())
             event_year_month = (event_when.year, event_when.month)
 
@@ -182,12 +188,25 @@ class ChartView(QChartView):
                     break
                 howmuchs[series.name()] = howmuch
 
-            self.move_hover(event_pos.x(), howmuchs)
+            self.move_hover(self.event_pos.x(), howmuchs)
 
         super().mouseMoveEvent(event)
+        self.update()
+
+    def drawForeground(self, painter: QPainter, rect: QRectF) -> None:
+        super().drawForeground(painter, rect)
+        if self.event_pos is not None:
+            self.setUpdatesEnabled(False)
+            try:
+                painter.setPen(QPen(Qt.gray, 1, Qt.DashLine))
+                x = self.event_pos.x()
+                painter.drawLine(x, int(rect.top()), x, int(rect.bottom()))
+            finally:
+                self.setUpdatesEnabled(True)
 
     def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
         # print(f'{x=}, {howmuchs=}')
+        self.chart_hover.set_howmuchs(howmuchs)
         if len(howmuchs) == 1:
             self.chart_hover.hide()
             return
