@@ -142,10 +142,7 @@ def extract_periodo(table: DataFrame) -> date:
 def extract(el: Union[str, float]) -> Decimal:
     s: Union[str, float]
     if isinstance(el, float):
-        if isnan(el):
-            s = '0'
-        else:
-            s = round(el, 2)
+        s = '0' if isnan(el) else round(el, 2)
     else:
         s = el.replace('.', '').replace(',', '.')
         if s.endswith('-'):
@@ -266,21 +263,20 @@ def extract_details(table: DataFrame) -> Iterator[AdditionalDetail]:
                                    compenso_unitario=extract(row[5]),
                                    trattenute=extract(row[6]),
                                    competenze=extract(row[7]))
-        else:
-            if (len(row) == 9
+        elif (len(row) == 9
                 and isnan(row[4])
                     and all(isnan(e) for e in table[4])):
-                yield AdditionalDetail(prev=(None
-                                             if isnan(row[0])
-                                             else int(row[0])),
-                                       fisc=(None
-                                             if isnan(row[1])
-                                             else int(row[1])),
-                                       cod=row[2],
-                                       descrizione=row[3],
-                                       ore_o_giorni=extract(row[5]),
-                                       compenso_unitario=extract(row[6]),
-                                       trattenute=extract(row[7]),
-                                       competenze=extract(row[8]))
-            else:
-                raise Exception(row)
+            yield AdditionalDetail(prev=(None
+                                         if isnan(row[0])
+                                         else int(row[0])),
+                                   fisc=(None
+                                         if isnan(row[1])
+                                         else int(row[1])),
+                                   cod=row[2],
+                                   descrizione=row[3],
+                                   ore_o_giorni=extract(row[5]),
+                                   compenso_unitario=extract(row[6]),
+                                   trattenute=extract(row[7]),
+                                   competenze=extract(row[8]))
+        else:
+            raise Exception(row)

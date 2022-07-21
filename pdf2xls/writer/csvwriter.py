@@ -12,13 +12,18 @@ MONTH: Final = 'month'
 
 
 def clean(descrizione: str) -> str:
-    for prefix in ('AD.COM.LE DA TR. NEL ',
-                   'AD.REG.LE DA TR. NEL ',
-                   'TICKET PASTO'):
-        if descrizione.startswith(prefix):
-            return f'{prefix}*'
-
-    return descrizione
+    return next(
+        (
+            f'{prefix}*'
+            for prefix in (
+                'AD.COM.LE DA TR. NEL ',
+                'AD.REG.LE DA TR. NEL ',
+                'TICKET PASTO',
+            )
+            if descrizione.startswith(prefix)
+        ),
+        descrizione,
+    )
 
 
 def fieldnames(infos: list[Info]) -> list[str]:

@@ -57,9 +57,13 @@ class ChartSlider(QWidget):
     @Slot()
     def source_model_reset(self) -> None:
         source_model = self._model.sourceModel()
-        dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
-                                               cast(int, Qt.UserRole))
-                             for row in range(0, source_model.rowCount())]
+        dates: list[date] = [
+            source_model.data(
+                source_model.createIndex(row, 0), cast(int, Qt.UserRole)
+            )
+            for row in range(source_model.rowCount())
+        ]
+
         dates.sort()
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])

@@ -25,10 +25,14 @@ from .settings import Settings
 
 def by_column(info: Info, i: int) -> Optional[Decimal]:
     column_header = ColumnHeader(i)
-    for column in info.columns:
-        if column.header == column_header:
-            return column.howmuch
-    return None
+    return next(
+        (
+            column.howmuch
+            for column in info.columns
+            if column.header == column_header
+        ),
+        None,
+    )
 
 
 def max_min_this(data: list[list[str]],
@@ -61,10 +65,7 @@ class ViewModel(QAbstractTableModel):
         if role != cast(int, Qt.DisplayRole):
             return None
 
-        if orientation != Qt.Horizontal:
-            return None
-
-        return self._headers[section]
+        return None if orientation != Qt.Horizontal else self._headers[section]
 
     def data(self,
              index: QModelIndex,
@@ -101,8 +102,6 @@ class ViewModel(QAbstractTableModel):
 
             return QBrush(QColor(red, green, blue, 127))
 
-            return None
-
         if role == cast(int, Qt.ForegroundRole):
             return None
 
@@ -113,12 +112,10 @@ class ViewModel(QAbstractTableModel):
             return None
 
         if role == cast(int, Qt.UserRole):
-            # TODO: avoid losing types
             if column == 0:
                 return self._infos[row].when
-            else:
-                value = self._data[row][column]
-                return Decimal(value) if value is not None else None
+            value = self._data[row][column]
+            return Decimal(value) if value is not None else None
 
         # DisplayRole 0
         # DecorationRole 1
