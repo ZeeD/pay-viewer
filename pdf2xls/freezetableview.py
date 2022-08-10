@@ -1,6 +1,8 @@
 from typing import Optional
 
-from PySide6.QtCore import QAbstractItemModel, QItemSelectionModel
+from PySide6.QtCore import Qt
+from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTableView
@@ -32,6 +34,8 @@ class FreezeTableView(QWidget):
         # link vertical scroll
         self._right.verticalScrollBar().valueChanged.connect(
             self._left.verticalScrollBar().setValue)
+        self._left.verticalScrollBar().valueChanged.connect(
+            self._right.verticalScrollBar().setValue)
 
         # share and expose selection model
         self._selection_model = self._right.selectionModel()
@@ -45,3 +49,5 @@ class FreezeTableView(QWidget):
         for col in range(self._model.columnCount()):
             self._left.setColumnHidden(col, col != 0)
             self._right.setColumnHidden(col, col == 0)
+
+        self._left.sortByColumn(0, Qt.SortOrder.DescendingOrder)

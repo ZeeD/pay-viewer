@@ -74,7 +74,12 @@ class ViewModel(QAbstractTableModel):
         row = index.row()
 
         if role == cast(int, Qt.DisplayRole):
-            return self._data[row][column]
+            value = self._data[row][column]
+            if column == 0:
+                return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
+            if value == '0':
+                return None
+            return value
 
         if role == cast(int, Qt.DecorationRole):
             return None
@@ -93,6 +98,9 @@ class ViewModel(QAbstractTableModel):
 
         if role == cast(int, Qt.BackgroundRole):
             max_, min_, this = max_min_this(self._data, row, column)
+            if this == 0:
+                return None
+
             perc = float((this - min_) / (max_ - min_)) if max_ != min_ else .5
 
             red = int((1 - perc) * 255)  # 0..1 ->  255..0
