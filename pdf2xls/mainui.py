@@ -63,6 +63,7 @@ def new_mainui(settings: Settings,
     # replace tableView
     tableView = FreezeTableView(mainui.tableView.parent(), model)
     mainui.gridLayout_1.replaceWidget(mainui.tableView, tableView)
+    mainui.tableView.deleteLater()
     mainui.tableView = tableView
     # replace tableView
 
