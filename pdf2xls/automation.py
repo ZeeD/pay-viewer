@@ -15,7 +15,7 @@ from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.support.expected_conditions import (
     presence_of_element_located)
 from selenium.webdriver.support.expected_conditions import url_contains
-from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.wait import WebDriverWait
 
 from .constants import GECKODRIVER_PATH
 
@@ -80,8 +80,8 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
 
         # do login
         d.get('https://login.myareaf2a.com/login/user')
-        d.find_element_by_id('mat-input-0').send_keys(username)
-        d.find_element_by_id('mat-input-1').send_keys(password + Keys.RETURN)
+        d.find_element(By.ID, 'mat-input-0').send_keys(username)
+        d.find_element(By.ID, 'mat-input-1').send_keys(password + Keys.RETURN)
         wait.until(url_contains('home/card/DATI_PERSONALI'))
         # go to "DOCUMENTI PERSONALI"
         d.get('https://www.myareaf2a.com/home/documents/personal')
@@ -102,7 +102,7 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
 
         def download_for_month(month: int) -> None:
             text = f'{month:02d}'
-            for row in d.find_elements_by_tag_name('mat-row'):
+            for row in d.find_elements(By.TAG_NAME, 'mat-row'):
                 mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-mese')
                 if not mese or mese.text != text:
                     continue
