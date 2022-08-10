@@ -48,6 +48,9 @@ class FreezeTableView(QWidget):
         # hide all-but-first column in left, first column in right
         for col in range(self._model.columnCount()):
             self._left.setColumnHidden(col, col != 0)
-            self._right.setColumnHidden(col, col == 0)
+            self._right.setColumnHidden(col,
+                                        col == 0 or not any(self._model.data(self._model.index(row, col))
+                                                            for row in range(self._model.rowCount())))
 
+        # force sort
         self._left.sortByColumn(0, Qt.SortOrder.DescendingOrder)
