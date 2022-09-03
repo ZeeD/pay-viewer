@@ -224,7 +224,8 @@ class SortFilterViewModel(QSortFilterProxyModel):
             try_fetch_new_data(self.settings.username, self.settings.password,
                                data_path)
 
-        self.sourceModel().load(load(data_path, force=force_pdf))
+        if data_path:
+            self.sourceModel().load(load(data_path, force=force_pdf))
 
     def get_categories(self) -> list[str]:
         view_model = cast(ViewModel, self.sourceModel())
