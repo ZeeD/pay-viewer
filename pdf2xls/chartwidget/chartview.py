@@ -71,7 +71,7 @@ class SeriesModel:
                     return column.howmuch
             raise NotImplementedError(f'{info=}, {column_header=}')
 
-        for info in infos:
+        for info in sorted(infos, key=lambda info:info.when):
             when = info.when
             howmuchs = []
             for serie, column_header in zip(series, column_headers):
