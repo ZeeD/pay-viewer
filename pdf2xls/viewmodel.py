@@ -210,11 +210,10 @@ class SortFilterViewModel(QSortFilterProxyModel):
     def selectionChanged(self,
                          selection_model: QItemSelectionModel,
                          statusbar: QStatusBar) -> None:
-        bigsum = ''
-        for index in cast(list[QModelIndex], selection_model.selectedRows(0)):
-            data = index.data(cast(int, Qt.UserRole))
-            bigsum = data
-
+        column = selection_model.currentIndex().column()
+        bigsum = sum(index.data(cast(int, Qt.UserRole))
+                     for index in cast(list[QModelIndex],
+                                       selection_model.selectedRows(column)))
         statusbar.showMessage(f'⅀ = {bigsum}')
 
     def update(self, *, only_local: bool, force_pdf: bool) -> None:

@@ -93,7 +93,7 @@ def new_mainui(settings: Settings,
     QShortcut(QKeySequence(mainui.tr('Ctrl+F')),
               mainui).activated.connect(mainui.lineEdit.setFocus)
     QShortcut(QKeySequence(mainui.tr('Esc')),
-              mainui).activated.connect(lambda: mainui.lineEdit.setText())
+              mainui).activated.connect(lambda: mainui.lineEdit.setText(''))
 
     # on startup load only from local, and ask if you really want
     update_helper(only_local=True, force_pdf=False)
