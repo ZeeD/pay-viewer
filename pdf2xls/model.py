@@ -86,7 +86,7 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
         # additional_details
         for additional_detail in info.additional_details:
             key = str(additional_detail.cod)
-            value = str(additional_detail.compenso_unitario)
+            value = str(-additional_detail.trattenute if additional_detail.trattenute else additional_detail.competenze)
             if key in indexes:
                 row[indexes[key]] = value
             else:
