@@ -211,10 +211,14 @@ class SortFilterViewModel(QSortFilterProxyModel):
                          selection_model: QItemSelectionModel,
                          statusbar: QStatusBar) -> None:
         column = selection_model.currentIndex().column()
-        bigsum = sum(index.data(cast(int, Qt.UserRole))
-                     for index in cast(list[QModelIndex],
-                                       selection_model.selectedRows(column)))
-        statusbar.showMessage(f'⅀ = {bigsum}')
+        if column == 0:
+            message = ''
+        else:
+            bigsum = sum(index.data(cast(int, Qt.UserRole))
+                         for index in cast(list[QModelIndex],
+                                           selection_model.selectedRows(column)))
+            message = f'⅀ = {bigsum}'
+        statusbar.showMessage(message)
 
     def update(self, *, only_local: bool, force_pdf: bool) -> None:
         data_path = self.settings.data_path
