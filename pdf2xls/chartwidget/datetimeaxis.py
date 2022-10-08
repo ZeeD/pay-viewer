@@ -11,19 +11,19 @@ from PySide6.QtCore import QObject
 from .common import date2days
 
 
-def first_january(d: date, *, before: bool = True) -> date:
+def first_january(d: date, *, before: bool=True) -> date:
     ret_year = d.year if before else d.year + 1
 
     return date(ret_year, 1, 1)
 
 
-def next_first_of_the_month(day: date, *, delta_months: int = 1) -> date:
+def next_first_of_the_month(day: date, *, delta_months: int=1) -> date:
     delta_years, m = divmod(day.month - 1 + delta_months, 12)
 
     return date(day.year + delta_years, m + 1, 1)
 
 
-def create_days(begin: date, end: date, *, step: int = 1) -> Iterator[date]:
+def create_days(begin: date, end: date, *, step: int=1) -> Iterator[date]:
     day = begin
     while True:
         yield day
@@ -37,7 +37,7 @@ class DateTimeAxis(QCategoryAxis):
     def __init__(self,
                  x_min: QDateTime,
                  x_max: QDateTime,
-                 parent: Optional[QObject] = None) -> None:
+                 parent: Optional[QObject]=None) -> None:
         super().__init__(parent)
         self.setLabelsPosition(QCategoryAxis.AxisLabelsPositionOnValue)
         self.setTruncateLabels(False)
@@ -52,6 +52,7 @@ class DateTimeAxis(QCategoryAxis):
 
         self.setMin(date2days(self.min_date))
         self.setMax(date2days(self.max_date))
+
         self.reset_categories()
 
     def reset_categories(self) -> None:

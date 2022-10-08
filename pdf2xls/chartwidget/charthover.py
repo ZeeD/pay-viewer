@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGraphicsItem
@@ -17,7 +17,7 @@ class ChartHover(QGraphicsWidget):
         self.setLayout(QGraphicsLinearLayout(Qt.Vertical))
 
     def set_howmuchs(self, howmuchs: dict[str, Decimal]) -> None:
-        layout = self.layout()
+        layout = cast(QGraphicsLinearLayout, self.layout())
         for item in self.items:
             layout.removeItem(item)
         self.items.clear()

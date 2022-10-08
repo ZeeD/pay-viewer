@@ -11,7 +11,7 @@ from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
-from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QDateTime, QRect
 from PySide6.QtCore import QPoint
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import Qt
@@ -95,7 +95,7 @@ class SeriesModel:
                    float(y_min), float(y_max))
 
 
-def tick_interval(y_max: float, n: int = 10) -> float:
+def tick_interval(y_max: float, n: int=10) -> float:
     'return min(10**x) > y_max / n'
     goal_step = y_max / n
     exp = 1
@@ -107,14 +107,15 @@ def tick_interval(y_max: float, n: int = 10) -> float:
 
 
 class ChartView(QChartView):
+
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget] = None):
+                 parent: Optional[QWidget]=None):
         super().__init__(parent)
         self.setMouseTracking(True)
-        self._model: ViewModel = model.sourceModel()
+        self._model = cast(ViewModel, model.sourceModel())
         self._model.modelReset.connect(self.model_reset)
-        self._axis_x: Optional[QAbstractAxis] = None
+        self._axis_x: Optional[DateTimeAxis] = None
         self._start_date: Optional[date] = None
         self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
@@ -131,16 +132,14 @@ class ChartView(QChartView):
         self._date_changed()
 
     def _date_changed(self) -> None:
-        chart: Chart = self.chart()
+        chart = cast(Chart, self.chart())
         axis_x = self._axis_x
         if chart is None or axis_x is None:
             return
 
-        x_min = days2date(axis_x.min())
-        x_max = days2date(axis_x.max())
-        start_date = self._start_date if self._start_date is not None else x_min
-        end_date = self._end_date if self._end_date is not None else x_max
-        chart.x_zoom(x_min, x_max, start_date, end_date)
+        start_date = self._start_date if self._start_date is not None else axis_x.min_date
+        end_date = self._end_date if self._end_date is not None else axis_x.max_date
+        chart.x_zoom(start_date, end_date)
 
     @Slot()
     def model_reset(self) -> None:
@@ -193,7 +192,7 @@ class ChartView(QChartView):
         super().mouseMoveEvent(event)
         self.update()
 
-    def drawForeground(self, painter: QPainter, rect: QRectF) -> None:
+    def drawForeground(self, painter: QPainter, rect: QRectF | QRect) -> None:
         super().drawForeground(painter, rect)
         if self.event_pos is not None:
             self.setUpdatesEnabled(False)
