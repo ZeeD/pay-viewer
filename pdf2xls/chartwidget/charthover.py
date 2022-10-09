@@ -12,12 +12,15 @@ from PySide6.QtWidgets import QLabel
 
 
 class ChartHover(QGraphicsWidget):
-    def __init__(self, parent: Optional[QGraphicsItem] = None) -> None:
+
+    def __init__(self, parent: Optional[QGraphicsItem]=None) -> None:
         super().__init__(parent)
         self.items: list[QGraphicsLayoutItem] = []
         self.setLayout(QGraphicsLinearLayout(Qt.Vertical))
 
     def set_howmuchs(self, howmuchs: dict[str, Decimal]) -> None:
+        print(f'{howmuchs=}')
+
         layout = cast(QGraphicsLinearLayout, self.layout())
         for item in self.items:
             layout.removeItem(item)

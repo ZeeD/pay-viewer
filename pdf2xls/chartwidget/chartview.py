@@ -204,9 +204,8 @@ class ChartView(QChartView):
                 self.setUpdatesEnabled(True)
 
     def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
-        # print(f'{x=}, {howmuchs=}')
         self.chart_hover.set_howmuchs(howmuchs)
-        if len(howmuchs) == 1:
-            self.chart_hover.hide()
-            return
+        # if len(howmuchs) == 1:
+        #     self.chart_hover.hide()
+        #     return
         self.chart_hover.show()
