@@ -1,5 +1,5 @@
-from typing import Final
 from os import name
+from typing import Final
 
 from pkg_resources import resource_filename
 

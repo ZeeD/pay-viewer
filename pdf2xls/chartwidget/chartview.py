@@ -6,13 +6,13 @@ from decimal import Decimal
 from typing import cast
 from typing import Optional
 
-from PySide6.QtCharts import QAbstractAxis
 from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
-from PySide6.QtCore import QDateTime, QRect
+from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QPoint
+from PySide6.QtCore import QRect
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
@@ -35,7 +35,7 @@ from .datetimeaxis import DateTimeAxis
 
 @dataclass
 class SeriesModel:
-    series: list[QAbstractSeries]
+    series: list[QLineSeries]
     x_min: QDateTime
     x_max: QDateTime
     y_min: float
@@ -52,7 +52,7 @@ class SeriesModel:
             ColumnHeader.totale_retributivo,
             ColumnHeader.netto_da_pagare,
         ]
-        series: list[QAbstractSeries] = []
+        series: list[QLineSeries] = []
         for column_header in column_headers:
             serie = QLineSeries()
             serie.setName(column_header.name)
@@ -113,8 +113,8 @@ class ChartView(QChartView):
                  parent: Optional[QWidget]=None):
         super().__init__(parent)
         self.setMouseTracking(True)
-        self._model = cast(ViewModel, model.sourceModel())
-        self._model.modelReset.connect(self.model_reset)
+        self._model = model.sourceModel()
+        self._model.modelReset.connect(self.model_reset)  # type: ignore
         self._axis_x: Optional[DateTimeAxis] = None
         self._start_date: Optional[date] = None
         self._end_date: Optional[date] = None

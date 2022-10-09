@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import Optional, cast
 
-from PySide6.QtCore import Qt
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QTableView
@@ -11,14 +11,20 @@ from PySide6.QtWidgets import QWidget
 from .constants import FREEZE_TABLE_VIEW_UI_PATH
 
 
+class TableViewUI(QWidget):
+    left: QTableView
+    right: QTableView
+
+
 class FreezeTableView(QWidget):
+
     def __init__(self,
                  parent: Optional[QWidget],
                  model: QAbstractItemModel) -> None:
         super().__init__(parent)
-        content = QUiLoader().load(FREEZE_TABLE_VIEW_UI_PATH)
-        self._left: QTableView = content.left
-        self._right: QTableView = content.right
+        content = cast(TableViewUI, QUiLoader().load(FREEZE_TABLE_VIEW_UI_PATH))
+        self._left = content.left
+        self._right = content.right
         self._model = model
 
         layout = QGridLayout(self)
@@ -29,12 +35,12 @@ class FreezeTableView(QWidget):
         self._right.setModel(model)
 
         # hide/show columns on model reset
-        self._model.modelReset.connect(self._reset_columns)
+        self._model.modelReset.connect(self._reset_columns)  # type: ignore
 
         # link vertical scroll
-        self._right.verticalScrollBar().valueChanged.connect(
+        self._right.verticalScrollBar().valueChanged.connect(# type: ignore
             self._left.verticalScrollBar().setValue)
-        self._left.verticalScrollBar().valueChanged.connect(
+        self._left.verticalScrollBar().valueChanged.connect(# type: ignore
             self._right.verticalScrollBar().setValue)
 
         # share and expose selection model

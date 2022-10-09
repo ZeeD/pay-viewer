@@ -4,10 +4,11 @@ from typing import cast
 from typing import Optional
 from typing import Union
 
-from PySide6.QtCore import QAbstractTableModel, QPersistentModelIndex
+from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
@@ -162,11 +163,11 @@ class ViewModel(QAbstractTableModel):
             raw = row[index]
             return date.fromisoformat(raw) if index == 0 else Decimal(raw)
 
-        self.layoutAboutToBeChanged.emit()
+        self.layoutAboutToBeChanged.emit()  # type: ignore
         try:
             self._data.sort(key=key, reverse=order == Qt.DescendingOrder)
         finally:
-            self.layoutChanged.emit()
+            self.layoutChanged.emit()  # type: ignore
 
     def load(self, infos: list[Info]) -> None:
         self.beginResetModel()
@@ -233,9 +234,12 @@ class SortFilterViewModel(QSortFilterProxyModel):
             self.sourceModel().load(load(data_path, force=force_pdf))
 
     def get_categories(self) -> list[str]:
-        view_model = cast(ViewModel, self.sourceModel())
+        view_model = self.sourceModel()
         return view_model._headers
 
     def get_rows(self) -> list[Info]:
-        view_model = cast(ViewModel, self.sourceModel())
+        view_model = self.sourceModel()
         return view_model._infos
+    
+    def sourceModel(self) -> ViewModel:
+        return cast(ViewModel, super().sourceModel())

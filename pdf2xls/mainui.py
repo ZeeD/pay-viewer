@@ -4,10 +4,14 @@ from PySide6.QtCore import QItemSelection
 from PySide6.QtGui import QKeySequence
 from PySide6.QtGui import QShortcut
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QLineEdit, QDialogButtonBox, \
-    QToolButton, QMainWindow, QTableView
+from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QLineEdit
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QTableView
+from PySide6.QtWidgets import QToolButton
 from PySide6.QtWidgets import QWidget
 
 from .chartwidget.chartwidget import ChartWidget

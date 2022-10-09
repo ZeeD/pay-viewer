@@ -1,5 +1,6 @@
 from decimal import Decimal
-from typing import Optional, cast
+from typing import cast
+from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGraphicsItem
