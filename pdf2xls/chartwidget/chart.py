@@ -1,5 +1,5 @@
 from datetime import date
-from typing import cast
+from typing import cast, Iterable
 
 from PySide6.QtCharts import QAbstractSeries, QLineSeries
 from PySide6.QtCharts import QChart
@@ -15,7 +15,7 @@ class Chart(QChart):
         super().__init__()
         self.setAcceptHoverEvents(True)
         self.legend().hide()
-        self._series: list[QLineSeries] = []
+        self._series: list[QAbstractSeries] = []
         self.scrolledTo = 0.
 
     def x_zoom(self, start_date: date, end_date: date) -> None:
@@ -24,7 +24,7 @@ class Chart(QChart):
         axis.setMin(date2days(start_date))
         axis.setMax(date2days(end_date))
 
-    def replace_series(self, series: list[QLineSeries]) -> None:
+    def replace_series(self, series: Iterable[QLineSeries]) -> None:
         self.removeAllSeries()
         self._series.clear()
         for serie in series:

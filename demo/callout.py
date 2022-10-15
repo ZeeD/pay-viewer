@@ -1,52 +1,19 @@
 from decimal import Decimal
-from typing import cast
 
-from PySide6.QtCharts import QChart, QLineSeries
 from PySide6.QtCharts import QChartView
-from PySide6.QtCore import Qt
+from PySide6.QtCharts import QLineSeries
+from PySide6.QtCore import QObject
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QGraphicsItem
-from PySide6.QtWidgets import QGraphicsLayoutItem
-from PySide6.QtWidgets import QGraphicsLinearLayout
-from PySide6.QtWidgets import QGraphicsProxyWidget
-from PySide6.QtWidgets import QGraphicsWidget
-from PySide6.QtWidgets import QLabel
+from pdf2xls.chartwidget.chart import Chart
+from pdf2xls.chartwidget.charthover import ChartHover
 
 
-class ChartHover(QGraphicsWidget):
-
-    def __init__(self, parent: QGraphicsItem | None=None) -> None:
-        super().__init__(parent)
-        self.items: list[QGraphicsLayoutItem] = []
-        self.setLayout(QGraphicsLinearLayout(Qt.Vertical))
-
-    def set_howmuchs(self, howmuchs: dict[str, Decimal]) -> None:
-        layout = cast(QGraphicsLinearLayout, self.layout())
-        for item in self.items:
-            layout.removeItem(item)
-        self.items.clear()
-        for name, howmuch in howmuchs.items():
-            item = QGraphicsProxyWidget(self)
-            item.setWidget(QLabel(f'{name}: {howmuch}'))
-            layout.addItem(item)
-            self.items.append(item)
-
-
-class Chart(QChart):
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.createDefaultAxes()
-        self.legend().hide()
-
-        series = QLineSeries(self)
-        series.append(1, 3)
-        series.append(4, 5)
-        series.append(5, 4.5)
-        series.append(7, 1)
-        series.append(11, 2)
-        self.addSeries(series)
+def serie(parent: QObject | None=None, points: list[tuple[float, float]]=[]) -> QLineSeries:
+    ret = QLineSeries(parent)
+    for x, y in points:
+        ret.append(x, y)
+    return ret
 
 
 class ChartView(QChartView):
@@ -55,6 +22,14 @@ class ChartView(QChartView):
         super().__init__()
 
         chart = Chart()
+        chart.replace_series([
+            serie(self, [(0, 3), (1, 5), (2, 4.5), (3, 1), (4, 2), (5, -3)]),
+            serie(self, [(0, -1), (1, 0), (2, 2), (3, 0), (4, -1), (5, 0)]),
+            serie(self, [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)]),
+            serie(self, [(0, 10), (1, 10), (2, 10), (3, -10), (4, -10), (5, -10)]),
+        ])
+        chart.createDefaultAxes()
+
         self.setChart(chart)
         self.hover = ChartHover(chart)
 
@@ -62,16 +37,17 @@ class ChartView(QChartView):
         chart = self.chart()
         if not chart:
             raise Exception('no chart!')
+
         pos = event.position()
         value = chart.mapToValue(pos)
-        self.hover.set_howmuchs({
+
+        howmuchs = {
             'x': Decimal.from_float(pos.x()),
             'y': Decimal.from_float(pos.y()),
             'ex': Decimal(value.x()),
             'ey': Decimal(value.y())
-        })
-        self.hover.setPos(pos)
-        super().mouseMoveEvent(event)
+        }
+        self.hover.set_howmuchs(howmuchs, pos)
 
 
 app = QApplication([__file__])
