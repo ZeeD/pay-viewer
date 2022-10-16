@@ -1,8 +1,10 @@
 from datetime import date
-from typing import cast, Iterable
+from typing import cast
+from typing import Iterable
 
-from PySide6.QtCharts import QAbstractSeries, QLineSeries
+from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChart
+from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import Qt
 
 from .common import date2days

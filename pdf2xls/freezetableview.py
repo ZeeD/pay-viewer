@@ -1,4 +1,5 @@
-from typing import Optional, cast
+from typing import cast
+from typing import Optional
 
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QItemSelectionModel

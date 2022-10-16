@@ -5,7 +5,6 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-
 class At:
     def __getitem__(self, other: Tuple[int, int]) -> Union[str, float]:
         ...

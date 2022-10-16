@@ -5,7 +5,6 @@ from typing import Union
 
 from pandas import DataFrame
 
-
 def read_pdf_with_template(input_path: Union[Path, BinaryIO],
                            template_path: Union[Path, str],
                            *,

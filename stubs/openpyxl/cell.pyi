@@ -2,7 +2,6 @@ import typing
 
 import openpyxl.worksheet.worksheet
 
-
 class Cell:
     number_format: str
     column_letter: str

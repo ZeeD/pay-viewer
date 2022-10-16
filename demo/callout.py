@@ -1,11 +1,14 @@
 from decimal import Decimal
-from typing import Iterable, cast
+from typing import cast
+from typing import Iterable
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
-from PySide6.QtCore import QObject, QPointF
+from PySide6.QtCore import QObject
+from PySide6.QtCore import QPointF
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QApplication
+
 from pdf2xls.chartwidget.chart import Chart
 from pdf2xls.chartwidget.charthover import ChartHover
 
