@@ -1,15 +1,16 @@
 from decimal import Decimal
+from typing import Iterable, cast
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, QPointF
 from PySide6.QtGui import QMouseEvent
 from PySide6.QtWidgets import QApplication
 from pdf2xls.chartwidget.chart import Chart
 from pdf2xls.chartwidget.charthover import ChartHover
 
 
-def serie(parent: QObject | None=None, points: list[tuple[float, float]]=[]) -> QLineSeries:
+def serie(parent: QObject | None=None, points: Iterable[tuple[float, float]]=[]) -> QLineSeries:
     ret = QLineSeries(parent)
     for x, y in points:
         ret.append(x, y)
@@ -23,10 +24,10 @@ class ChartView(QChartView):
 
         chart = Chart()
         chart.replace_series([
-            serie(self, [(0, 3), (1, 5), (2, 4.5), (3, 1), (4, 2), (5, -3)]),
-            serie(self, [(0, -1), (1, 0), (2, 2), (3, 0), (4, -1), (5, 0)]),
-            serie(self, [(0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0)]),
-            serie(self, [(0, 10), (1, 10), (2, 10), (3, -10), (4, -10), (5, -10)]),
+            serie(self, zip(range(6), [ 3, 5, 4.5, 1, 2, -3])),
+            serie(self, zip(range(6), [-1, 0, 2, 0, -1, 0])),
+            serie(self, zip(range(6), [ 0, 0, 0, 0, 0, 0])),
+            serie(self, zip(range(6), [10, 10, 10, -10, -10, -10])),
         ])
         chart.createDefaultAxes()
 
@@ -41,13 +42,30 @@ class ChartView(QChartView):
         pos = event.position()
         value = chart.mapToValue(pos)
 
+        # find closest x
+        # assumption: all series have same x, so I can just one the first one
+        series = cast(list[QLineSeries], chart.series())
+        _, index, value = min(
+            (abs(value.x() - point.x()), i, point)
+            for i, point in enumerate(series[0].points())
+        )
+
+        for serie in series:
+            serie.deselectAllPoints()
+            serie.selectPoint(index)
+
         howmuchs = {
             'x': Decimal.from_float(pos.x()),
             'y': Decimal.from_float(pos.y()),
             'ex': Decimal(value.x()),
             'ey': Decimal(value.y())
         }
-        self.hover.set_howmuchs(howmuchs, pos)
+
+        new_x = chart.mapToPosition(value).x()
+        new_y = (self.size().height() - self.hover.size().height()) / 2.
+        new_pos = QPointF(new_x, new_y)
+
+        self.hover.set_howmuchs(howmuchs, new_pos)
 
 
 app = QApplication([__file__])

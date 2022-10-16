@@ -17,8 +17,12 @@ class ChartHover(QGraphicsWidget):
         super().__init__(parent)
         self.items: list[QGraphicsLayoutItem] = []
         self.setLayout(QGraphicsLinearLayout(Qt.Vertical))
+        self.setZValue(11)
 
     def set_howmuchs(self, howmuchs: dict[str, Decimal], pos: QPointF) -> None:
+        if pos == self.pos():
+            return
+        
         layout = cast(QGraphicsLinearLayout, self.layout())
         for item in self.items:
             layout.removeItem(item)

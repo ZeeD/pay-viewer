@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import cast
 from typing import Optional
+from typing import cast, Iterable
 
 from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
-from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QDateTime, QPointF
 from PySide6.QtCore import QPoint
 from PySide6.QtCore import QRect
 from PySide6.QtCore import QRectF
@@ -27,8 +27,8 @@ from ..viewmodel import SortFilterViewModel
 from ..viewmodel import ViewModel
 from .chart import Chart
 from .charthover import ChartHover
-from .common import date2days
 from .common import date2QDateTime
+from .common import date2days
 from .common import days2date
 from .datetimeaxis import DateTimeAxis
 
@@ -119,7 +119,7 @@ class ChartView(QChartView):
         self._start_date: Optional[date] = None
         self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
-        self.event_pos: Optional[QPoint] = None
+        self.event_pos: Optional[QPointF] = None
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
@@ -168,26 +168,32 @@ class ChartView(QChartView):
         self._axis_x = axis_x
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        self.event_pos = event.pos()
-
         chart = self.chart()
         if chart is not None:
-            event_value = chart.mapToValue(self.event_pos)
-            event_when = days2date(event_value.x())
-            event_year_month = (event_when.year, event_when.month)
+            event_pos = event.position()
+            event_value = chart.mapToValue(event_pos)
 
-            howmuchs = {'': Decimal(event_value.y())}
-            for series in chart.series():
-                for point in series.points():
-                    point_when = days2date(point.x())
-                    if event_year_month == (point_when.year, point_when.month):
-                        howmuch = Decimal(f'{point.y():.2f}')
-                        break
-                else:
-                    break
-                howmuchs[series.name()] = howmuch
+            # find closest x
+            # assumption: all series have same x, so I can just one the first one
+            series = cast(list[QLineSeries], chart.series())
+            _, index, value = min(
+                (abs(event_value.x() - point.x()), i, point)
+                for i, point in enumerate(series[0].points())
+            )
 
-            self.move_hover(self.event_pos.x(), howmuchs)
+            for serie in series:
+                serie.deselectAllPoints()
+                serie.selectPoint(index)
+
+            howmuchs = {'': Decimal(value.y())}
+            for serie in series:
+                howmuchs[serie.name()] = Decimal(f'{serie.at(index).y():.2f}')
+
+            new_x = chart.mapToPosition(value).x()
+            new_y = (self.size().height() - self.chart_hover.size().height()) / 2.
+            self.event_pos = QPointF(new_x, new_y)
+
+            self.chart_hover.set_howmuchs(howmuchs, self.event_pos)
 
         super().mouseMoveEvent(event)
         self.update()
@@ -199,13 +205,7 @@ class ChartView(QChartView):
             try:
                 painter.setPen(QPen(Qt.gray, 1, Qt.DashLine))
                 x = self.event_pos.x()
-                painter.drawLine(x, int(rect.top()), x, int(rect.bottom()))
+                painter.drawLine(int(x), int(rect.top()),
+                                 int(x), int(rect.bottom()))
             finally:
                 self.setUpdatesEnabled(True)
-
-    def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
-        self.chart_hover.set_howmuchs(howmuchs)
-        # if len(howmuchs) == 1:
-        #     self.chart_hover.hide()
-        #     return
-        self.chart_hover.show()
