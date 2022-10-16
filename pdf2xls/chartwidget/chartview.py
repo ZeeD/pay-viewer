@@ -3,15 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from typing import cast
 from typing import Optional
-from typing import cast, Iterable
 
-from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
-from PySide6.QtCore import QDateTime, QPointF
-from PySide6.QtCore import QPoint
+from PySide6.QtCore import QDateTime
+from PySide6.QtCore import QPointF
 from PySide6.QtCore import QRect
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import Qt
@@ -24,12 +23,10 @@ from PySide6.QtWidgets import QWidget
 from ..model import ColumnHeader
 from ..model import Info
 from ..viewmodel import SortFilterViewModel
-from ..viewmodel import ViewModel
 from .chart import Chart
 from .charthover import ChartHover
-from .common import date2QDateTime
 from .common import date2days
-from .common import days2date
+from .common import date2QDateTime
 from .datetimeaxis import DateTimeAxis
 
 
