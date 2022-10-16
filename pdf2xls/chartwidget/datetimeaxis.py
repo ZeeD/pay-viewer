@@ -39,7 +39,7 @@ class DateTimeAxis(QCategoryAxis):
                  x_max: QDateTime,
                  parent: Optional[QObject]=None) -> None:
         super().__init__(parent)
-        self.setLabelsPosition(QCategoryAxis.AxisLabelsPositionOnValue)
+        self.setLabelsPosition(QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue)
         self.setTruncateLabels(False)
 
         x_min_date = cast(datetime, x_min.toPython()).date()
