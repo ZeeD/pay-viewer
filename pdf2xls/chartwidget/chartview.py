@@ -3,8 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import cast
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
@@ -146,15 +145,15 @@ class ChartView(QChartView):
         chart.replace_series(series_model.series)
 
         axis_x = DateTimeAxis(series_model.x_min, series_model.x_max)
-        chart.addAxis(axis_x, cast(Qt.Alignment, Qt.AlignBottom))
+        chart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
         for serie in series_model.series:
             serie.attachAxis(axis_x)
 
         axis_y = QValueAxis(self)
-        chart.addAxis(axis_y, cast(Qt.Alignment, Qt.AlignLeft))
+        chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
         for serie in series_model.series:
             serie.attachAxis(axis_y)
-        axis_y.setTickType(QValueAxis.TicksDynamic)
+        axis_y.setTickType(QValueAxis.TickType.TicksDynamic)
         axis_y.setTickAnchor(0.)
         axis_y.setMinorTickCount(9)
         axis_y.setTickInterval(tick_interval(series_model.y_max))
@@ -162,6 +161,7 @@ class ChartView(QChartView):
         axis_y.setMax(series_model.y_max)
 
         self.setChart(chart)
+        self.chart_hover.setParentItem(chart)
         self._axis_x = axis_x
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
@@ -200,7 +200,7 @@ class ChartView(QChartView):
         if self.event_pos is not None:
             self.setUpdatesEnabled(False)
             try:
-                painter.setPen(QPen(Qt.gray, 1, Qt.DashLine))
+                painter.setPen(QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
                 x = self.event_pos.x()
                 painter.drawLine(int(x), int(rect.top()),
                                  int(x), int(rect.bottom()))

@@ -17,7 +17,7 @@ class ChartHover(QGraphicsWidget):
     def __init__(self, parent: Optional[QGraphicsItem]=None) -> None:
         super().__init__(parent)
         self.items: list[QGraphicsLayoutItem] = []
-        self.setLayout(QGraphicsLinearLayout(Qt.Vertical))
+        self.setLayout(QGraphicsLinearLayout(Qt.Orientation.Vertical))
         self.setZValue(11)
 
     def set_howmuchs(self, howmuchs: dict[str, Decimal], pos: QPointF) -> None:
