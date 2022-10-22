@@ -8,6 +8,7 @@ from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QItemSelectionModel
 from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import QObject
+from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtCore import QRegularExpression
 from PySide6.QtCore import QSortFilterProxyModel
 from PySide6.QtCore import Qt
@@ -40,6 +41,7 @@ def max_min_this(data: list[list[str]],
 
 
 class ViewModel(QAbstractTableModel):
+
     def __init__(self, parent: QObject, infos: list[Info]):
         super().__init__(parent)
         self._set_infos(infos)
@@ -48,16 +50,16 @@ class ViewModel(QAbstractTableModel):
         self._headers, self._data = parse_infos(infos)
         self._infos = infos
 
-    def rowCount(self, _parent: QModelIndex = QModelIndex()) -> int:
+    def rowCount(self, _parent: QModelIndex | QPersistentModelIndex=QModelIndex()) -> int:
         return len(self._data)
 
-    def columnCount(self, _parent: QModelIndex = QModelIndex()) -> int:
+    def columnCount(self, _parent: QModelIndex | QPersistentModelIndex=QModelIndex()) -> int:
         return len(self._headers)
 
     def headerData(self,
                    section: int,
                    orientation: Qt.Orientation,
-                   role: int = cast(int, Qt.DisplayRole)) -> Optional[str]:
+                   role: int=cast(int, Qt.DisplayRole)) -> Optional[str]:
         if role != cast(int, Qt.DisplayRole):
             return None
 
@@ -67,9 +69,9 @@ class ViewModel(QAbstractTableModel):
         return self._headers[section]
 
     def data(self,
-             index: QModelIndex,
-             role: int = cast(int, Qt.DisplayRole)
-             ) -> Union[str, Qt.Alignment, None, date, Decimal]:
+             index: QModelIndex | QPersistentModelIndex,
+             role: int=cast(int, Qt.DisplayRole)
+             ) -> Union[str, Qt.Alignment, None, date, Decimal, QBrush]:
         column = index.column()
         row = index.row()
 
@@ -155,16 +157,17 @@ class ViewModel(QAbstractTableModel):
 
     def sort(self,
              index: int,
-             order: Qt.SortOrder = Qt.AscendingOrder) -> None:
+             order: Qt.SortOrder=Qt.AscendingOrder) -> None:
+
         def key(row: list[str]) -> Union[date, Decimal]:
             raw = row[index]
             return date.fromisoformat(raw) if index == 0 else Decimal(raw)
 
-        self.layoutAboutToBeChanged.emit()
+        self.layoutAboutToBeChanged.emit()  # type: ignore
         try:
             self._data.sort(key=key, reverse=order == Qt.DescendingOrder)
         finally:
-            self.layoutChanged.emit()
+            self.layoutChanged.emit()  # type: ignore
 
     def load(self, infos: list[Info]) -> None:
         self.beginResetModel()
@@ -175,6 +178,7 @@ class ViewModel(QAbstractTableModel):
 
 
 class SortFilterViewModel(QSortFilterProxyModel):
+
     def __init__(self, settings: Settings) -> None:
         super().__init__()
         self.settings = settings
@@ -185,7 +189,7 @@ class SortFilterViewModel(QSortFilterProxyModel):
 
     def filterAcceptsRow(self,
                          source_row: int,
-                         source_parent: QModelIndex) -> bool:
+                         source_parent: QModelIndex | QPersistentModelIndex) -> bool:
         regex = self.filterRegularExpression()
         source_model = self.sourceModel()
         column_count = source_model.columnCount(source_parent)
@@ -204,18 +208,20 @@ class SortFilterViewModel(QSortFilterProxyModel):
 
     def sort(self,
              column: int,
-             order: Qt.SortOrder = Qt.AscendingOrder) -> None:
+             order: Qt.SortOrder=Qt.AscendingOrder) -> None:
         self.sourceModel().sort(column, order)
 
     def selectionChanged(self,
                          selection_model: QItemSelectionModel,
                          statusbar: QStatusBar) -> None:
-        bigsum = ''
-        for index in cast(list[QModelIndex], selection_model.selectedRows(0)):
-            data = index.data(cast(int, Qt.UserRole))
-            bigsum = data
-
-        statusbar.showMessage(f'⅀ = {bigsum}')
+        column = selection_model.currentIndex().column()
+        if column == 0:
+            message = ''
+        else:
+            bigsum = sum(index.data(cast(int, Qt.UserRole))
+                         for index in selection_model.selectedRows(column))
+            message = f'⅀ = {bigsum}'
+        statusbar.showMessage(message)
 
     def update(self, *, only_local: bool, force_pdf: bool) -> None:
         data_path = self.settings.data_path
@@ -224,12 +230,16 @@ class SortFilterViewModel(QSortFilterProxyModel):
             try_fetch_new_data(self.settings.username, self.settings.password,
                                data_path)
 
-        self.sourceModel().load(load(data_path, force=force_pdf))
+        if data_path:
+            self.sourceModel().load(load(data_path, force=force_pdf))
 
     def get_categories(self) -> list[str]:
-        view_model = cast(ViewModel, self.sourceModel())
+        view_model = self.sourceModel()
         return view_model._headers
 
     def get_rows(self) -> list[Info]:
-        view_model = cast(ViewModel, self.sourceModel())
+        view_model = self.sourceModel()
         return view_model._infos
+    
+    def sourceModel(self) -> ViewModel:
+        return cast(ViewModel, super().sourceModel())

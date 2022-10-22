@@ -3,16 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import cast
-from typing import Optional
+from typing import Optional, cast
 
-from PySide6.QtCharts import QAbstractAxis
-from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QPoint
+from PySide6.QtCore import QPointF
+from PySide6.QtCore import QRect
 from PySide6.QtCore import QRectF
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
@@ -24,18 +22,16 @@ from PySide6.QtWidgets import QWidget
 from ..model import ColumnHeader
 from ..model import Info
 from ..viewmodel import SortFilterViewModel
-from ..viewmodel import ViewModel
 from .chart import Chart
 from .charthover import ChartHover
 from .common import date2days
 from .common import date2QDateTime
-from .common import days2date
 from .datetimeaxis import DateTimeAxis
 
 
 @dataclass
 class SeriesModel:
-    series: list[QAbstractSeries]
+    series: list[QLineSeries]
     x_min: QDateTime
     x_max: QDateTime
     y_min: float
@@ -52,7 +48,7 @@ class SeriesModel:
             ColumnHeader.totale_retributivo,
             ColumnHeader.netto_da_pagare,
         ]
-        series: list[QAbstractSeries] = []
+        series: list[QLineSeries] = []
         for column_header in column_headers:
             serie = QLineSeries()
             serie.setName(column_header.name)
@@ -71,7 +67,7 @@ class SeriesModel:
                     return column.howmuch
             raise NotImplementedError(f'{info=}, {column_header=}')
 
-        for info in infos:
+        for info in sorted(infos, key=lambda info:info.when):
             when = info.when
             howmuchs = []
             for serie, column_header in zip(series, column_headers):
@@ -95,7 +91,7 @@ class SeriesModel:
                    float(y_min), float(y_max))
 
 
-def tick_interval(y_max: float, n: int = 10) -> float:
+def tick_interval(y_max: float, n: int=10) -> float:
     'return min(10**x) > y_max / n'
     goal_step = y_max / n
     exp = 1
@@ -107,18 +103,19 @@ def tick_interval(y_max: float, n: int = 10) -> float:
 
 
 class ChartView(QChartView):
+
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget] = None):
+                 parent: Optional[QWidget]=None):
         super().__init__(parent)
         self.setMouseTracking(True)
-        self._model: ViewModel = model.sourceModel()
-        self._model.modelReset.connect(self.model_reset)
-        self._axis_x: Optional[QAbstractAxis] = None
+        self._model = model.sourceModel()
+        self._model.modelReset.connect(self.model_reset)  # type: ignore
+        self._axis_x: Optional[DateTimeAxis] = None
         self._start_date: Optional[date] = None
         self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
-        self.event_pos: Optional[QPoint] = None
+        self.event_pos: Optional[QPointF] = None
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
@@ -131,16 +128,14 @@ class ChartView(QChartView):
         self._date_changed()
 
     def _date_changed(self) -> None:
-        chart: Chart = self.chart()
+        chart = cast(Chart, self.chart())
         axis_x = self._axis_x
         if chart is None or axis_x is None:
             return
 
-        x_min = days2date(axis_x.min())
-        x_max = days2date(axis_x.max())
-        start_date = self._start_date if self._start_date is not None else x_min
-        end_date = self._end_date if self._end_date is not None else x_max
-        chart.x_zoom(x_min, x_max, start_date, end_date)
+        start_date = self._start_date if self._start_date is not None else axis_x.min_date
+        end_date = self._end_date if self._end_date is not None else axis_x.max_date
+        chart.x_zoom(start_date, end_date)
 
     @Slot()
     def model_reset(self) -> None:
@@ -150,15 +145,15 @@ class ChartView(QChartView):
         chart.replace_series(series_model.series)
 
         axis_x = DateTimeAxis(series_model.x_min, series_model.x_max)
-        chart.addAxis(axis_x, cast(Qt.Alignment, Qt.AlignBottom))
+        chart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
         for serie in series_model.series:
             serie.attachAxis(axis_x)
 
         axis_y = QValueAxis(self)
-        chart.addAxis(axis_y, cast(Qt.Alignment, Qt.AlignLeft))
+        chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
         for serie in series_model.series:
             serie.attachAxis(axis_y)
-        axis_y.setTickType(QValueAxis.TicksDynamic)
+        axis_y.setTickType(QValueAxis.TickType.TicksDynamic)
         axis_y.setTickAnchor(0.)
         axis_y.setMinorTickCount(9)
         axis_y.setTickInterval(tick_interval(series_model.y_max))
@@ -166,48 +161,48 @@ class ChartView(QChartView):
         axis_y.setMax(series_model.y_max)
 
         self.setChart(chart)
+        self.chart_hover.setParentItem(chart)
         self._axis_x = axis_x
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        self.event_pos = event.pos()
-
         chart = self.chart()
         if chart is not None:
-            event_value = chart.mapToValue(self.event_pos)
-            event_when = days2date(event_value.x())
-            event_year_month = (event_when.year, event_when.month)
+            event_pos = event.position()
+            event_value = chart.mapToValue(event_pos)
 
-            howmuchs = {'': Decimal(event_value.y())}
-            for series in chart.series():
-                for point in series.points():
-                    point_when = days2date(point.x())
-                    if event_year_month == (point_when.year, point_when.month):
-                        howmuch = Decimal(f'{point.y():.2f}')
-                        break
-                else:
-                    break
-                howmuchs[series.name()] = howmuch
+            # find closest x
+            # assumption: all series have same x, so I can just one the first one
+            series = cast(list[QLineSeries], chart.series())
+            _, index, value = min(
+                (abs(event_value.x() - point.x()), i, point)
+                for i, point in enumerate(series[0].points())
+            )
 
-            self.move_hover(self.event_pos.x(), howmuchs)
+            for serie in series:
+                serie.deselectAllPoints()
+                serie.selectPoint(index)
+
+            howmuchs = {'': Decimal(value.y())}
+            for serie in series:
+                howmuchs[serie.name()] = Decimal(f'{serie.at(index).y():.2f}')
+
+            new_x = chart.mapToPosition(value).x()
+            new_y = (self.size().height() - self.chart_hover.size().height()) / 2.
+            self.event_pos = QPointF(new_x, new_y)
+
+            self.chart_hover.set_howmuchs(howmuchs, self.event_pos)
 
         super().mouseMoveEvent(event)
         self.update()
 
-    def drawForeground(self, painter: QPainter, rect: QRectF) -> None:
+    def drawForeground(self, painter: QPainter, rect: QRectF | QRect) -> None:
         super().drawForeground(painter, rect)
         if self.event_pos is not None:
             self.setUpdatesEnabled(False)
             try:
-                painter.setPen(QPen(Qt.gray, 1, Qt.DashLine))
+                painter.setPen(QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
                 x = self.event_pos.x()
-                painter.drawLine(x, int(rect.top()), x, int(rect.bottom()))
+                painter.drawLine(int(x), int(rect.top()),
+                                 int(x), int(rect.bottom()))
             finally:
                 self.setUpdatesEnabled(True)
-
-    def move_hover(self, x: int, howmuchs: dict[str, Decimal]) -> None:
-        # print(f'{x=}, {howmuchs=}')
-        self.chart_hover.set_howmuchs(howmuchs)
-        if len(howmuchs) == 1:
-            self.chart_hover.hide()
-            return
-        self.chart_hover.show()

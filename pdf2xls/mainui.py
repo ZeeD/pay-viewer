@@ -1,10 +1,16 @@
+from typing import cast
+
 from PySide6.QtCore import QItemSelection
 from PySide6.QtGui import QKeySequence
 from PySide6.QtGui import QShortcut
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QLineEdit
+from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QToolButton
 from PySide6.QtWidgets import QWidget
 
 from .chartwidget.chartwidget import ChartWidget
@@ -17,7 +23,16 @@ from .settings import Settings
 from .viewmodel import SortFilterViewModel
 
 
+class Settingsui(QWidget):
+    usernameLineEdit: QLineEdit
+    passwordLineEdit: QLineEdit
+    dataPathLineEdit: QLineEdit
+    buttonBox: QDialogButtonBox
+    toolButton: QToolButton
+
+
 def new_settingsui(settings: Settings) -> QWidget:
+
     def save_settings() -> None:
         settings.username = settingsui.usernameLineEdit.text()
         settings.password = settingsui.passwordLineEdit.text()
@@ -26,7 +41,7 @@ def new_settingsui(settings: Settings) -> QWidget:
     def open_folder() -> None:
         settingsui.dataPathLineEdit.setText(QFileDialog.getExistingDirectory())
 
-    settingsui = QUiLoader().load(SETTINGSUI_UI_PATH)
+    settingsui = cast(Settingsui, QUiLoader().load(SETTINGSUI_UI_PATH))
     settingsui.usernameLineEdit.setText(settings.username)
     settingsui.passwordLineEdit.setText(settings.password)
     settingsui.dataPathLineEdit.setText(settings.data_path)
@@ -36,13 +51,19 @@ def new_settingsui(settings: Settings) -> QWidget:
 
     return settingsui
 
+class Mainui(QMainWindow):
+    tableView: QWidget
+    chart: QWidget
+    lineEdit: QLineEdit
+
 
 def new_mainui(settings: Settings,
                model: SortFilterViewModel,
                settingsui: QWidget) -> QWidget:
+
     def update_helper(*,
-                      only_local: bool = False,
-                      force_pdf: bool = True) -> None:
+                      only_local: bool=False,
+                      force_pdf: bool=True) -> None:
         try:
             model.update(only_local=only_local, force_pdf=force_pdf)
         except NoHistoryException:
@@ -58,7 +79,7 @@ def new_mainui(settings: Settings,
         remove_jsons(settings.data_path)
         QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
 
-    mainui = QUiLoader().load(MAINUI_UI_PATH)
+    mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
     # replace tableView
     tableView = FreezeTableView(mainui.tableView.parent(), model)
@@ -93,7 +114,7 @@ def new_mainui(settings: Settings,
     QShortcut(QKeySequence(mainui.tr('Ctrl+F')),
               mainui).activated.connect(mainui.lineEdit.setFocus)
     QShortcut(QKeySequence(mainui.tr('Esc')),
-              mainui).activated.connect(lambda: mainui.lineEdit.setText())
+              mainui).activated.connect(lambda: mainui.lineEdit.setText(''))
 
     # on startup load only from local, and ask if you really want
     update_helper(only_local=True, force_pdf=False)

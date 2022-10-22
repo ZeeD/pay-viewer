@@ -24,7 +24,7 @@ class ChartSlider(QWidget):
     def dump(self, status: QQuickView.Status) -> None:
         if status is QQuickView.Error:
             for error in self.view.errors():
-                print(error)
+                print(f'{error=}')
 
     def __init__(self,
                  model: SortFilterViewModel,
@@ -64,7 +64,7 @@ class ChartSlider(QWidget):
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])
 
-        self.range_slider.setProperty('from', minimum)  # type: ignore
-        self.range_slider.setProperty('to', maximum)  # type: ignore
+        self.range_slider.setProperty('from', minimum)
+        self.range_slider.setProperty('to', maximum)
         self.range_slider.set_first_value(minimum)
         self.range_slider.set_second_value(maximum)
