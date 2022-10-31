@@ -21,7 +21,7 @@ class Chart(QChart):
         self.scrolledTo = 0.
 
     def x_zoom(self, start_date: date, end_date: date) -> None:
-        axis = cast(DateTimeAxis, self.axes(Qt.Horizontal)[0])
+        axis = cast(DateTimeAxis, self.axes(Qt.Orientation.Horizontal)[0])
 
         axis.setMin(date2days(start_date))
         axis.setMax(date2days(end_date))

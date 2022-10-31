@@ -22,7 +22,7 @@ class ChartSlider(QWidget):
     end_date_changed = Signal(date)
 
     def dump(self, status: QQuickView.Status) -> None:
-        if status is QQuickView.Error:
+        if status is QQuickView.Status.Error:
             for error in self.view.errors():
                 print(f'{error=}')
 
@@ -34,7 +34,7 @@ class ChartSlider(QWidget):
         self.setLayout(layout)
         self.view = QQuickView()
         self.view.statusChanged.connect(self.dump)  # pylint: disable=no-member
-        self.view.setResizeMode(QQuickView.SizeRootObjectToView)
+        self.view.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
         self.view.setSource(QUrl.fromLocalFile(CHARTSLIDER_QML_PATH))
 
         self.range_slider: QQuickItem = self.view.rootObject()
@@ -58,7 +58,7 @@ class ChartSlider(QWidget):
     def source_model_reset(self) -> None:
         source_model = self._model.sourceModel()
         dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
-                                               cast(int, Qt.UserRole))
+                                               cast(int, Qt.ItemDataRole.UserRole))
                              for row in range(0, source_model.rowCount())]
         dates.sort()
         minimum = date2days(dates[0])

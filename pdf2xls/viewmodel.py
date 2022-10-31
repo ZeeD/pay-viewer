@@ -59,23 +59,23 @@ class ViewModel(QAbstractTableModel):
     def headerData(self,
                    section: int,
                    orientation: Qt.Orientation,
-                   role: int=cast(int, Qt.DisplayRole)) -> Optional[str]:
-        if role != cast(int, Qt.DisplayRole):
+                   role: int=Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+        if role != Qt.ItemDataRole.DisplayRole:
             return None
 
-        if orientation != Qt.Horizontal:
+        if orientation != Qt.Orientation.Horizontal:
             return None
 
         return self._headers[section]
 
     def data(self,
              index: QModelIndex | QPersistentModelIndex,
-             role: int=cast(int, Qt.DisplayRole)
-             ) -> Union[str, Qt.Alignment, None, date, Decimal, QBrush]:
+             role: int=Qt.ItemDataRole.DisplayRole
+             ) -> Union[str, Qt.AlignmentFlag, None, date, Decimal, QBrush]:
         column = index.column()
         row = index.row()
 
-        if role == cast(int, Qt.DisplayRole):
+        if role == Qt.ItemDataRole.DisplayRole:
             value = self._data[row][column]
             if column == 0:
                 return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
@@ -83,22 +83,22 @@ class ViewModel(QAbstractTableModel):
                 return None
             return value
 
-        if role == cast(int, Qt.DecorationRole):
+        if role == Qt.ItemDataRole.DecorationRole:
             return None
 
-        if role == cast(int, Qt.ToolTipRole):
+        if role == Qt.ItemDataRole.ToolTipRole:
             return self._data[row][column]
 
-        if role == cast(int, Qt.StatusTipRole):
+        if role == Qt.ItemDataRole.StatusTipRole:
             return None
 
-        if role == cast(int, Qt.FontRole):
+        if role == Qt.ItemDataRole.FontRole:
             return None
 
-        if role == cast(int, Qt.TextAlignmentRole):
-            return cast(Qt.Alignment, Qt.AlignCenter)
+        if role == Qt.ItemDataRole.TextAlignmentRole:
+            return Qt.AlignmentFlag.AlignCenter
 
-        if role == cast(int, Qt.BackgroundRole):
+        if role == Qt.ItemDataRole.BackgroundRole:
             max_, min_, this = max_min_this(self._data, row, column)
             if this == 0:
                 return None
@@ -113,16 +113,16 @@ class ViewModel(QAbstractTableModel):
 
             return None
 
-        if role == cast(int, Qt.ForegroundRole):
+        if role == Qt.ItemDataRole.ForegroundRole:
             return None
 
-        if role == cast(int, Qt.CheckStateRole):
+        if role == Qt.ItemDataRole.CheckStateRole:
             return None
 
-        if role == cast(int, Qt.SizeHintRole):
+        if role == Qt.ItemDataRole.SizeHintRole:
             return None
 
-        if role == cast(int, Qt.UserRole):
+        if role == Qt.ItemDataRole.UserRole:
             # TODO: avoid losing types
             if column == 0:
                 return self._infos[row].when
@@ -157,7 +157,7 @@ class ViewModel(QAbstractTableModel):
 
     def sort(self,
              index: int,
-             order: Qt.SortOrder=Qt.AscendingOrder) -> None:
+             order: Qt.SortOrder=Qt.SortOrder.AscendingOrder) -> None:
 
         def key(row: list[str]) -> Union[date, Decimal]:
             raw = row[index]
@@ -165,7 +165,7 @@ class ViewModel(QAbstractTableModel):
 
         self.layoutAboutToBeChanged.emit()  # type: ignore
         try:
-            self._data.sort(key=key, reverse=order == Qt.DescendingOrder)
+            self._data.sort(key=key, reverse=order == Qt.SortOrder.DescendingOrder)
         finally:
             self.layoutChanged.emit()  # type: ignore
 
@@ -183,8 +183,8 @@ class SortFilterViewModel(QSortFilterProxyModel):
         super().__init__()
         self.settings = settings
         self.setSourceModel(ViewModel(self, []))
-        self.setFilterCaseSensitivity(Qt.CaseInsensitive)
-        self.setSortCaseSensitivity(Qt.CaseInsensitive)
+        self.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
+        self.setSortCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.setDynamicSortFilter(True)
 
     def filterAcceptsRow(self,
@@ -202,13 +202,12 @@ class SortFilterViewModel(QSortFilterProxyModel):
 
     def filterChanged(self, text: str) -> None:
         text = QRegularExpression.escape(text)
-        options = cast(QRegularExpression.PatternOptions,
-                       QRegularExpression.CaseInsensitiveOption)
+        options = QRegularExpression.PatternOption.CaseInsensitiveOption
         self.setFilterRegularExpression(QRegularExpression(text, options))
 
     def sort(self,
              column: int,
-             order: Qt.SortOrder=Qt.AscendingOrder) -> None:
+             order: Qt.SortOrder=Qt.SortOrder.AscendingOrder) -> None:
         self.sourceModel().sort(column, order)
 
     def selectionChanged(self,
@@ -218,7 +217,7 @@ class SortFilterViewModel(QSortFilterProxyModel):
         if column == 0:
             message = ''
         else:
-            bigsum = sum(index.data(cast(int, Qt.UserRole))
+            bigsum = sum(index.data(Qt.ItemDataRole.UserRole)
                          for index in selection_model.selectedRows(column))
             message = f'⅀ = {bigsum}'
         statusbar.showMessage(message)
