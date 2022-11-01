@@ -1,12 +1,14 @@
 from typing import cast
 
 from PySide6.QtCore import QItemSelection
+from PySide6.QtGui import QAction
 from PySide6.QtGui import QKeySequence
 from PySide6.QtGui import QShortcut
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QDialogButtonBox
 from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QMessageBox
@@ -55,6 +57,10 @@ class Mainui(QMainWindow):
     tableView: QWidget
     chart: QWidget
     lineEdit: QLineEdit
+    actionCleanup: QAction
+    actionSettings: QAction
+    actionUpdate: QAction
+    gridLayout_1: QGridLayout
 
 
 def new_mainui(settings: Settings,
@@ -82,7 +88,7 @@ def new_mainui(settings: Settings,
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
     # replace tableView
-    tableView = FreezeTableView(mainui.tableView.parent(), model)
+    tableView = FreezeTableView(mainui.tableView.parentWidget(), model)
     mainui.gridLayout_1.replaceWidget(mainui.tableView, tableView)
     mainui.tableView.deleteLater()
     mainui.tableView = tableView
@@ -111,9 +117,9 @@ def new_mainui(settings: Settings,
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
     settingsui.accepted.connect(update_helper)
 
-    QShortcut(QKeySequence(mainui.tr('Ctrl+F')),
+    QShortcut(QKeySequence('Ctrl+F'),
               mainui).activated.connect(mainui.lineEdit.setFocus)
-    QShortcut(QKeySequence(mainui.tr('Esc')),
+    QShortcut(QKeySequence('Esc'),
               mainui).activated.connect(lambda: mainui.lineEdit.setText(''))
 
     # on startup load only from local, and ask if you really want
