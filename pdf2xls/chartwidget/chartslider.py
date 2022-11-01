@@ -1,6 +1,5 @@
 from datetime import date
-from typing import cast
-from typing import Optional
+from typing import Optional, cast
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QUrl
@@ -15,6 +14,18 @@ from ..constants import CHARTSLIDER_QML_PATH
 from ..viewmodel import SortFilterViewModel
 from .common import date2days
 from .common import days2date
+from abc import abstractmethod
+
+
+class RangeSlider(QQuickItem):
+    first_moved: Signal
+    second_moved: Signal
+
+    @abstractmethod
+    def set_first_value(self, first_value: float) -> None: ...
+
+    @abstractmethod
+    def set_second_value(self, second_value: float) -> None: ...
 
 
 class ChartSlider(QWidget):
@@ -33,11 +44,11 @@ class ChartSlider(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
         self.view = QQuickView()
-        self.view.statusChanged.connect(self.dump)  # pylint: disable=no-member
+        self.view.statusChanged.connect(self.dump)
         self.view.setResizeMode(QQuickView.ResizeMode.SizeRootObjectToView)
         self.view.setSource(QUrl.fromLocalFile(CHARTSLIDER_QML_PATH))
 
-        self.range_slider: QQuickItem = self.view.rootObject()
+        self.range_slider = cast(RangeSlider, self.view.rootObject())
 
         container = QWidget.createWindowContainer(self.view)
         container.setMinimumSize(100, 10)
@@ -58,7 +69,7 @@ class ChartSlider(QWidget):
     def source_model_reset(self) -> None:
         source_model = self._model.sourceModel()
         dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
-                                               cast(int, Qt.ItemDataRole.UserRole))
+                                               Qt.ItemDataRole.UserRole)
                              for row in range(0, source_model.rowCount())]
         dates.sort()
         minimum = date2days(dates[0])

@@ -1,8 +1,6 @@
 from datetime import date
 from decimal import Decimal
-from typing import cast
-from typing import Optional
-from typing import Union
+from typing import cast, overload, Literal
 
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QItemSelectionModel
@@ -24,7 +22,7 @@ from .model import parse_infos
 from .settings import Settings
 
 
-def by_column(info: Info, i: int) -> Optional[Decimal]:
+def by_column(info: Info, i: int) -> Decimal | None:
     column_header = ColumnHeader(i)
     for column in info.columns:
         if column.header == column_header:
@@ -59,7 +57,7 @@ class ViewModel(QAbstractTableModel):
     def headerData(self,
                    section: int,
                    orientation: Qt.Orientation,
-                   role: int=Qt.ItemDataRole.DisplayRole) -> Optional[str]:
+                   role: int=Qt.ItemDataRole.DisplayRole) -> str | None:
         if role != Qt.ItemDataRole.DisplayRole:
             return None
 
@@ -68,10 +66,21 @@ class ViewModel(QAbstractTableModel):
 
         return self._headers[section]
 
+    @overload
+    def data(self,
+             index: QModelIndex | QPersistentModelIndex, # white liar, we need also to add a rule on index --> col 0
+             role: Literal[Qt.ItemDataRole.UserRole]) -> date: ...
+
+    @overload
     def data(self,
              index: QModelIndex | QPersistentModelIndex,
              role: int=Qt.ItemDataRole.DisplayRole
-             ) -> Union[str, Qt.AlignmentFlag, None, date, Decimal, QBrush]:
+             ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush: ...
+
+    def data(self,
+             index: QModelIndex | QPersistentModelIndex,
+             role: int=Qt.ItemDataRole.DisplayRole
+             ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush:
         column = index.column()
         row = index.row()
 
@@ -110,8 +119,6 @@ class ViewModel(QAbstractTableModel):
             blue = int((.5 - abs(perc - .5)) * 511)  # 0..0.5..1 -> 0..255..0
 
             return QBrush(QColor(red, green, blue, 127))
-
-            return None
 
         if role == Qt.ItemDataRole.ForegroundRole:
             return None
@@ -159,13 +166,14 @@ class ViewModel(QAbstractTableModel):
              index: int,
              order: Qt.SortOrder=Qt.SortOrder.AscendingOrder) -> None:
 
-        def key(row: list[str]) -> Union[date, Decimal]:
+        def key(row: list[str]) -> date | Decimal:
             raw = row[index]
             return date.fromisoformat(raw) if index == 0 else Decimal(raw)
 
         self.layoutAboutToBeChanged.emit()  # type: ignore
         try:
-            self._data.sort(key=key, reverse=order == Qt.SortOrder.DescendingOrder)
+            self._data.sort(key=key, reverse=order ==
+                            Qt.SortOrder.DescendingOrder)
         finally:
             self.layoutChanged.emit()  # type: ignore
 
@@ -239,6 +247,6 @@ class SortFilterViewModel(QSortFilterProxyModel):
     def get_rows(self) -> list[Info]:
         view_model = self.sourceModel()
         return view_model._infos
-    
+
     def sourceModel(self) -> ViewModel:
         return cast(ViewModel, super().sourceModel())
