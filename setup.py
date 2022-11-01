@@ -12,11 +12,13 @@ setup(name='pdf2xls',
       zip_safe=False,
       install_requires=[
           'pandas',
+          'pandas-stubs',
           'tabula-py',
           'openpyxl',
           'PySide6',
           'selenium'
       ],
+      
       entry_points={
           'gui_scripts': [
               'pdf2xls=pdf2xls.__main__:main',

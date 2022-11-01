@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from math import isnan
-from typing import cast
 from typing import Iterator
 from typing import Union
 
@@ -124,7 +123,7 @@ class PdfReader(ABCReader):
 def extract_periodo(table: DataFrame) -> date:
     'extract the right row, and parse the date inside'
 
-    cell = cast(str, table.at[0, 0])
+    cell = table.at[0, 0]
     words = cell.split()
 
     day = 31 if words[0] == '13.MA' else 1
@@ -180,63 +179,63 @@ def extract_totale_retributivo(table: DataFrame) -> Decimal:
 
 def extract_netto_da_pagare(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[0, 0]))
+        return extract(table.at[0, 0])
     except IndexError:
         return Decimal(0)
 
 
 def extract_ferie_a_prec(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[1, 1]))
+        return extract(table.at[1, 1])
     except IndexError:
         return Decimal(0)
 
 
 def extract_ferie_spett(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[1, 2]))
+        return extract(table.at[1, 2])
     except IndexError:
         return Decimal(0)
 
 
 def extract_ferie_godute(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[1, 3]))
+        return extract(table.at[1, 3])
     except IndexError:
         return Decimal(0)
 
 
 def extract_ferie_saldo(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[1, 4]))
+        return extract(table.at[1, 4])
     except IndexError:
         return Decimal(0)
 
 
 def extract_par_a_prec(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[2, 1]))
+        return extract(table.at[2, 1])
     except IndexError:
         return Decimal(0)
 
 
 def extract_par_spett(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[2, 2]))
+        return extract(table.at[2, 2])
     except IndexError:
         return Decimal(0)
 
 
 def extract_par_godute(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[2, 3]))
+        return extract(table.at[2, 3])
     except IndexError:
         return Decimal(0)
 
 
 def extract_par_saldo(table: DataFrame) -> Decimal:
     try:
-        return extract(cast(str, table.at[2, 4]))
+        return extract(table.at[2, 4])
     except IndexError:
         return Decimal(0)
 
