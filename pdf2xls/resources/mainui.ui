@@ -73,9 +73,15 @@
       </widget>
       <widget class="QWidget" name="chart">
        <attribute name="title">
-        <string>chart</string>
+        <string>Chart 1</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3"/>
+      </widget>
+      <widget class="QWidget" name="chart2">
+       <attribute name="title">
+        <string>Chart 2</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4"/>
       </widget>
      </widget>
     </item>
