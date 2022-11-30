@@ -24,7 +24,7 @@ from ..model import Info
 from ..viewmodel import SortFilterViewModel
 from .chart import Chart
 from .charthover import ChartHover
-from .common import date2days
+from .common import date2days, days2date
 from .common import date2QDateTime
 from .datetimeaxis import DateTimeAxis
 
@@ -67,7 +67,7 @@ class SeriesModel:
                     return column.howmuch
             raise NotImplementedError(f'{info=}, {column_header=}')
 
-        for info in sorted(infos, key=lambda info:info.when):
+        for info in sorted(infos, key=lambda info: info.when):
             when = info.when
             howmuchs = []
             for serie, column_header in zip(series, column_headers):
@@ -173,24 +173,24 @@ class ChartView(QChartView):
             # find closest x
             # assumption: all series have same x, so I can just one the first one
             series = cast(list[QLineSeries], chart.series())
-            _, index, value = min(
-                (abs(event_value.x() - point.x()), i, point)
-                for i, point in enumerate(series[0].points())
-            )
+            _, index, value = min((abs(event_value.x() - point.x()), i, point)
+                                  for i, point in enumerate(series[0].points()))
 
             for serie in series:
                 serie.deselectAllPoints()
                 serie.selectPoint(index)
 
-            howmuchs = {'': Decimal(value.y())}
-            for serie in series:
-                howmuchs[serie.name()] = Decimal(f'{serie.at(index).y():.2f}')
+            when = days2date(value.x())
+
+            howmuchs = {serie.name(): (serie.color(), Decimal(f'{serie.at(index).y():.2f}'))
+                        for serie in series}
 
             new_x = chart.mapToPosition(value).x()
-            new_y = (self.size().height() - self.chart_hover.size().height()) / 2.
+            new_y = (self.size().height() -
+                     self.chart_hover.size().height()) / 2.
             self.event_pos = QPointF(new_x, new_y)
 
-            self.chart_hover.set_howmuchs(howmuchs, self.event_pos)
+            self.chart_hover.set_howmuchs(when, howmuchs, self.event_pos)
 
         super().mouseMoveEvent(event)
         self.update()
@@ -200,7 +200,8 @@ class ChartView(QChartView):
         if self.event_pos is not None:
             self.setUpdatesEnabled(False)
             try:
-                painter.setPen(QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
+                painter.setPen(
+                    QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
                 x = self.event_pos.x()
                 painter.drawLine(int(x), int(rect.top()),
                                  int(x), int(rect.bottom()))
