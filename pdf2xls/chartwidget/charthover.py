@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import cast
 from typing import Optional
 
-from PySide6.QtCore import QPointF, Qt
+from PySide6.QtCore import QPointF, Qt, QSizeF
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QGraphicsItem, QFormLayout
 from PySide6.QtWidgets import QGraphicsLinearLayout
@@ -18,21 +18,21 @@ from PySide6.QtGui import QColor
 
 class ChartHoverUI(QWidget):
     label: QLabel
-    formLayout: QFormLayout
+    ormLayout: QFormLayout
 
 
 class ChartHover(QGraphicsWidget):
-
     def __init__(self, parent: Optional[QGraphicsItem]=None) -> None:
         super().__init__(parent)
         self.setLayout(QGraphicsLinearLayout(Qt.Orientation.Vertical))
         self.setZValue(11)
 
-        self.widget = cast(
-            ChartHoverUI, QUiLoader().load(CHARTHOVERUI_UI_PATH))
+        self.widget = cast(ChartHoverUI,
+                           QUiLoader().load(CHARTHOVERUI_UI_PATH))
 
         item = QGraphicsProxyWidget(self)
         item.setWidget(self.widget)
+        self.keyToValueLabel: dict[str, QLabel] = {}
 
     def set_howmuchs(self,
                      when: date,
@@ -43,15 +43,24 @@ class ChartHover(QGraphicsWidget):
 
         self.widget.label.setText(f'{when:%B %Y}')
 
-        # self.widget.formLayout.
-        #
-        # for item in self.items:
-        # layout.removeItem(item)
-        # self.items.clear()
-        # for name, howmuch in howmuchs.items():
-        # item = QGraphicsProxyWidget(self)
-        # item.setWidget(QLabel(f'{name}: {howmuch}'))
-        # layout.addItem(item)
-        # self.items.append(item)
+        for key, label in self.keyToValueLabel.items():
+            if key not in howmuchs:
+                self.widget.ormLayout.removeRow(label)
+                del self.keyToValueLabel[key]
+            else:
+                _, v = howmuchs[key]
+                label.setText(str(v))
+
+        for key, (color, v) in howmuchs.items():
+            if key in self.keyToValueLabel:
+                continue
+            label = QLabel(str(v), self.widget)
+            label.setStyleSheet(f'background-color: {color.name()}')
+
+            self.widget.ormLayout.addRow(key, label)
+            self.keyToValueLabel[key] = label
 
         self.setPos(pos)
+
+    def size(self) -> QSizeF:
+        return QSizeF(self.widget.size())

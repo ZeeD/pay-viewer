@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Callable
 
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
@@ -6,6 +6,8 @@ from PySide6.QtWidgets import QWidget
 from ..viewmodel import SortFilterViewModel
 from .chartslider import ChartSlider
 from .chartview import ChartView
+from ..model import Info
+from .chartview import SeriesModel
 
 
 class ChartWidget(QWidget):
@@ -13,11 +15,12 @@ class ChartWidget(QWidget):
 
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget] = None):
+                 parent: Optional[QWidget],
+                 factory: Callable[[list[Info]], SeriesModel]):
         super().__init__(parent)
 
         layout = QVBoxLayout(self)
-        chart_view = ChartView(model, self)
+        chart_view = ChartView(model, self, factory)
         chart_slider = ChartSlider(model, self)
         layout.addWidget(chart_view)
         layout.addWidget(chart_slider)

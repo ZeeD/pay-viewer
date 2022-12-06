@@ -23,6 +23,7 @@ from .loader import NoHistoryException
 from .removejsons import remove_jsons
 from .settings import Settings
 from .viewmodel import SortFilterViewModel
+from pdf2xls.chartwidget.chartview import SeriesModel
 
 
 class Settingsui(QWidget):
@@ -56,6 +57,8 @@ def new_settingsui(settings: Settings) -> QWidget:
 class Mainui(QMainWindow):
     tableView: QWidget
     chart: QWidget
+    chart_ferie: QWidget
+    chart_rol: QWidget
     lineEdit: QLineEdit
     actionCleanup: QAction
     actionSettings: QAction
@@ -97,18 +100,14 @@ def new_mainui(settings: Settings,
     selection_model = mainui.tableView.selectionModel()
     selection_model.selectionChanged.connect(update_status_bar)
 
-    # chart
-    # filled_group_box = FilledGroupBox(mainui, model)
-    # mainui.tab_2.layout().addWidget(filled_group_box)
-    #
-    # chart_view = ChartView(mainui, model)
-    # mainui.tab_2.layout().addWidget(chart_view)
-    # chart
+    chart_widget_money = ChartWidget(model, mainui, SeriesModel.money)
+    mainui.chart.layout().addWidget(chart_widget_money)
 
-    # chart 3
-    chart_widget = ChartWidget(model, mainui)
-    mainui.chart.layout().addWidget(chart_widget)
-    # chart 3
+    chart_widget_ferie = ChartWidget(model, mainui, SeriesModel.ferie)
+    mainui.chart_ferie.layout().addWidget(chart_widget_ferie)
+
+    chart_widget_rol = ChartWidget(model, mainui, SeriesModel.rol)
+    mainui.chart_rol.layout().addWidget(chart_widget_rol)
 
     mainui.lineEdit.textChanged.connect(model.filterChanged)
 

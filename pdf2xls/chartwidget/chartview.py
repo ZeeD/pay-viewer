@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import Optional, cast
+from typing import Optional, cast, Callable
 
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
@@ -38,8 +38,8 @@ class SeriesModel:
     y_max: float
 
     @classmethod
-    def from_infos(cls, infos: list[Info]) -> SeriesModel:
-        column_headers = [
+    def money(cls, infos: list[Info]) -> SeriesModel:
+        return SeriesModel._from_infos(infos, [
             ColumnHeader.minimo,
             ColumnHeader.scatti,
             ColumnHeader.superm,
@@ -47,7 +47,30 @@ class SeriesModel:
             ColumnHeader.edr,
             ColumnHeader.totale_retributivo,
             ColumnHeader.netto_da_pagare,
-        ]
+        ])
+
+    @classmethod
+    def rol(cls, infos: list[Info]) -> SeriesModel:
+        return SeriesModel._from_infos(infos, [
+            ColumnHeader.par_a_prec,
+            ColumnHeader.par_spett,
+            ColumnHeader.par_godute,
+            ColumnHeader.par_saldo,
+            ColumnHeader.legenda_rol,
+        ])
+
+    @classmethod
+    def ferie(cls, infos: list[Info]) -> SeriesModel:
+        return SeriesModel._from_infos(infos, [
+            ColumnHeader.ferie_a_prec,
+            ColumnHeader.ferie_spett,
+            ColumnHeader.ferie_godute,
+            ColumnHeader.ferie_saldo,
+            ColumnHeader.legenda_ferie,
+        ])
+
+    @classmethod
+    def _from_infos(cls, infos: list[Info], column_headers: list[ColumnHeader]) -> SeriesModel:
         series: list[QLineSeries] = []
         for column_header in column_headers:
             serie = QLineSeries()
@@ -106,7 +129,8 @@ class ChartView(QChartView):
 
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget]=None):
+                 parent: Optional[QWidget],
+                 factory: Callable[[list[Info]], SeriesModel]):
         super().__init__(parent)
         self.setMouseTracking(True)
         self._model = model.sourceModel()
@@ -116,6 +140,7 @@ class ChartView(QChartView):
         self._end_date: Optional[date] = None
         self.chart_hover = ChartHover()
         self.event_pos: Optional[QPointF] = None
+        self.factory = factory
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
@@ -139,7 +164,7 @@ class ChartView(QChartView):
 
     @Slot()
     def model_reset(self) -> None:
-        series_model = SeriesModel.from_infos(self._model._infos)
+        series_model = self.factory(self._model._infos)
 
         chart = Chart()
         chart.replace_series(series_model.series)
@@ -185,12 +210,15 @@ class ChartView(QChartView):
             howmuchs = {serie.name(): (serie.color(), Decimal(f'{serie.at(index).y():.2f}'))
                         for serie in series}
 
-            new_x = chart.mapToPosition(value).x()
-            new_y = (self.size().height() -
-                     self.chart_hover.size().height()) / 2.
-            self.event_pos = QPointF(new_x, new_y)
+            self.event_pos = chart.mapToPosition(value)
 
-            self.chart_hover.set_howmuchs(when, howmuchs, self.event_pos)
+            new_x = self.event_pos.x()
+            if new_x + self.chart_hover.size().width() > self.size().width():
+                new_x -= self.chart_hover.size().width()
+            new_y = 100
+
+            self.chart_hover.set_howmuchs(
+                when, howmuchs, QPointF(new_x, new_y))
 
         super().mouseMoveEvent(event)
         self.update()
