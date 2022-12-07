@@ -27,6 +27,7 @@ from .charthover import ChartHover
 from .common import date2days, days2date
 from .common import date2QDateTime
 from .datetimeaxis import DateTimeAxis
+from mypy_extensions import Arg
 
 
 @dataclass
@@ -66,13 +67,17 @@ class SeriesModel:
             ColumnHeader.ferie_spett,
             ColumnHeader.ferie_godute,
             ColumnHeader.ferie_saldo,
-            ColumnHeader.legenda_ferie,
+            (ColumnHeader.legenda_ferie, lambda d:d/8),
         ])
 
     @classmethod
-    def _from_infos(cls, infos: list[Info], column_headers: list[ColumnHeader]) -> SeriesModel:
+    def _from_infos(cls, infos: list[Info], column_headers: list[ColumnHeader | tuple[ColumnHeader, Callable[[Arg(Decimal, 'd')], Decimal]]]) -> SeriesModel:
         series: list[QLineSeries] = []
         for column_header in column_headers:
+            if isinstance(column_header, ColumnHeader):
+                pass
+            else:
+                column_header = column_header[0]
             serie = QLineSeries()
             serie.setName(column_header.name)
             series.append(serie)
@@ -94,7 +99,11 @@ class SeriesModel:
             when = info.when
             howmuchs = []
             for serie, column_header in zip(series, column_headers):
-                howmuch = get_howmuch(info, column_header)
+                if isinstance(column_header, ColumnHeader):
+                    def op(d: Decimal)->Decimal: return d
+                else:
+                    column_header, op = column_header
+                howmuch = op(get_howmuch(info, column_header))
                 howmuchs.append(howmuch)
                 serie.append(date2days(when), float(howmuch))
 
