@@ -109,6 +109,7 @@
     <addaction name="actionUpdate"/>
     <addaction name="actionSettings"/>
     <addaction name="actionCleanup"/>
+    <addaction name="actionExport"/>
    </widget>
    <addaction name="menu"/>
   </widget>
@@ -126,6 +127,11 @@
   <action name="actionCleanup">
    <property name="text">
     <string>&amp;Cleanup</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>&amp;Export</string>
    </property>
   </action>
  </widget>

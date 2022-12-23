@@ -15,6 +15,7 @@ from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QToolButton
 from PySide6.QtWidgets import QWidget
 
+from .chartwidget.chartview import SeriesModel
 from .chartwidget.chartwidget import ChartWidget
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
@@ -23,8 +24,8 @@ from .loader import NoHistoryException
 from .removejsons import remove_jsons
 from .settings import Settings
 from .viewmodel import SortFilterViewModel
-from pdf2xls.chartwidget.chartview import SeriesModel
-
+from .writer.csvwriter import CsvWriter
+from pathlib import Path
 
 class Settingsui(QWidget):
     usernameLineEdit: QLineEdit
@@ -63,6 +64,7 @@ class Mainui(QMainWindow):
     actionCleanup: QAction
     actionSettings: QAction
     actionUpdate: QAction
+    actionExport: QAction
     gridLayout_1: QGridLayout
 
 
@@ -87,6 +89,11 @@ def new_mainui(settings: Settings,
     def remove_jsons_helper() -> None:
         remove_jsons(settings.data_path)
         QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
+
+    def export_helper() -> None:
+        print('export_helper')
+        csvWriter = CsvWriter(Path('/home/zed/Desktop/pdf2xls.csv'))
+        csvWriter.write_infos(model.get_rows())
 
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
@@ -114,6 +121,7 @@ def new_mainui(settings: Settings,
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
+    mainui.actionExport.triggered.connect(export_helper)
     settingsui.accepted.connect(update_helper)
 
     QShortcut(QKeySequence('Ctrl+F'),
