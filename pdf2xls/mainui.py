@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import cast
 
 from PySide6.QtCore import QItemSelection
@@ -25,7 +26,7 @@ from .removejsons import remove_jsons
 from .settings import Settings
 from .viewmodel import SortFilterViewModel
 from .writer.csvwriter import CsvWriter
-from pathlib import Path
+
 
 class Settingsui(QWidget):
     usernameLineEdit: QLineEdit

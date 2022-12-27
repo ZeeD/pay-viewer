@@ -3,8 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import Optional, cast, Callable
+from typing import Callable
+from typing import cast
+from typing import Optional
 
+from mypy_extensions import Arg
 from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCharts import QValueAxis
@@ -24,10 +27,10 @@ from ..model import Info
 from ..viewmodel import SortFilterViewModel
 from .chart import Chart
 from .charthover import ChartHover
-from .common import date2days, days2date
+from .common import date2days
 from .common import date2QDateTime
+from .common import days2date
 from .datetimeaxis import DateTimeAxis
-from mypy_extensions import Arg
 
 
 @dataclass

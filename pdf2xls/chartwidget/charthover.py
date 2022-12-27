@@ -1,10 +1,15 @@
+from datetime import date
 from decimal import Decimal
 from typing import cast
 from typing import Optional
 
-from PySide6.QtCore import QPointF, Qt, QSizeF
+from PySide6.QtCore import QPointF
+from PySide6.QtCore import QSizeF
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QGraphicsItem, QFormLayout
+from PySide6.QtWidgets import QFormLayout
+from PySide6.QtWidgets import QGraphicsItem
 from PySide6.QtWidgets import QGraphicsLinearLayout
 from PySide6.QtWidgets import QGraphicsProxyWidget
 from PySide6.QtWidgets import QGraphicsWidget
@@ -12,8 +17,6 @@ from PySide6.QtWidgets import QLabel
 from PySide6.QtWidgets import QWidget
 
 from ..constants import CHARTHOVERUI_UI_PATH
-from datetime import date
-from PySide6.QtGui import QColor
 
 
 class ChartHoverUI(QWidget):

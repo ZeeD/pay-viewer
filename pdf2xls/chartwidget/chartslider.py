@@ -1,5 +1,7 @@
+from abc import abstractmethod
 from datetime import date
-from typing import Optional, cast
+from typing import cast
+from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QUrl
@@ -14,7 +16,6 @@ from ..constants import CHARTSLIDER_QML_PATH
 from ..viewmodel import SortFilterViewModel
 from .common import date2days
 from .common import days2date
-from abc import abstractmethod
 
 
 class RangeSlider(QQuickItem):

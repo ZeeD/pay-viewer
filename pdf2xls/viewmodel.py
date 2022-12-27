@@ -1,6 +1,8 @@
 from datetime import date
 from decimal import Decimal
-from typing import cast, overload, Literal
+from typing import cast
+from typing import Literal
+from typing import overload
 
 from PySide6.QtCore import QAbstractTableModel
 from PySide6.QtCore import QItemSelectionModel

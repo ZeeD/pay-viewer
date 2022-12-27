@@ -1,12 +1,13 @@
-from typing import Optional, Callable
+from typing import Callable
+from typing import Optional
 
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
+from ..model import Info
 from ..viewmodel import SortFilterViewModel
 from .chartslider import ChartSlider
 from .chartview import ChartView
-from ..model import Info
 from .chartview import SeriesModel
 
 
