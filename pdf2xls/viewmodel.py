@@ -70,7 +70,8 @@ class ViewModel(QAbstractTableModel):
 
     @overload
     def data(self,
-             index: QModelIndex | QPersistentModelIndex, # white liar, we need also to add a rule on index --> col 0
+             # white liar, we need also to add a rule on index --> col 0
+             index: QModelIndex | QPersistentModelIndex,
              role: Literal[Qt.ItemDataRole.UserRole]) -> date: ...
 
     @overload
@@ -174,8 +175,8 @@ class ViewModel(QAbstractTableModel):
 
         self.layoutAboutToBeChanged.emit()  # type: ignore
         try:
-            self._data.sort(key=key, reverse=order ==
-                            Qt.SortOrder.DescendingOrder)
+            self._data.sort(key=key,
+                            reverse=order == Qt.SortOrder.AscendingOrder)
         finally:
             self.layoutChanged.emit()  # type: ignore
 

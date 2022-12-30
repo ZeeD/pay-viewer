@@ -64,3 +64,5 @@ class FreezeTableView(QWidget):
 
         self._left.resizeColumnsToContents()
         self._right.resizeColumnsToContents()
+
+        self._right.horizontalHeader().setSectionsMovable(True)
