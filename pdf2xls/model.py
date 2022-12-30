@@ -58,6 +58,17 @@ class Info:
     additional_details: list[AdditionalDetail]
 
 
+def get_descrizione(additional_detail: AdditionalDetail) -> str:
+    return {
+        2302: 'TICKET PASTO C',
+        2308: 'TICKET PASTO E',
+        2802: 'REPER. INTERVENTO',
+        6854: 'AD.COM.LE DA TR.',
+        6856: 'AD.REG.LE DA TR.',
+        7293: 'ULT.DETRAZIONE MESE/PROGR'
+    }.get(additional_detail.cod, additional_detail.descrizione)
+
+
 def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
     headers: list[str] = ['when']
     data: list[list[str]] = []
@@ -91,7 +102,7 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
                 row[indexes[key]] = value
             else:
                 indexes[key] = len(headers)
-                headers.append(additional_detail.descrizione)  # first one
+                headers.append(get_descrizione(additional_detail))  # first one
                 for other_row in data:
                     other_row.append('0')
                 row.append(value)
