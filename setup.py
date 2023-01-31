@@ -16,7 +16,8 @@ setup(name='pdf2xls',
           'tabula-py',
           'openpyxl',
           'PySide6',
-          'selenium'
+          'selenium',
+          'mypy-extensions'
       ],
       
       entry_points={
