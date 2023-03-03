@@ -60,6 +60,11 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
 def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
                             data_path: str) -> None:
     makedirs(f'{data_path}/{year}', exist_ok=True)
+
+    print('files in dtemp:')
+    for dtempfn in listdir(dtemp):
+        print(f'\t{dtemp}/{dtempfn}')
+    print(f"mv'ing '{dtemp}/{listdir(dtemp)[0]}' to '{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'")
     move(f'{dtemp}/{listdir(dtemp)[0]}',
          f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
