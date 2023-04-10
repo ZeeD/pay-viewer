@@ -3,7 +3,6 @@
 from datetime import date
 from decimal import Decimal
 from json import load
-from typing import Optional
 from typing import TypedDict
 
 from ..model import AdditionalDetail
@@ -15,12 +14,12 @@ from .abcreader import ABCReader
 
 class RawColumn(TypedDict):
     header: str
-    howmuch: Optional[str]
+    howmuch: str | None
 
 
 class RawAdditionalDetail(TypedDict):
-    prev: Optional[int]
-    fisc: Optional[int]
+    prev: int | None
+    fisc: int | None
     cod: int
     descrizione: str
     ore_o_giorni: str

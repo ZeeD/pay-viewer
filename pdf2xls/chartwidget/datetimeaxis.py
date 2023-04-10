@@ -1,8 +1,7 @@
+from collections.abc import Iterator
 from datetime import date
 from datetime import datetime
 from typing import cast
-from typing import Iterator
-from typing import Optional
 
 from PySide6.QtCharts import QCategoryAxis
 from PySide6.QtCore import QDateTime
@@ -37,9 +36,10 @@ class DateTimeAxis(QCategoryAxis):
     def __init__(self,
                  x_min: QDateTime,
                  x_max: QDateTime,
-                 parent: Optional[QObject]=None) -> None:
+                 parent: QObject | None=None) -> None:
         super().__init__(parent)
-        self.setLabelsPosition(QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue)
+        self.setLabelsPosition(
+            QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue)
         self.setTruncateLabels(False)
 
         x_min_date = cast(datetime, x_min.toPython()).date()

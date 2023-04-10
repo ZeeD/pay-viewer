@@ -1,7 +1,6 @@
 from datetime import date
 from decimal import Decimal
 from typing import cast
-from typing import Optional
 
 from PySide6.QtCore import QPointF
 from PySide6.QtCore import QSizeF
@@ -25,7 +24,7 @@ class ChartHoverUI(QWidget):
 
 
 class ChartHover(QGraphicsWidget):
-    def __init__(self, parent: Optional[QGraphicsItem]=None) -> None:
+    def __init__(self, parent: QGraphicsItem | None=None) -> None:
         super().__init__(parent)
         self.setLayout(QGraphicsLinearLayout(Qt.Orientation.Vertical))
         self.setZValue(11)

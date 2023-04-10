@@ -1,10 +1,9 @@
 'pdf reader'
 
+from collections.abc import Iterator
 from datetime import date
 from decimal import Decimal
 from math import isnan
-from typing import Iterator
-from typing import Union
 
 from pandas import DataFrame
 from pandas import options
@@ -138,8 +137,8 @@ def extract_periodo(table: DataFrame) -> date:
     return date(year, month, day)
 
 
-def extract(el: Union[str, float]) -> Decimal:
-    s: Union[str, float]
+def extract(el: str | float) -> Decimal:
+    s: str | float
     if isinstance(el, float):
         if isnan(el):
             s = '0'

@@ -1,6 +1,6 @@
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Iterator
 from unittest.mock import MagicMock
 from unittest.mock import mock_open
 from unittest.mock import patch

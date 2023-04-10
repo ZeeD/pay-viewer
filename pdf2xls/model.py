@@ -3,7 +3,6 @@ from datetime import date
 from decimal import Decimal
 from enum import auto
 from enum import Enum
-from typing import Optional
 
 
 class ColumnHeader(Enum):
@@ -36,13 +35,13 @@ class ColumnHeader(Enum):
 @dataclass(frozen=True)
 class Column:
     header: ColumnHeader
-    howmuch: Optional[Decimal]
+    howmuch: Decimal | None
 
 
 @dataclass(frozen=True)
 class AdditionalDetail:
-    prev: Optional[int]
-    fisc: Optional[int]
+    prev: int | None
+    fisc: int | None
     cod: int
     descrizione: str
     ore_o_giorni: Decimal

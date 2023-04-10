@@ -1,11 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
-from typing import Callable
 from typing import cast
-from typing import Optional
 
 from mypy_extensions import Arg
 from PySide6.QtCharts import QChartView
@@ -141,17 +140,17 @@ class ChartView(QChartView):
 
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget],
+                 parent: QWidget | None,
                  factory: Callable[[list[Info]], SeriesModel]):
         super().__init__(parent)
         self.setMouseTracking(True)
         self._model = model.sourceModel()
-        self._model.modelReset.connect(self.model_reset)  # type: ignore
-        self._axis_x: Optional[DateTimeAxis] = None
-        self._start_date: Optional[date] = None
-        self._end_date: Optional[date] = None
+        self._model.modelReset.connect(self.model_reset)
+        self._axis_x: DateTimeAxis | None = None
+        self._start_date: date | None = None
+        self._end_date: date | None = None
         self.chart_hover = ChartHover()
-        self.event_pos: Optional[QPointF] = None
+        self.event_pos: QPointF | None = None
         self.factory = factory
 
     @Slot(date)

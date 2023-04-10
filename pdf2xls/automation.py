@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import date
 from os import listdir
 from os import makedirs
 from shutil import move
 from tempfile import TemporaryDirectory
-from typing import Iterable
 from typing import NamedTuple
 
 from selenium import webdriver

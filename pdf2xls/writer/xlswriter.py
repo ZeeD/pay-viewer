@@ -2,8 +2,6 @@
 
 from datetime import date
 from decimal import Decimal
-from typing import Tuple
-from typing import Union
 
 from openpyxl.cell import Cell
 from openpyxl.utils.cell import get_column_letter
@@ -14,7 +12,7 @@ from ..model import ColumnHeader
 from ..model import Info
 from .abcwriter import ABCWriter
 
-E = Union[None, str, date, Decimal]
+E = None | str | date | Decimal
 
 NUMBER_FORMAT_TEXT = '@'
 NUMBER_FORMAT_DATE = 'mm-dd-yy'
@@ -72,7 +70,7 @@ class XlsWriter(ABCWriter):
 
         # there are 1 + len(keys)-1 + len(details) columns
 
-        header: list[Tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
+        header: list[tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
         for column_header in ColumnHeader:
             if column_header is not ColumnHeader.detail:
                 header.append((column_header.name, NUMBER_FORMAT_TEXT))
@@ -80,7 +78,7 @@ class XlsWriter(ABCWriter):
                 for detail in details:
                     header.append((detail, NUMBER_FORMAT_TEXT))
 
-        rows: list[list[Tuple[E, str]]] = [header]
+        rows: list[list[tuple[E, str]]] = [header]
 
         for info in infos:
             # group columns by column_header
@@ -92,7 +90,7 @@ class XlsWriter(ABCWriter):
                                   for additional_detail in
                                   info.additional_details}
 
-            row: list[Tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
+            row: list[tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
             for column_header in ColumnHeader:
                 if column_header is not ColumnHeader.detail:
                     row.append((columns[column_header].howmuch,

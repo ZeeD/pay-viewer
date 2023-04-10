@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from datetime import date
 from typing import cast
-from typing import Optional
 
 from PySide6.QtCore import Qt
 from PySide6.QtCore import QUrl
@@ -40,7 +39,7 @@ class ChartSlider(QWidget):
 
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget] = None):
+                 parent: QWidget | None = None):
         super().__init__(parent)
         layout = QVBoxLayout()
         self.setLayout(layout)

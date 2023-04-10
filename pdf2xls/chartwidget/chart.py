@@ -1,6 +1,6 @@
+from collections.abc import Iterable
 from datetime import date
 from typing import cast
-from typing import Iterable
 
 from PySide6.QtCharts import QAbstractSeries
 from PySide6.QtCharts import QChart

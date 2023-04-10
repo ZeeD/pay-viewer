@@ -1,5 +1,4 @@
-from typing import Callable
-from typing import Optional
+from collections.abc import Callable
 
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
@@ -16,7 +15,7 @@ class ChartWidget(QWidget):
 
     def __init__(self,
                  model: SortFilterViewModel,
-                 parent: Optional[QWidget],
+                 parent: QWidget | None,
                  factory: Callable[[list[Info]], SeriesModel]):
         super().__init__(parent)
 

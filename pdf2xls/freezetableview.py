@@ -1,5 +1,4 @@
 from typing import cast
-from typing import Optional
 
 from PySide6.QtCore import QAbstractItemModel
 from PySide6.QtCore import QItemSelectionModel
@@ -20,10 +19,11 @@ class TableViewUI(QWidget):
 class FreezeTableView(QWidget):
 
     def __init__(self,
-                 parent: Optional[QWidget],
+                 parent: QWidget | None,
                  model: QAbstractItemModel) -> None:
         super().__init__(parent)
-        content = cast(TableViewUI, QUiLoader().load(FREEZE_TABLE_VIEW_UI_PATH))
+        content = cast(TableViewUI, QUiLoader().load(
+            FREEZE_TABLE_VIEW_UI_PATH))
         self._left = content.left
         self._right = content.right
         self._model = model
@@ -36,12 +36,12 @@ class FreezeTableView(QWidget):
         self._right.setModel(model)
 
         # hide/show columns on model reset
-        self._model.modelReset.connect(self._reset_columns)  # type: ignore
+        self._model.modelReset.connect(self._reset_columns)
 
         # link vertical scroll
-        self._right.verticalScrollBar().valueChanged.connect(# type: ignore
+        self._right.verticalScrollBar().valueChanged.connect(
             self._left.verticalScrollBar().setValue)
-        self._left.verticalScrollBar().valueChanged.connect(# type: ignore
+        self._left.verticalScrollBar().valueChanged.connect(
             self._right.verticalScrollBar().setValue)
 
         # share and expose selection model
