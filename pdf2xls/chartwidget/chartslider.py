@@ -71,6 +71,9 @@ class ChartSlider(QWidget):
         dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
                                                Qt.ItemDataRole.UserRole)
                              for row in range(0, source_model.rowCount())]
+        if not dates:
+            print('no dates!')
+            return
         dates.sort()
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])

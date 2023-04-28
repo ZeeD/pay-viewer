@@ -2,13 +2,16 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import date
+from itertools import count
 from os import listdir
 from os import makedirs
 from shutil import move
 from tempfile import TemporaryDirectory
+from time import sleep
 from typing import NamedTuple
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -57,6 +60,16 @@ def firefox_profile(dtemp: str) -> FirefoxProfile:
     return profile
 
 
+def wait_download(dtemp: str) -> None:
+    print(f'wait_download (initial: {listdir(dtemp)})')
+    while not listdir(dtemp):
+        sleep(.5)
+        print(f'wait_download [empty]')
+    while any(fn.endswith('.part') for fn in listdir(dtemp)):
+        sleep(.5)
+        print(f'wait_download [.part]')
+
+
 def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
                             data_path: str) -> None:
     makedirs(f'{data_path}/{year}', exist_ok=True)
@@ -81,7 +94,7 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
     with TemporaryDirectory() as dtemp, \
             webdriver.Firefox(executable_path=GECKODRIVER_PATH,
                               firefox_profile=firefox_profile(dtemp)) as d:
-        wait = WebDriverWait(d, 10)
+        wait = WebDriverWait(d, 30)
 
         # do login
         d.get('https://login.myareaf2a.com/login/user')
@@ -107,12 +120,17 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
 
         def download_for_month(month: int) -> None:
             text = f'{month:02d}'
-            for row in d.find_elements(By.TAG_NAME, 'mat-row'):
+            for i in count(2):
+                try:
+                    row = d.find_element(By.CSS_SELECTOR, f'.mat-row:nth-child({i})')
+                except NoSuchElementException:
+                    break
                 mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-mese')
                 if not mese or mese.text != text:
                     continue
                 row.find_element(By.CSS_SELECTOR,
                                  '.cdk-column-download button').click()
+                wait_download(dtemp)
                 return
             raise ValueError()
 
