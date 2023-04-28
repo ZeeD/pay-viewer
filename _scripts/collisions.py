@@ -6,7 +6,7 @@ from collections import defaultdict
 
 
 COLLISIONS = defaultdict[str, set[str]](lambda: set([]))
-for filename in sorted(Path('../pdf2xls-data').glob('**/*.pdf.json')):
+for filename in sorted(Path('../../pdf2xls-data').glob('**/*.pdf.json')):
     with filename.open(encoding='utf-8') as fp:
         for obj in load(fp):
             for additional_detail in obj['additional_details']:

@@ -56,6 +56,12 @@ class Info:
     columns: list[Column]
     additional_details: list[AdditionalDetail]
 
+    def howmuch(self, header: ColumnHeader) -> Decimal | None:
+        for column in self.columns:
+            if column.header == header:
+                return column.howmuch
+        return None
+
 
 def get_descrizione(additional_detail: AdditionalDetail) -> str:
     return {

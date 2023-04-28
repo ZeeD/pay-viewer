@@ -1,3 +1,4 @@
+from operator import attrgetter
 from os.path import getmtime
 from pathlib import Path
 
@@ -35,4 +36,5 @@ def load(data_path: str, *, force: bool = False) -> list[Info]:
     infos: list[Info] = []
     for name in Path(data_path).glob('*/*.pdf'):
         infos.extend(_get_reader(name, force).read_infos())
+    infos.sort(key=attrgetter('when'))
     return infos
