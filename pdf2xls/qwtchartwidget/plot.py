@@ -3,21 +3,19 @@ from datetime import date
 from datetime import datetime
 from datetime import time
 from datetime import timedelta
-from decimal import Decimal
 from itertools import cycle
-from sys import argv
 
+from PySide6.QtCore import Slot
 from qtpy.QtCore import Qt
-from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QWidget
 from qwt import QwtPlot
 from qwt import QwtPlotCurve
 from qwt import QwtPlotGrid
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
 
-from pdf2xls.loader import load
-from pdf2xls.model import ColumnHeader
-from pdf2xls.model import Info
+from ..modelgui import SeriesModelFactory
+from ..viewmodel import SortFilterViewModel
 
 
 def linecolors(excluded: set[Qt.GlobalColor]=set([Qt.GlobalColor.color0,
@@ -79,61 +77,51 @@ class SD(QwtScaleDraw):
         return date.fromtimestamp(value).strftime('%Y-%m')
 
 
-def qwtmain(infos: list[Info]) -> QwtPlot:
-    plot = QwtPlot()
+class Plot(QwtPlot):
+    def __init__(self,
+                 model: SortFilterViewModel,
+                 parent: QWidget | None,
+                 factory: SeriesModelFactory):
+        super().__init__(parent)
+        self._model = model.sourceModel()
+        self._model.modelReset.connect(self.model_reset)
+        self.factory = factory
 
-    min_xdata: float | None = None
-    max_xdata: float | None = None
-    for (header, linecolor) in zip([ColumnHeader.netto_da_pagare], linecolors()):
-        xdata: list[float] = []
-        ydata: list[float] = []
-        for when, howmuch in ((info.when, info.howmuch(header) or Decimal(0))
-                              for info in infos):
-            xdata.append(datetime.combine(when, time()).timestamp())
-            ydata.append(float(howmuch))
+    @Slot()
+    def model_reset(self) -> None:
+        series_model = self.factory(self._model._infos)
 
-        tmp = min(xdata)
-        if min_xdata is None or tmp < min_xdata:
-            min_xdata = tmp
-        tmp = max(xdata)
-        if max_xdata is None or tmp > max_xdata:
-            max_xdata = tmp
+        min_xdata: float | None = None
+        max_xdata: float | None = None
+        for (serie, linecolor) in zip(series_model.series, linecolors()):
+            xdata: list[float] = []
+            ydata: list[float] = []
+            for point in serie.points():
+                when, howmuch = point.x(), point.y()
+                xdata.append(when)
+                ydata.append(howmuch)
 
-        QwtPlotCurve.make(xdata, ydata, str(header), plot,
-                          style=QwtPlotCurve.Steps,
-                          linecolor=linecolor,
-                          linewidth=3,
-                          antialiased=True)
+            tmp = min(xdata)
+            if min_xdata is None or tmp < min_xdata:
+                min_xdata = tmp
+            tmp = max(xdata)
+            if max_xdata is None or tmp > max_xdata:
+                max_xdata = tmp
 
-    if min_xdata is None or max_xdata is None:
-        raise Exception('no *_xdata!')
+            QwtPlotCurve.make(xdata, ydata, serie.name(), self,
+                              linecolor=linecolor,
+                              linewidth=3,
+                              antialiased=True)
 
-    plot.setAxisScaleDiv(QwtPlot.xBottom,
-                         QwtScaleDiv(min_xdata, max_xdata,
-                                     days(min_xdata, max_xdata),
-                                     months(min_xdata, max_xdata),
-                                     years(min_xdata, max_xdata)))
+        if min_xdata is None or max_xdata is None:
+            raise Exception('no *_xdata!')
 
-    plot.setAxisScaleDraw(QwtPlot.xBottom, SD())
+        self.setAxisScaleDiv(QwtPlot.xBottom,
+                             QwtScaleDiv(min_xdata, max_xdata,
+                                         days(min_xdata, max_xdata),
+                                         months(min_xdata, max_xdata),
+                                         years(min_xdata, max_xdata)))
 
-    QwtPlotGrid.make(plot)
+        self.setAxisScaleDraw(QwtPlot.xBottom, SD())
 
-    plot.resize(1_000, 1_000)
-    return plot
-
-
-PATH = '/home/zed/eclipse-workspace/pdf2xls-data'
-
-
-def main() -> None:
-    app = QApplication(argv)
-
-    infos = load(PATH)
-    plot = qwtmain(infos)
-    plot.show()
-
-    app.exec_()
-
-
-if __name__ == '__main__':
-    main()
+        QwtPlotGrid.make(self)

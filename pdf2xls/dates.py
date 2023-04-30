@@ -1,7 +1,7 @@
 from datetime import date
 from datetime import timedelta
 
-from PySide6.QtCore import QDateTime
+from qtpy.QtCore import QDateTime
 
 
 def date2days(d: date, *, epoch: date = date(1970, 1, 1)) -> int:

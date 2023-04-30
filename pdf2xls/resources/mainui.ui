@@ -71,7 +71,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="chart">
+      <widget class="QWidget" name="chart_money">
        <attribute name="title">
         <string>Money</string>
        </attribute>
@@ -88,6 +88,12 @@
         <string>ROL</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_5"/>
+      </widget>
+      <widget class="QWidget" name="qwt_chart_money">
+       <attribute name="title">
+        <string>Money - QWT</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_6"/>
       </widget>
      </widget>
     </item>

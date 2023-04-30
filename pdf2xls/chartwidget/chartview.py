@@ -1,128 +1,28 @@
 from __future__ import annotations
 
-from collections.abc import Callable
-from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 from typing import cast
 
-from mypy_extensions import Arg
-from PySide6.QtCharts import QChartView
-from PySide6.QtCharts import QLineSeries
-from PySide6.QtCharts import QValueAxis
-from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QPointF
-from PySide6.QtCore import QRect
-from PySide6.QtCore import QRectF
-from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
-from PySide6.QtGui import QMouseEvent
-from PySide6.QtGui import QPainter
-from PySide6.QtGui import QPen
-from PySide6.QtWidgets import QWidget
+from qtpy.QtCharts import QChartView
+from qtpy.QtCharts import QLineSeries
+from qtpy.QtCharts import QValueAxis
+from qtpy.QtCore import QPointF
+from qtpy.QtCore import QRect
+from qtpy.QtCore import QRectF
+from qtpy.QtCore import Qt
+from qtpy.QtGui import QMouseEvent
+from qtpy.QtGui import QPainter
+from qtpy.QtGui import QPen
+from qtpy.QtWidgets import QWidget
 
-from ..model import ColumnHeader
-from ..model import Info
+from ..dates import days2date
+from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
 from .chart import Chart
 from .charthover import ChartHover
-from .common import date2days
-from .common import date2QDateTime
-from .common import days2date
 from .datetimeaxis import DateTimeAxis
-
-
-@dataclass
-class SeriesModel:
-    series: list[QLineSeries]
-    x_min: QDateTime
-    x_max: QDateTime
-    y_min: float
-    y_max: float
-
-    @classmethod
-    def money(cls, infos: list[Info]) -> SeriesModel:
-        return SeriesModel._from_infos(infos, [
-            ColumnHeader.minimo,
-            ColumnHeader.scatti,
-            ColumnHeader.superm,
-            ColumnHeader.sup_ass,
-            ColumnHeader.edr,
-            ColumnHeader.totale_retributivo,
-            ColumnHeader.netto_da_pagare,
-        ])
-
-    @classmethod
-    def rol(cls, infos: list[Info]) -> SeriesModel:
-        return SeriesModel._from_infos(infos, [
-            ColumnHeader.par_a_prec,
-            ColumnHeader.par_spett,
-            ColumnHeader.par_godute,
-            ColumnHeader.par_saldo,
-            ColumnHeader.legenda_rol,
-        ])
-
-    @classmethod
-    def ferie(cls, infos: list[Info]) -> SeriesModel:
-        return SeriesModel._from_infos(infos, [
-            ColumnHeader.ferie_a_prec,
-            ColumnHeader.ferie_spett,
-            ColumnHeader.ferie_godute,
-            ColumnHeader.ferie_saldo,
-            (ColumnHeader.legenda_ferie, lambda d:d/8),
-        ])
-
-    @classmethod
-    def _from_infos(cls, infos: list[Info], column_headers: list[ColumnHeader | tuple[ColumnHeader, Callable[[Arg(Decimal, 'd')], Decimal]]]) -> SeriesModel:
-        series: list[QLineSeries] = []
-        for column_header in column_headers:
-            if isinstance(column_header, ColumnHeader):
-                pass
-            else:
-                column_header = column_header[0]
-            serie = QLineSeries()
-            serie.setName(column_header.name)
-            series.append(serie)
-
-        x_min = date.max
-        x_max = date.min
-        y_min = Decimal('inf')
-        y_max = Decimal(0)
-
-        def get_howmuch(info: Info, column_header: ColumnHeader) -> Decimal:
-            for column in info.columns:
-                if column.header is column_header:
-                    if column.howmuch is None:
-                        raise NotImplementedError(f'{info=}, {column_header=}')
-                    return column.howmuch
-            raise NotImplementedError(f'{info=}, {column_header=}')
-
-        for info in sorted(infos, key=lambda info: info.when):
-            when = info.when
-            howmuchs = []
-            for serie, column_header in zip(series, column_headers):
-                if isinstance(column_header, ColumnHeader):
-                    def op(d: Decimal)->Decimal: return d
-                else:
-                    column_header, op = column_header
-                howmuch = op(get_howmuch(info, column_header))
-                howmuchs.append(howmuch)
-                serie.append(date2days(when), float(howmuch))
-
-            # update {x,y}_{min,max}
-            if when < x_min:
-                x_min = when
-            if when > x_max:
-                x_max = when
-            for howmuch in howmuchs:
-                if howmuch < y_min:
-                    y_min = howmuch
-                if howmuch > y_max:
-                    y_max = howmuch
-
-        return cls(series,
-                   date2QDateTime(x_min), date2QDateTime(x_max),
-                   float(y_min), float(y_max))
 
 
 def tick_interval(y_max: float, n: int=10) -> float:
@@ -141,7 +41,7 @@ class ChartView(QChartView):
     def __init__(self,
                  model: SortFilterViewModel,
                  parent: QWidget | None,
-                 factory: Callable[[list[Info]], SeriesModel]):
+                 factory: SeriesModelFactory):
         super().__init__(parent)
         self.setMouseTracking(True)
         self._model = model.sourceModel()

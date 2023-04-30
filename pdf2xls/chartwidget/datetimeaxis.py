@@ -7,7 +7,7 @@ from PySide6.QtCharts import QCategoryAxis
 from PySide6.QtCore import QDateTime
 from PySide6.QtCore import QObject
 
-from .common import date2days
+from pdf2xls.dates import date2days
 
 
 def first_january(d: date, *, before: bool=True) -> date:

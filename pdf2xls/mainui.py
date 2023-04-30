@@ -1,34 +1,36 @@
 from pathlib import Path
 from typing import cast
 
-from PySide6.QtCore import QItemSelection
 from PySide6.QtGui import QAction
-from PySide6.QtGui import QKeySequence
 from PySide6.QtGui import QShortcut
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication
-from PySide6.QtWidgets import QDialogButtonBox
-from PySide6.QtWidgets import QFileDialog
-from PySide6.QtWidgets import QGridLayout
-from PySide6.QtWidgets import QLineEdit
-from PySide6.QtWidgets import QMainWindow
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QToolButton
-from PySide6.QtWidgets import QWidget
+from qtpy.QtCore import QItemSelection
+from qtpy.QtGui import QKeySequence
+from qtpy.QtUiTools import QUiLoader
+from qtpy.QtWidgets import QApplication
+from qtpy.QtWidgets import QDialog
+from qtpy.QtWidgets import QDialogButtonBox
+from qtpy.QtWidgets import QFileDialog
+from qtpy.QtWidgets import QGridLayout
+from qtpy.QtWidgets import QLineEdit
+from qtpy.QtWidgets import QMainWindow
+from qtpy.QtWidgets import QMessageBox
+from qtpy.QtWidgets import QToolButton
+from qtpy.QtWidgets import QWidget
 
-from .chartwidget.chartview import SeriesModel
 from .chartwidget.chartwidget import ChartWidget
 from .constants import MAINUI_UI_PATH
 from .constants import SETTINGSUI_UI_PATH
 from .freezetableview import FreezeTableView
 from .loader import NoHistoryException
+from .modelgui import SeriesModel
+from .qwtchartwidget.qwtchartwidget import QwtChartVidget
 from .removejsons import remove_jsons
 from .settings import Settings
 from .viewmodel import SortFilterViewModel
 from .writer.csvwriter import CsvWriter
 
 
-class Settingsui(QWidget):
+class Settingsui(QDialog):
     usernameLineEdit: QLineEdit
     passwordLineEdit: QLineEdit
     dataPathLineEdit: QLineEdit
@@ -36,7 +38,7 @@ class Settingsui(QWidget):
     toolButton: QToolButton
 
 
-def new_settingsui(settings: Settings) -> QWidget:
+def new_settingsui(settings: Settings) -> Settingsui:
 
     def save_settings() -> None:
         settings.username = settingsui.usernameLineEdit.text()
@@ -56,11 +58,13 @@ def new_settingsui(settings: Settings) -> QWidget:
 
     return settingsui
 
+
 class Mainui(QMainWindow):
     tableView: QWidget
-    chart: QWidget
+    chart_money: QWidget
     chart_ferie: QWidget
     chart_rol: QWidget
+    qwt_chart_money: QWidget
     lineEdit: QLineEdit
     actionCleanup: QAction
     actionSettings: QAction
@@ -71,7 +75,7 @@ class Mainui(QMainWindow):
 
 def new_mainui(settings: Settings,
                model: SortFilterViewModel,
-               settingsui: QWidget) -> QWidget:
+               settingsui: Settingsui) -> QWidget:
 
     def update_helper(*,
                       only_local: bool=False,
@@ -109,13 +113,16 @@ def new_mainui(settings: Settings,
     selection_model.selectionChanged.connect(update_status_bar)
 
     chart_widget_money = ChartWidget(model, mainui, SeriesModel.money)
-    mainui.chart.layout().addWidget(chart_widget_money)
+    mainui.chart_money.layout().addWidget(chart_widget_money)
 
     chart_widget_ferie = ChartWidget(model, mainui, SeriesModel.ferie)
     mainui.chart_ferie.layout().addWidget(chart_widget_ferie)
 
     chart_widget_rol = ChartWidget(model, mainui, SeriesModel.rol)
     mainui.chart_rol.layout().addWidget(chart_widget_rol)
+
+    qwt_chart_widget_money = QwtChartVidget(model, mainui, SeriesModel.money)
+    mainui.qwt_chart_money.layout().addWidget(qwt_chart_widget_money)
 
     mainui.lineEdit.textChanged.connect(model.filterChanged)
 

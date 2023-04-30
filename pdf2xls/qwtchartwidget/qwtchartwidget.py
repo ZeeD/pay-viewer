@@ -3,11 +3,10 @@ from qtpy.QtWidgets import QWidget
 
 from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
-from .chartslider import ChartSlider
-from .chartview import ChartView
+from .plot import Plot
 
 
-class ChartWidget(QWidget):
+class QwtChartVidget(QWidget):
     'composition of a ChartView and a slider'
 
     def __init__(self,
@@ -17,11 +16,11 @@ class ChartWidget(QWidget):
         super().__init__(parent)
 
         layout = QVBoxLayout(self)
-        chart_view = ChartView(model, self, factory)
-        chart_slider = ChartSlider(model, self)
-        layout.addWidget(chart_view)
+        plot = Plot(model, self, factory)
+        chart_slider = QWidget(self)  # ChartSlider(model, self)
+        layout.addWidget(plot)
         layout.addWidget(chart_slider)
         self.setLayout(layout)
 
-        chart_slider.start_date_changed.connect(chart_view.start_date_changed)
-        chart_slider.end_date_changed.connect(chart_view.end_date_changed)
+        # chart_slider.start_date_changed.connect(plot.start_date_changed)
+        # chart_slider.end_date_changed.connect(plot.end_date_changed)
