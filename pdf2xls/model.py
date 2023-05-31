@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 from enum import auto
 from enum import Enum
+from operator import attrgetter
 
 
 class ColumnHeader(Enum):
@@ -80,14 +81,14 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
 
     indexes: dict[str, int] = {}
 
-    for info in infos:
+    for info in sorted(infos, key=attrgetter('when'), reverse=True):
         row = ['0'] * len(headers)
 
         # when
         row[0] = str(info.when)
 
         # columns
-        for columns in info.columns:
+        for columns in sorted(info.columns, key=lambda column: column.header.name):
             key = columns.header.name
             value = str(columns.howmuch)
             if key in indexes:
@@ -100,7 +101,7 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
                 row.append(value)
 
         # additional_details
-        for additional_detail in info.additional_details:
+        for additional_detail in sorted(info.additional_details, key=attrgetter('descrizione')):
             key = str(additional_detail.cod)
             value = str(-additional_detail.trattenute if additional_detail.trattenute else additional_detail.competenze)
             if key in indexes:

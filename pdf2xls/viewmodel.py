@@ -173,12 +173,12 @@ class ViewModel(QAbstractTableModel):
             raw = row[index]
             return date.fromisoformat(raw) if index == 0 else Decimal(raw)
 
-        self.layoutAboutToBeChanged.emit()  # type: ignore
+        self.layoutAboutToBeChanged.emit()
         try:
             self._data.sort(key=key,
                             reverse=order == Qt.SortOrder.AscendingOrder)
         finally:
-            self.layoutChanged.emit()  # type: ignore
+            self.layoutChanged.emit()
 
     def load(self, infos: list[Info]) -> None:
         self.beginResetModel()
