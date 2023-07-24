@@ -10,11 +10,13 @@ from tempfile import TemporaryDirectory
 from time import sleep
 from typing import NamedTuple
 
-from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.expected_conditions import (
     presence_of_element_located)
 from selenium.webdriver.support.expected_conditions import url_contains
@@ -45,19 +47,21 @@ class Date(NamedTuple):
             yield d
 
 
-def firefox_profile(dtemp: str) -> FirefoxProfile:
-    profile = FirefoxProfile()
+def options(dtemp: str) -> Options:
+    options = Options()
+
+    options.profile = FirefoxProfile()
 
     # disable Firefox's built-in PDF viewer
-    profile.set_preference('pdfjs.disabled', True)
+    options.profile.set_preference('pdfjs.disabled', True)
 
     # set download folder
-    profile.set_preference('browser.download.folderList', 2)
-    profile.set_preference('browser.download.dir', dtemp)
-    profile.set_preference('browser.helperApps.neverAsk.saveToDisk',
-                           'application/octet-stream')
+    options.profile.set_preference('browser.download.folderList', 2)
+    options.profile.set_preference('browser.download.dir', dtemp)
+    options.profile.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                                   'application/octet-stream')
 
-    return profile
+    return options
 
 
 def wait_download(dtemp: str) -> None:
@@ -77,7 +81,8 @@ def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
     print('files in dtemp:')
     for dtempfn in listdir(dtemp):
         print(f'\t{dtemp}/{dtempfn}')
-    print(f"mv'ing '{dtemp}/{listdir(dtemp)[0]}' to '{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'")
+    print(
+        f"mv'ing '{dtemp}/{listdir(dtemp)[0]}' to '{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'")
     move(f'{dtemp}/{listdir(dtemp)[0]}',
          f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf')
 
@@ -92,8 +97,8 @@ def get_last_local(data_path: str) -> Date:
 
 def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
     with TemporaryDirectory() as dtemp, \
-            webdriver.Firefox(executable_path=GECKODRIVER_PATH,
-                              firefox_profile=firefox_profile(dtemp)) as d:
+            Firefox(service=Service(executable_path=GECKODRIVER_PATH),
+                    options=options(dtemp)) as d:
         wait = WebDriverWait(d, 30)
 
         # do login
@@ -122,7 +127,8 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:
             text = f'{month:02d}'
             for i in count(2):
                 try:
-                    row = d.find_element(By.CSS_SELECTOR, f'.mat-row:nth-child({i})')
+                    row = d.find_element(
+                        By.CSS_SELECTOR, f'.mat-row:nth-child({i})')
                 except NoSuchElementException:
                     break
                 mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-mese')
