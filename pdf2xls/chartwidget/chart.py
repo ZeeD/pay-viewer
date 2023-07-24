@@ -8,6 +8,7 @@ from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import Qt
 
 from pdf2xls.dates import date2days
+
 from .datetimeaxis import DateTimeAxis
 
 

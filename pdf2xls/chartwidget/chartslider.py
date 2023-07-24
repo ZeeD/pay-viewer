@@ -12,9 +12,9 @@ from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
 from ..constants import CHARTSLIDER_QML_PATH
+from ..dates import date2days
+from ..dates import days2date
 from ..viewmodel import SortFilterViewModel
-from pdf2xls.dates import date2days
-from pdf2xls.dates import days2date
 
 
 class RangeSlider(QQuickItem):

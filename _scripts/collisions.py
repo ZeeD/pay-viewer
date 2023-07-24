@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 
-from pathlib import Path
-from json import load
 from collections import defaultdict
-
+from json import load
+from pathlib import Path
 
 COLLISIONS = defaultdict[str, set[str]](lambda: set([]))
 for filename in sorted(Path('../../pdf2xls-data').glob('**/*.pdf.json')):

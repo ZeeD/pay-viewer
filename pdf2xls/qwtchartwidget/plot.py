@@ -1,7 +1,5 @@
 from collections.abc import Iterable
 from datetime import date
-from datetime import datetime
-from datetime import time
 from datetime import timedelta
 from itertools import cycle
 
@@ -14,6 +12,8 @@ from qwt import QwtPlotGrid
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
 
+from ..dates import date2days
+from ..dates import days2date
 from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
 
@@ -30,20 +30,20 @@ def linecolors(excluded: set[Qt.GlobalColor]=set([Qt.GlobalColor.color0,
 
 
 def days(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = date.fromtimestamp(min_xdata)
-    upper = date.fromtimestamp(max_xdata)
+    lower = days2date(min_xdata)
+    upper = days2date(max_xdata)
 
     def it() -> Iterable[float]:
         when = lower
         while when < upper:
-            yield datetime.combine(when, time()).timestamp()
+            yield date2days(when)
             when += timedelta(days=1)
     return list(it())
 
 
 def months(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = date.fromtimestamp(min_xdata)
-    upper = date.fromtimestamp(max_xdata)
+    lower = days2date(min_xdata)
+    upper = days2date(max_xdata)
 
     ly, lm = (lower.year, lower.month)
     uy, um = (upper.year, upper.month)
@@ -51,7 +51,7 @@ def months(min_xdata: float, max_xdata: float) -> list[float]:
     def it() -> Iterable[float]:
         wy, wm = ly, lm
         while (wy, wm) < (uy, um):
-            yield datetime.combine(date(wy, wm, 1), time()).timestamp()
+            yield date2days(date(wy, wm, 1))
             if wm < 12:
                 wm += 1
             else:
@@ -61,20 +61,23 @@ def months(min_xdata: float, max_xdata: float) -> list[float]:
 
 
 def years(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = date.fromtimestamp(min_xdata).year
-    upper = date.fromtimestamp(max_xdata).year
+    lower = days2date(min_xdata)
+    upper = days2date(max_xdata)
+
+    ly = lower.year
+    uy = upper.year
 
     def it() -> Iterable[float]:
-        when = lower
-        while when < upper:
-            yield datetime.combine(date(when, 1, 1), time()).timestamp()
-            when += 1
+        wy = ly
+        while wy < uy:
+            yield date2days(date(wy, 1, 1))
+            wy += 1
     return list(it())
 
 
 class SD(QwtScaleDraw):
     def label(self, value: float) -> str:
-        return date.fromtimestamp(value).strftime('%Y-%m')
+        return days2date(value).strftime('%Y-%m')
 
 
 class Plot(QwtPlot):

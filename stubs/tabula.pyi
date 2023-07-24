@@ -4,7 +4,6 @@ from typing import BinaryIO
 
 from pandas import DataFrame
 
-
 def read_pdf_with_template(input_path: Path | BinaryIO,
                            template_path: Path | str,
                            *,

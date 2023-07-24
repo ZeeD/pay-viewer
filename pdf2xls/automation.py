@@ -64,10 +64,10 @@ def wait_download(dtemp: str) -> None:
     print(f'wait_download (initial: {listdir(dtemp)})')
     while not listdir(dtemp):
         sleep(.5)
-        print(f'wait_download [empty]')
+        print('wait_download [empty]')
     while any(fn.endswith('.part') for fn in listdir(dtemp)):
         sleep(.5)
-        print(f'wait_download [.part]')
+        print('wait_download [.part]')
 
 
 def mv_pdf_from_tmp_to_data(dtemp: str, year: int, month: int,
