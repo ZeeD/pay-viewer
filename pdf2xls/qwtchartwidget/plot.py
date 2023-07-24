@@ -3,8 +3,8 @@ from datetime import date
 from datetime import timedelta
 from itertools import cycle
 
-from PySide6.QtCore import Slot
 from qtpy.QtCore import Qt
+from qtpy.QtCore import Slot
 from qtpy.QtWidgets import QWidget
 from qwt import QwtPlot
 from qwt import QwtPlotCurve

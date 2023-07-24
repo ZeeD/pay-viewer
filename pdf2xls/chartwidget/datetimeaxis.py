@@ -3,9 +3,9 @@ from datetime import date
 from datetime import datetime
 from typing import cast
 
-from PySide6.QtCharts import QCategoryAxis
-from PySide6.QtCore import QDateTime
-from PySide6.QtCore import QObject
+from qtpy.QtCharts import QCategoryAxis
+from qtpy.QtCore import QDateTime
+from qtpy.QtCore import QObject
 
 from pdf2xls.dates import date2days
 

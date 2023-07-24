@@ -2,14 +2,14 @@ from abc import abstractmethod
 from datetime import date
 from typing import cast
 
-from PySide6.QtCore import Qt
-from PySide6.QtCore import QUrl
-from PySide6.QtCore import Signal
-from PySide6.QtCore import Slot
-from PySide6.QtQuick import QQuickItem
-from PySide6.QtQuick import QQuickView
-from PySide6.QtWidgets import QVBoxLayout
-from PySide6.QtWidgets import QWidget
+from qtpy.QtCore import Qt
+from qtpy.QtCore import QUrl
+from qtpy.QtCore import Signal
+from qtpy.QtCore import Slot
+from qtpy.QtQuick import QQuickItem
+from qtpy.QtQuick import QQuickView
+from qtpy.QtWidgets import QVBoxLayout
+from qtpy.QtWidgets import QWidget
 
 from ..constants import CHARTSLIDER_QML_PATH
 from ..dates import date2days

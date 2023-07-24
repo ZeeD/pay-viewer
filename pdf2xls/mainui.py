@@ -1,10 +1,10 @@
 from pathlib import Path
 from typing import cast
 
-from PySide6.QtGui import QAction
-from PySide6.QtGui import QShortcut
 from qtpy.QtCore import QItemSelection
+from qtpy.QtGui import QAction
 from qtpy.QtGui import QKeySequence
+from qtpy.QtGui import QShortcut
 from qtpy.QtUiTools import QUiLoader
 from qtpy.QtWidgets import QApplication
 from qtpy.QtWidgets import QDialog

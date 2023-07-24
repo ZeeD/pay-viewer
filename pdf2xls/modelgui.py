@@ -6,8 +6,8 @@ from datetime import date
 from decimal import Decimal
 
 from mypy_extensions import Arg
-from PySide6.QtCore import QDateTime
 from qtpy.QtCharts import QLineSeries
+from qtpy.QtCore import QDateTime
 
 from .dates import date2days
 from .dates import date2QDateTime

@@ -1,12 +1,12 @@
 from typing import cast
 
-from PySide6.QtCore import QAbstractItemModel
-from PySide6.QtCore import QItemSelectionModel
-from PySide6.QtCore import Qt
-from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QGridLayout
-from PySide6.QtWidgets import QTableView
-from PySide6.QtWidgets import QWidget
+from qtpy.QtCore import QAbstractItemModel
+from qtpy.QtCore import QItemSelectionModel
+from qtpy.QtCore import Qt
+from qtpy.QtUiTools import QUiLoader
+from qtpy.QtWidgets import QGridLayout
+from qtpy.QtWidgets import QTableView
+from qtpy.QtWidgets import QWidget
 
 from .constants import FREEZE_TABLE_VIEW_UI_PATH
 

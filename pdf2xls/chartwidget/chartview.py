@@ -4,7 +4,6 @@ from datetime import date
 from decimal import Decimal
 from typing import cast
 
-from PySide6.QtCore import Slot
 from qtpy.QtCharts import QChartView
 from qtpy.QtCharts import QLineSeries
 from qtpy.QtCharts import QValueAxis
@@ -12,6 +11,7 @@ from qtpy.QtCore import QPointF
 from qtpy.QtCore import QRect
 from qtpy.QtCore import QRectF
 from qtpy.QtCore import Qt
+from qtpy.QtCore import Slot
 from qtpy.QtGui import QMouseEvent
 from qtpy.QtGui import QPainter
 from qtpy.QtGui import QPen

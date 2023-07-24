@@ -2,10 +2,10 @@ from collections.abc import Iterable
 from datetime import date
 from typing import cast
 
-from PySide6.QtCharts import QAbstractSeries
-from PySide6.QtCharts import QChart
-from PySide6.QtCharts import QLineSeries
-from PySide6.QtCore import Qt
+from qtpy.QtCharts import QAbstractSeries
+from qtpy.QtCharts import QChart
+from qtpy.QtCharts import QLineSeries
+from qtpy.QtCore import Qt
 
 from pdf2xls.dates import date2days
 

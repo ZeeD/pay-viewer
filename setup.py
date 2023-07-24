@@ -15,6 +15,7 @@ setup(name='pdf2xls',
           'pandas-stubs',
           'tabula-py',
           'openpyxl',
+          'qtpy',
           'PySide6',
           'selenium',
           'mypy-extensions'
