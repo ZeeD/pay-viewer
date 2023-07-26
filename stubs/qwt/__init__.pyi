@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFrame
+from qtpy.QtCore import Qt
+from qtpy.QtWidgets import QFrame
 
 from .scale_div import QwtScaleDiv
 from .scale_draw import QwtScaleDraw
 
 class QwtPlot(QFrame):
     xBottom: int
+    yLeft: int
 
     def setAxisScaleDiv(self,
                         axisId: int,

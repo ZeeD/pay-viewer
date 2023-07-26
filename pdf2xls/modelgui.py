@@ -4,6 +4,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
+from enum import auto
+from enum import Enum
 
 from mypy_extensions import Arg
 from qtpy.QtCharts import QLineSeries
@@ -15,6 +17,12 @@ from .model import ColumnHeader
 from .model import Info
 
 
+class SeriesModelUnit(Enum):
+    EURO = auto()
+    HOUR = auto()
+    DAY = auto()
+
+
 @dataclass
 class SeriesModel:
     series: list[QLineSeries]
@@ -22,6 +30,7 @@ class SeriesModel:
     x_max: QDateTime
     y_min: float
     y_max: float
+    unit: SeriesModelUnit
 
     @classmethod
     def money(cls, infos: list[Info]) -> SeriesModel:
@@ -33,7 +42,7 @@ class SeriesModel:
             ColumnHeader.edr,
             ColumnHeader.totale_retributivo,
             ColumnHeader.netto_da_pagare,
-        ])
+        ], SeriesModelUnit.EURO)
 
     @classmethod
     def rol(cls, infos: list[Info]) -> SeriesModel:
@@ -43,7 +52,7 @@ class SeriesModel:
             ColumnHeader.par_godute,
             ColumnHeader.par_saldo,
             ColumnHeader.legenda_rol,
-        ])
+        ], SeriesModelUnit.HOUR)
 
     @classmethod
     def ferie(cls, infos: list[Info]) -> SeriesModel:
@@ -53,10 +62,14 @@ class SeriesModel:
             ColumnHeader.ferie_godute,
             ColumnHeader.ferie_saldo,
             (ColumnHeader.legenda_ferie, lambda d:d/8),
-        ])
+        ], SeriesModelUnit.DAY)
 
     @classmethod
-    def _from_infos(cls, infos: list[Info], column_headers: list[ColumnHeader | tuple[ColumnHeader, Callable[[Arg(Decimal, 'd')], Decimal]]]) -> SeriesModel:
+    def _from_infos(cls,
+                    infos: list[Info],
+                    column_headers: list[ColumnHeader | tuple[ColumnHeader, Callable[[Arg(Decimal, 'd')], Decimal]]],
+                    unit: SeriesModelUnit
+                    ) -> SeriesModel:
         series: list[QLineSeries] = []
         for column_header in column_headers:
             if isinstance(column_header, ColumnHeader):
@@ -105,7 +118,8 @@ class SeriesModel:
 
         return cls(series,
                    date2QDateTime(x_min), date2QDateTime(x_max),
-                   float(y_min), float(y_max))
+                   float(y_min), float(y_max),
+                   unit)
 
 
 SeriesModelFactory = Callable[[list[Info]], SeriesModel]

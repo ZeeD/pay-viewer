@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Iterable
 from datetime import date
 from datetime import timedelta
@@ -14,7 +16,7 @@ from qwt.scale_draw import QwtScaleDraw
 
 from ..dates import date2days
 from ..dates import days2date
-from ..modelgui import SeriesModelFactory
+from ..modelgui import SeriesModelFactory, SeriesModelUnit
 from ..viewmodel import SortFilterViewModel
 
 
@@ -75,7 +77,24 @@ def years(min_xdata: float, max_xdata: float) -> list[float]:
     return list(it())
 
 
-class SD(QwtScaleDraw):
+class FmtScaleDraw(QwtScaleDraw):
+    def __init__(self, fmt: str) -> None:
+        super().__init__()
+        self.fmt = fmt
+
+    def label(self, value: float) -> str:
+        return self.fmt.format(value=value)
+
+    @classmethod
+    def from_unit(cls, unit: SeriesModelUnit) -> FmtScaleDraw:
+        return cls({
+            SeriesModelUnit.EURO: '€ {value:_.2f}',
+            SeriesModelUnit.HOUR: '{value:_} hours',
+            SeriesModelUnit.DAY: '{value:_} days',
+        }[unit])
+
+
+class YearMonthScaleDraw(QwtScaleDraw):
     def label(self, value: float) -> str:
         return days2date(value).strftime('%Y-%m')
 
@@ -125,6 +144,8 @@ class Plot(QwtPlot):
                                          months(min_xdata, max_xdata),
                                          years(min_xdata, max_xdata)))
 
-        self.setAxisScaleDraw(QwtPlot.xBottom, SD())
+        self.setAxisScaleDraw(QwtPlot.yLeft,
+                              FmtScaleDraw.from_unit(series_model.unit))
+        self.setAxisScaleDraw(QwtPlot.xBottom, YearMonthScaleDraw())
 
         QwtPlotGrid.make(self)
