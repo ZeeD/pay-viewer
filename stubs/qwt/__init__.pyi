@@ -6,6 +6,7 @@ from qtpy.QtWidgets import QFrame
 from .scale_div import QwtScaleDiv
 from .scale_draw import QwtScaleDraw
 
+
 class QwtPlot(QFrame):
     xBottom: int
     yLeft: int
@@ -17,6 +18,14 @@ class QwtPlot(QFrame):
     def setAxisScaleDraw(self,
                          axisId: int,
                          scaleDraw: QwtScaleDraw) -> None: ...
+
+    def axisScaleDiv(self, axisId: int) -> QwtScaleDiv: ...
+
+    def axisScaleDraw(self, axisId: int) -> QwtScaleDraw: ...
+
+    def replot(self) -> None: ...
+
+    def setCanvasBackground(self, brush: Qt.GlobalColor) -> None: ...
 
 
 class QwtPlotCurve:
@@ -46,8 +55,8 @@ class QwtPlotGrid:
     def make(cls,
              plot: QwtPlot | None=None,
              z: None=None,
-             enablemajor: None=None,
-             enableminor: None=None,
+             enablemajor: tuple[bool, bool] | None=None,
+             enableminor: tuple[bool, bool] | None=None,
              color: None=None,
              width: None=None,
              style: None=None,

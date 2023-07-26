@@ -4,6 +4,7 @@ from qtpy.QtWidgets import QWidget
 from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
 from .plot import Plot
+from ..chartslider.chartslider import ChartSlider
 
 
 class QwtChartVidget(QWidget):
@@ -17,10 +18,10 @@ class QwtChartVidget(QWidget):
 
         layout = QVBoxLayout(self)
         plot = Plot(model, self, factory)
-        chart_slider = QWidget(self)  # ChartSlider(model, self)
+        chart_slider = ChartSlider(model, self)
         layout.addWidget(plot)
         layout.addWidget(chart_slider)
         self.setLayout(layout)
 
-        # chart_slider.start_date_changed.connect(plot.start_date_changed)
-        # chart_slider.end_date_changed.connect(plot.end_date_changed)
+        chart_slider.start_date_changed.connect(plot.start_date_changed)
+        chart_slider.end_date_changed.connect(plot.end_date_changed)

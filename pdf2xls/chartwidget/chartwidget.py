@@ -1,9 +1,9 @@
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
+from ..chartslider.chartslider import ChartSlider
 from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
-from .chartslider import ChartSlider
 from .chartview import ChartView
 
 

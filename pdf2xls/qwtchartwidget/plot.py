@@ -16,7 +16,8 @@ from qwt.scale_draw import QwtScaleDraw
 
 from ..dates import date2days
 from ..dates import days2date
-from ..modelgui import SeriesModelFactory, SeriesModelUnit
+from ..modelgui import SeriesModelFactory
+from ..modelgui import SeriesModelUnit
 from ..viewmodel import SortFilterViewModel
 
 
@@ -24,9 +25,11 @@ def linecolors(excluded: set[Qt.GlobalColor]=set([Qt.GlobalColor.color0,
                                                   Qt.GlobalColor.color1,
                                                   Qt.GlobalColor.black,
                                                   Qt.GlobalColor.white,
-                                                  Qt.GlobalColor.darkGray,
-                                                  Qt.GlobalColor.gray,
                                                   Qt.GlobalColor.lightGray,
+                                                  Qt.GlobalColor.cyan,
+                                                  Qt.GlobalColor.green,
+                                                  Qt.GlobalColor.magenta,
+                                                  Qt.GlobalColor.yellow,
                                                   Qt.GlobalColor.transparent])) -> Iterable[Qt.GlobalColor]:
     return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
 
@@ -39,7 +42,7 @@ def days(min_xdata: float, max_xdata: float) -> list[float]:
         when = lower
         while when < upper:
             yield date2days(when)
-            when += timedelta(days=1)
+            when += timedelta(days=7)
     return list(it())
 
 
@@ -105,9 +108,10 @@ class Plot(QwtPlot):
                  parent: QWidget | None,
                  factory: SeriesModelFactory):
         super().__init__(parent)
-        self._model = model.sourceModel()
-        self._model.modelReset.connect(self.model_reset)
         self.factory = factory
+        self._model = model.sourceModel()
+
+        self._model.modelReset.connect(self.model_reset)
 
     @Slot()
     def model_reset(self) -> None:
@@ -132,20 +136,55 @@ class Plot(QwtPlot):
 
             QwtPlotCurve.make(xdata, ydata, serie.name(), self,
                               linecolor=linecolor,
-                              linewidth=3,
+                              # style=QwtPlotCurve.Dots,
+                              # linewidth=5,
                               antialiased=True)
 
         if min_xdata is None or max_xdata is None:
             raise Exception('no *_xdata!')
 
-        self.setAxisScaleDiv(QwtPlot.xBottom,
-                             QwtScaleDiv(min_xdata, max_xdata,
-                                         days(min_xdata, max_xdata),
-                                         months(min_xdata, max_xdata),
-                                         years(min_xdata, max_xdata)))
-
         self.setAxisScaleDraw(QwtPlot.yLeft,
                               FmtScaleDraw.from_unit(series_model.unit))
-        self.setAxisScaleDraw(QwtPlot.xBottom, YearMonthScaleDraw())
 
-        QwtPlotGrid.make(self)
+        x_scale_draw = YearMonthScaleDraw()
+        x_scale_div = QwtScaleDiv(min_xdata, max_xdata,
+                                  days(min_xdata, max_xdata),
+                                  months(min_xdata, max_xdata),
+                                  years(min_xdata, max_xdata))
+        self.setAxisScaleDiv(QwtPlot.xBottom, x_scale_div)
+        self.setAxisScaleDraw(QwtPlot.xBottom, x_scale_draw)
+
+        QwtPlotGrid.make(self,
+                         enableminor=(False, True))
+
+        self.setCanvasBackground(Qt.GlobalColor.white)
+
+        self.setAxisScale(QwtPlot.xBottom, x_scale_div.lowerBound(), x_scale_div.upperBound())
+        self.replot()
+
+    @Slot(date)
+    def start_date_changed(self, start_date: date) -> None:
+        lower_bound = date2days(start_date)
+
+        scale_div = self.axisScaleDiv(QwtPlot.xBottom)
+        scale_div.setLowerBound(lower_bound)
+
+        # scale_draw = self.axisScaleDraw(QwtPlot.xBottom)
+        # pos = scale_draw.pos()
+        # length = scale_draw.length()
+        # print(f'{pos=}, {length=}')
+        # scale_draw.move(pos.x()+1, 0)
+        # scale_draw.setLength(length-1)
+
+        self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
+        self.replot()
+
+    @Slot(date)
+    def end_date_changed(self, end_date: date) -> None:
+        upper_bound = date2days(end_date)
+
+        scale_div = self.axisScaleDiv(QwtPlot.xBottom)
+        scale_div.setUpperBound(upper_bound)
+
+        self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
+        self.replot()

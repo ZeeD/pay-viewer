@@ -15,6 +15,7 @@ from ..constants import CHARTSLIDER_QML_PATH
 from ..dates import date2days
 from ..dates import days2date
 from ..viewmodel import SortFilterViewModel
+import math
 
 
 class RangeSlider(QQuickItem):
