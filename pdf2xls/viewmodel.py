@@ -71,13 +71,14 @@ class ViewModel(QAbstractTableModel):
     @overload
     def data(self,
              # white liar, we need also to add a rule on index --> col 0
-             index: QModelIndex | QPersistentModelIndex,
-             role: Literal[Qt.ItemDataRole.UserRole]) -> date: ...
+             index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
+             role: Literal[Qt.ItemDataRole.UserRole]  # @UnusedVariable
+             ) -> date: ...
 
     @overload
     def data(self,
-             index: QModelIndex | QPersistentModelIndex,
-             role: int=Qt.ItemDataRole.DisplayRole
+             index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
+             role: int=Qt.ItemDataRole.DisplayRole  # @UnusedVariable
              ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush: ...
 
     def data(self,
