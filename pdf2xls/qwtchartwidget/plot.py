@@ -21,17 +21,26 @@ from ..modelgui import SeriesModelUnit
 from ..viewmodel import SortFilterViewModel
 
 
-def linecolors(excluded: set[Qt.GlobalColor]=set([Qt.GlobalColor.color0,
-                                                  Qt.GlobalColor.color1,
-                                                  Qt.GlobalColor.black,
-                                                  Qt.GlobalColor.white,
-                                                  Qt.GlobalColor.lightGray,
-                                                  Qt.GlobalColor.cyan,
-                                                  Qt.GlobalColor.green,
-                                                  Qt.GlobalColor.magenta,
-                                                  Qt.GlobalColor.yellow,
-                                                  Qt.GlobalColor.transparent])) -> Iterable[Qt.GlobalColor]:
+def linecolors() -> Iterable[Qt.GlobalColor]:
+    excluded: set[Qt.GlobalColor] = set([Qt.GlobalColor.color0,
+                                         Qt.GlobalColor.color1,
+                                         Qt.GlobalColor.black,
+                                         Qt.GlobalColor.white,
+                                         Qt.GlobalColor.lightGray,
+                                         Qt.GlobalColor.cyan,
+                                         Qt.GlobalColor.green,
+                                         Qt.GlobalColor.magenta,
+                                         Qt.GlobalColor.yellow,
+                                         Qt.GlobalColor.transparent])
     return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
+
+
+def normalized_xdatas(min_xdata: float, max_xdata: float) -> tuple[float, float]:
+    lower = days2date(min_xdata)
+    upper = days2date(max_xdata)
+
+    return (date2days(date(lower.year, 1, 1)),
+            date2days(date(upper.year + 1, 1, 1)))
 
 
 def days(min_xdata: float, max_xdata: float) -> list[float]:
@@ -40,7 +49,7 @@ def days(min_xdata: float, max_xdata: float) -> list[float]:
 
     def it() -> Iterable[float]:
         when = lower
-        while when < upper:
+        while when <= upper:
             yield date2days(when)
             when += timedelta(days=7)
     return list(it())
@@ -55,7 +64,7 @@ def months(min_xdata: float, max_xdata: float) -> list[float]:
 
     def it() -> Iterable[float]:
         wy, wm = ly, lm
-        while (wy, wm) < (uy, um):
+        while (wy, wm) <= (uy, um):
             yield date2days(date(wy, wm, 1))
             if wm < 12:
                 wm += 1
@@ -74,7 +83,7 @@ def years(min_xdata: float, max_xdata: float) -> list[float]:
 
     def it() -> Iterable[float]:
         wy = ly
-        while wy < uy:
+        while wy <= uy:
             yield date2days(date(wy, 1, 1))
             wy += 1
     return list(it())
@@ -111,11 +120,19 @@ class Plot(QwtPlot):
         self.factory = factory
         self._model = model.sourceModel()
 
+        self.setCanvasBackground(Qt.GlobalColor.white)
+        QwtPlotGrid.make(self,
+                         enableminor=(False, True))
+        self.setAxisScaleDraw(QwtPlot.xBottom, YearMonthScaleDraw())
+
         self._model.modelReset.connect(self.model_reset)
 
     @Slot()
     def model_reset(self) -> None:
         series_model = self.factory(self._model._infos)
+
+        self.setAxisScaleDraw(QwtPlot.yLeft,
+                              FmtScaleDraw.from_unit(series_model.unit))
 
         min_xdata: float | None = None
         max_xdata: float | None = None
@@ -142,24 +159,15 @@ class Plot(QwtPlot):
 
         if min_xdata is None or max_xdata is None:
             raise Exception('no *_xdata!')
+        normalized_min_xdata, normalized_max_xdata = normalized_xdatas(min_xdata, max_xdata)
 
-        self.setAxisScaleDraw(QwtPlot.yLeft,
-                              FmtScaleDraw.from_unit(series_model.unit))
-
-        x_scale_draw = YearMonthScaleDraw()
         x_scale_div = QwtScaleDiv(min_xdata, max_xdata,
-                                  days(min_xdata, max_xdata),
-                                  months(min_xdata, max_xdata),
-                                  years(min_xdata, max_xdata))
+                                  days(normalized_min_xdata, normalized_max_xdata),
+                                  months(normalized_min_xdata, normalized_max_xdata),
+                                  years(normalized_min_xdata, normalized_max_xdata))
         self.setAxisScaleDiv(QwtPlot.xBottom, x_scale_div)
-        self.setAxisScaleDraw(QwtPlot.xBottom, x_scale_draw)
 
-        QwtPlotGrid.make(self,
-                         enableminor=(False, True))
-
-        self.setCanvasBackground(Qt.GlobalColor.white)
-
-        self.setAxisScale(QwtPlot.xBottom, x_scale_div.lowerBound(), x_scale_div.upperBound())
+        # self.setAxisScale(QwtPlot.xBottom, x_scale_div.lowerBound(), x_scale_div.upperBound())
         self.replot()
 
     @Slot(date)
@@ -176,7 +184,7 @@ class Plot(QwtPlot):
         # scale_draw.move(pos.x()+1, 0)
         # scale_draw.setLength(length-1)
 
-        self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
+        # self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
         self.replot()
 
     @Slot(date)
@@ -186,5 +194,5 @@ class Plot(QwtPlot):
         scale_div = self.axisScaleDiv(QwtPlot.xBottom)
         scale_div.setUpperBound(upper_bound)
 
-        self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
+        # self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
         self.replot()
