@@ -1,8 +1,12 @@
 from datetime import date
 from unittest import TestCase
 
-from pdf2xls.qwtchartwidget.plot import days, months, years, normalized_xdatas
-from pdf2xls.dates import days2date, date2days
+from pdf2xls.dates import date2days
+from pdf2xls.dates import days2date
+from pdf2xls.qwtchartwidget.plot import days
+from pdf2xls.qwtchartwidget.plot import months
+from pdf2xls.qwtchartwidget.plot import normalized_xdatas
+from pdf2xls.qwtchartwidget.plot import years
 
 
 class TestNormalizedXdatas(TestCase):

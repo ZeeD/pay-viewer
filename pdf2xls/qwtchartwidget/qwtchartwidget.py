@@ -1,10 +1,10 @@
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
+from ..chartslider.chartslider import ChartSlider
 from ..modelgui import SeriesModelFactory
 from ..viewmodel import SortFilterViewModel
 from .plot import Plot
-from ..chartslider.chartslider import ChartSlider
 
 
 class QwtChartVidget(QWidget):
