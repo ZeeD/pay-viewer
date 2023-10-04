@@ -88,7 +88,8 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
         row[0] = str(info.when)
 
         # columns
-        for columns in sorted(info.columns, key=lambda column: column.header.name):
+        for columns in sorted(info.columns,
+                              key=lambda column: column.header.name):
             key = columns.header.name
             value = str(columns.howmuch)
             if key in indexes:
@@ -101,9 +102,12 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
                 row.append(value)
 
         # additional_details
-        for additional_detail in sorted(info.additional_details, key=attrgetter('descrizione')):
+        for additional_detail in sorted(info.additional_details,
+                                        key=attrgetter('descrizione')):
             key = str(additional_detail.cod)
-            value = str(-additional_detail.trattenute if additional_detail.trattenute else additional_detail.competenze)
+            value = str(-additional_detail.trattenute
+                        if additional_detail.trattenute
+                        else additional_detail.competenze)
             if key in indexes:
                 row[indexes[key]] = value
             else:
