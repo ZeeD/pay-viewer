@@ -22,7 +22,7 @@ class FreezeTableView(QWidget):
                  parent: QWidget | None,
                  model: QAbstractItemModel) -> None:
         super().__init__(parent)
-        content = cast(TableViewUI, QUiLoader().load(
+        content = cast(TableViewUI, QUiLoader(parent).load(
             FREEZE_TABLE_VIEW_UI_PATH))
         self._left = content.left
         self._right = content.right

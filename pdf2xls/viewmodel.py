@@ -112,17 +112,18 @@ class ViewModel(QAbstractTableModel):
             return Qt.AlignmentFlag.AlignCenter
 
         if role == Qt.ItemDataRole.BackgroundRole:
-            max_, min_, this = max_min_this(self._data, row, column)
-            if this == 0:
+            max_, min_, val = max_min_this(self._data, row, column)
+            if val == 0:
                 return None
 
-            perc = float((this - min_) / (max_ - min_)) if max_ != min_ else .5
+            perc = (val - min_) / (max_ - min_) if max_ != min_ else Decimal(.5)
 
-            red = int((1 - perc) * 255)  # 0..1 ->  255..0
-            green = int(perc * 255)  # 0..1 -> 0..255
-            blue = int((.5 - abs(perc - .5)) * 511)  # 0..0.5..1 -> 0..255..0
+            hue = int(perc * 120)   # 0..359 ; red=0, green=120
+            saturation = 223        # 0..255
+            lightness = 159         # 0..255
 
-            return QBrush(QColor(red, green, blue, 127))
+            return QBrush(QColor.fromHsl(hue, saturation, lightness))
+
 
         if role == Qt.ItemDataRole.ForegroundRole:
             return None
