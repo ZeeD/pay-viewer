@@ -60,7 +60,8 @@ class FreezeTableView(QWidget):
                                                             for row in range(self._model.rowCount())))
 
         # force sort
-        self._left.sortByColumn(0, Qt.SortOrder.DescendingOrder)
+        self._left.sortByColumn(
+            0, Qt.SortOrder.DescendingOrder)  # @UndefinedVariable
 
         self._left.resizeColumnsToContents()
         self._right.resizeColumnsToContents()
