@@ -18,7 +18,9 @@ setup(name='pdf2xls',
           'qtpy',
           'PySide6',
           'selenium',
-          'mypy-extensions'
+          'mypy-extensions',
+          'PythonQwt',
+          'types-setuptools',
       ],
       
       entry_points={
