@@ -13,13 +13,12 @@ from .datetimeaxis import DateTimeAxis
 
 
 class Chart(QChart):
-
     def __init__(self) -> None:
         super().__init__()
         self.setAcceptHoverEvents(True)
         self.legend().hide()
         self._series: list[QAbstractSeries] = []
-        self.scrolledTo = 0.
+        self.scrolledTo = 0.0
 
     def x_zoom(self, start_date: date, end_date: date) -> None:
         axis = cast(DateTimeAxis, self.axes(Qt.Orientation.Horizontal)[0])

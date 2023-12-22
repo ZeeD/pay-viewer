@@ -11,4 +11,4 @@ class ABCReader(ABC):
 
     @abstractmethod
     def read_infos(self) -> list[Info]:
-        'eagerly read self.name'
+        "eagerly read self.name"

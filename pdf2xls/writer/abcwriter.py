@@ -11,4 +11,4 @@ class ABCWriter(ABC):
 
     @abstractmethod
     def write_infos(self, infos: list[Info]) -> None:
-        'append an info to a file - returns mtime'
+        "append an info to a file - returns mtime"

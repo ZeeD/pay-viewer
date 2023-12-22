@@ -1,4 +1,4 @@
-'pdf reader'
+"pdf reader"
 
 from collections.abc import Iterator
 from datetime import date
@@ -18,20 +18,22 @@ from .abcreader import ABCReader
 
 
 class PdfReader(ABCReader):
-    'retrieve infos from .pdf'
+    "retrieve infos from .pdf"
 
     def read_infos(self) -> list[Info]:
-        'read from a file'
+        "read from a file"
 
         for name in dir(options.display):
-            if 'max' in name:
+            if "max" in name:
                 setattr(options.display, name, 1000)
 
-        tables = read_pdf_with_template(self.name,
-                                        TEMPLATE_PATH,
-                                        pandas_options={'header': None},
-                                        pages=1,
-                                        stream=True)
+        tables = read_pdf_with_template(
+            self.name,
+            TEMPLATE_PATH,
+            pandas_options={"header": None},
+            pages=1,
+            stream=True,
+        )
 
         table_periodo = tables[0]
         table_money = tables[1]
@@ -68,69 +70,72 @@ class PdfReader(ABCReader):
         par_godute = extract_par_godute(table_ferie)
         par_saldo = extract_par_saldo(table_ferie)
 
-        legenda_ordinario = extract_legenda(table_legenda_keys,
-                                            table_legenda_values,
-                                            'OR')
-        legenda_straordinario = extract_legenda(table_legenda_keys,
-                                                table_legenda_values,
-                                                'ST')
-        legenda_ferie = extract_legenda(table_legenda_keys,
-                                        table_legenda_values,
-                                        'FR')
-        legenda_reperibilita = extract_legenda(table_legenda_keys,
-                                               table_legenda_values,
-                                               'RA')
-        legenda_rol = extract_legenda(table_legenda_keys,
-                                      table_legenda_values,
-                                      'RL')
+        legenda_ordinario = extract_legenda(
+            table_legenda_keys, table_legenda_values, "OR"
+        )
+        legenda_straordinario = extract_legenda(
+            table_legenda_keys, table_legenda_values, "ST"
+        )
+        legenda_ferie = extract_legenda(table_legenda_keys, table_legenda_values, "FR")
+        legenda_reperibilita = extract_legenda(
+            table_legenda_keys, table_legenda_values, "RA"
+        )
+        legenda_rol = extract_legenda(table_legenda_keys, table_legenda_values, "RL")
 
         additional_details = extract_details(table_details)
 
-        info = Info(when=when,
-                    columns=[
-                        Column(ColumnHeader.minimo, minimo),
-                        Column(ColumnHeader.scatti, scatti),
-                        Column(ColumnHeader.superm, superm),
-                        Column(ColumnHeader.sup_ass, sup_ass),
-                        Column(ColumnHeader.edr, edr),
-                        Column(ColumnHeader.totale_retributivo,
-                               totale_retributivo),
-                        Column(ColumnHeader.netto_da_pagare, netto_da_pagare),
-                        Column(ColumnHeader.ferie_a_prec, ferie_a_prec),
-                        Column(ColumnHeader.ferie_spett, ferie_spett),
-                        Column(ColumnHeader.ferie_godute, ferie_godute),
-                        Column(ColumnHeader.ferie_saldo, ferie_saldo),
-                        Column(ColumnHeader.par_a_prec, par_a_prec),
-                        Column(ColumnHeader.par_spett, par_spett),
-                        Column(ColumnHeader.par_godute, par_godute),
-                        Column(ColumnHeader.par_saldo, par_saldo),
-                        Column(ColumnHeader.legenda_ordinario,
-                               legenda_ordinario),
-                        Column(ColumnHeader.legenda_straordinario,
-                               legenda_straordinario),
-                        Column(ColumnHeader.legenda_ferie, legenda_ferie),
-                        Column(ColumnHeader.legenda_reperibilita,
-                               legenda_reperibilita),
-                        Column(ColumnHeader.legenda_rol, legenda_rol)
-                    ],
-                    additional_details=list(additional_details))
+        info = Info(
+            when=when,
+            columns=[
+                Column(ColumnHeader.minimo, minimo),
+                Column(ColumnHeader.scatti, scatti),
+                Column(ColumnHeader.superm, superm),
+                Column(ColumnHeader.sup_ass, sup_ass),
+                Column(ColumnHeader.edr, edr),
+                Column(ColumnHeader.totale_retributivo, totale_retributivo),
+                Column(ColumnHeader.netto_da_pagare, netto_da_pagare),
+                Column(ColumnHeader.ferie_a_prec, ferie_a_prec),
+                Column(ColumnHeader.ferie_spett, ferie_spett),
+                Column(ColumnHeader.ferie_godute, ferie_godute),
+                Column(ColumnHeader.ferie_saldo, ferie_saldo),
+                Column(ColumnHeader.par_a_prec, par_a_prec),
+                Column(ColumnHeader.par_spett, par_spett),
+                Column(ColumnHeader.par_godute, par_godute),
+                Column(ColumnHeader.par_saldo, par_saldo),
+                Column(ColumnHeader.legenda_ordinario, legenda_ordinario),
+                Column(ColumnHeader.legenda_straordinario, legenda_straordinario),
+                Column(ColumnHeader.legenda_ferie, legenda_ferie),
+                Column(ColumnHeader.legenda_reperibilita, legenda_reperibilita),
+                Column(ColumnHeader.legenda_rol, legenda_rol),
+            ],
+            additional_details=list(additional_details),
+        )
 
         # there is only an info object in a pdf
         return [info]
 
 
 def extract_periodo(table: DataFrame) -> date:
-    'extract the right row, and parse the date inside'
+    "extract the right row, and parse the date inside"
 
     cell = table.at[0, 0]
     words = cell.split()
 
-    day = 31 if words[0] == '13.MA' else 1
+    day = 31 if words[0] == "13.MA" else 1
     month = {
-        'GENNAIO': 1, 'FEBBRAIO': 2, 'MARZO': 3, 'APRILE': 4,
-        'MAGGIO': 5, 'GIUGNO': 6, 'LUGLIO': 7, 'AGOSTO': 8,
-        'SETTEMBRE': 9, 'OTTOBRE': 10, 'NOVEMBRE': 11, 'DICEMBRE': 12,
-        '13.MA': 12
+        "GENNAIO": 1,
+        "FEBBRAIO": 2,
+        "MARZO": 3,
+        "APRILE": 4,
+        "MAGGIO": 5,
+        "GIUGNO": 6,
+        "LUGLIO": 7,
+        "AGOSTO": 8,
+        "SETTEMBRE": 9,
+        "OTTOBRE": 10,
+        "NOVEMBRE": 11,
+        "DICEMBRE": 12,
+        "13.MA": 12,
     }[words[0]]
     year = int(words[1])
 
@@ -141,12 +146,12 @@ def extract(el: str | float) -> Decimal:
     s: str | float
     if isinstance(el, float):
         if isnan(el):
-            s = '0'
+            s = "0"
         else:
             s = round(el, 2)
     else:
-        s = el.replace('.', '').replace(',', '.')
-        if s.endswith('-'):
+        s = el.replace(".", "").replace(",", ".")
+        if s.endswith("-"):
             s = s[-1] + s[:-1]
 
     return Decimal(s)
@@ -240,11 +245,10 @@ def extract_par_saldo(table: DataFrame) -> Decimal:
 
 
 def extract_legenda(
-        table_keys: DataFrame,
-        table_values: DataFrame,
-        key: str) -> Decimal:
+    table_keys: DataFrame, table_values: DataFrame, key: str
+) -> Decimal:
     for i, row in table_keys.itertuples():
-        if row.startswith(f'{key}='):
+        if row.startswith(f"{key}="):
             return extract(table_values.iloc[i, 0])
     return Decimal(0)
 
@@ -252,33 +256,27 @@ def extract_legenda(
 def extract_details(table: DataFrame) -> Iterator[AdditionalDetail]:
     for row in table.itertuples(False, None):
         if len(row) == 8:
-            yield AdditionalDetail(prev=(None
-                                         if isnan(row[0])
-                                         else int(row[0])),
-                                   fisc=(None
-                                         if isnan(row[1])
-                                         else int(row[1])),
-                                   cod=row[2],
-                                   descrizione=row[3],
-                                   ore_o_giorni=extract(row[4]),
-                                   compenso_unitario=extract(row[5]),
-                                   trattenute=extract(row[6]),
-                                   competenze=extract(row[7]))
+            yield AdditionalDetail(
+                prev=(None if isnan(row[0]) else int(row[0])),
+                fisc=(None if isnan(row[1]) else int(row[1])),
+                cod=row[2],
+                descrizione=row[3],
+                ore_o_giorni=extract(row[4]),
+                compenso_unitario=extract(row[5]),
+                trattenute=extract(row[6]),
+                competenze=extract(row[7]),
+            )
         else:
-            if (len(row) == 9
-                and isnan(row[4])
-                    and all(isnan(e) for e in table[4])):
-                yield AdditionalDetail(prev=(None
-                                             if isnan(row[0])
-                                             else int(row[0])),
-                                       fisc=(None
-                                             if isnan(row[1])
-                                             else int(row[1])),
-                                       cod=row[2],
-                                       descrizione=row[3],
-                                       ore_o_giorni=extract(row[5]),
-                                       compenso_unitario=extract(row[6]),
-                                       trattenute=extract(row[7]),
-                                       competenze=extract(row[8]))
+            if len(row) == 9 and isnan(row[4]) and all(isnan(e) for e in table[4]):
+                yield AdditionalDetail(
+                    prev=(None if isnan(row[0]) else int(row[0])),
+                    fisc=(None if isnan(row[1]) else int(row[1])),
+                    cod=row[2],
+                    descrizione=row[3],
+                    ore_o_giorni=extract(row[5]),
+                    compenso_unitario=extract(row[6]),
+                    trattenute=extract(row[7]),
+                    competenze=extract(row[8]),
+                )
             else:
                 raise Exception(row)

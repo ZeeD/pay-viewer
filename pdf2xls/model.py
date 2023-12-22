@@ -66,30 +66,29 @@ class Info:
 
 def get_descrizione(additional_detail: AdditionalDetail) -> str:
     return {
-        2302: 'TICKET PASTO C',
-        2308: 'TICKET PASTO E',
-        2802: 'REPER. INTERVENTO',
-        6854: 'AD.COM.LE DA TR.',
-        6856: 'AD.REG.LE DA TR.',
-        7293: 'ULT.DETRAZIONE MESE/PROGR'
+        2302: "TICKET PASTO C",
+        2308: "TICKET PASTO E",
+        2802: "REPER. INTERVENTO",
+        6854: "AD.COM.LE DA TR.",
+        6856: "AD.REG.LE DA TR.",
+        7293: "ULT.DETRAZIONE MESE/PROGR",
     }.get(additional_detail.cod, additional_detail.descrizione)
 
 
 def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
-    headers: list[str] = ['when']
+    headers: list[str] = ["when"]
     data: list[list[str]] = []
 
     indexes: dict[str, int] = {}
 
-    for info in sorted(infos, key=attrgetter('when'), reverse=True):
-        row = ['0'] * len(headers)
+    for info in sorted(infos, key=attrgetter("when"), reverse=True):
+        row = ["0"] * len(headers)
 
         # when
         row[0] = str(info.when)
 
         # columns
-        for columns in sorted(info.columns,
-                              key=lambda column: column.header.name):
+        for columns in sorted(info.columns, key=lambda column: column.header.name):
             key = columns.header.name
             value = str(columns.howmuch)
             if key in indexes:
@@ -98,23 +97,26 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
                 indexes[key] = len(headers)
                 headers.append(key)
                 for other_row in data:
-                    other_row.append('0')
+                    other_row.append("0")
                 row.append(value)
 
         # additional_details
-        for additional_detail in sorted(info.additional_details,
-                                        key=attrgetter('descrizione')):
+        for additional_detail in sorted(
+            info.additional_details, key=attrgetter("descrizione")
+        ):
             key = str(additional_detail.cod)
-            value = str(-additional_detail.trattenute
-                        if additional_detail.trattenute
-                        else additional_detail.competenze)
+            value = str(
+                -additional_detail.trattenute
+                if additional_detail.trattenute
+                else additional_detail.competenze
+            )
             if key in indexes:
                 row[indexes[key]] = value
             else:
                 indexes[key] = len(headers)
                 headers.append(get_descrizione(additional_detail))  # first one
                 for other_row in data:
-                    other_row.append('0')
+                    other_row.append("0")
                 row.append(value)
 
         data.append(row)

@@ -1,5 +1,9 @@
 from pathlib import Path
 from typing import cast
+from os import environ
+
+if "QT_API" not in environ:
+    environ["QT_API"] = "pyside6"
 
 from qtpy.QtCore import QItemSelection
 from qtpy.QtGui import QAction
@@ -39,7 +43,6 @@ class Settingsui(QDialog):
 
 
 def new_settingsui(settings: Settings) -> Settingsui:
-
     def save_settings() -> None:
         settings.username = settingsui.usernameLineEdit.text()
         settings.password = settingsui.passwordLineEdit.text()
@@ -73,31 +76,29 @@ class Mainui(QMainWindow):
     gridLayout_1: QGridLayout
 
 
-def new_mainui(settings: Settings,
-               model: SortFilterViewModel,
-               settingsui: Settingsui) -> QWidget:
-
-    def update_helper(*,
-                      only_local: bool=False,
-                      force_pdf: bool=True) -> None:
+def new_mainui(
+    settings: Settings, model: SortFilterViewModel, settingsui: Settingsui
+) -> QWidget:
+    def update_helper(*, only_local: bool = False, force_pdf: bool = True) -> None:
         try:
             model.update(only_local=only_local, force_pdf=force_pdf)
         except NoHistoryException:
-            resp = QMessageBox.question(mainui, 'pdf2xls', 'Should load pdf?')
+            resp = QMessageBox.question(mainui, "pdf2xls", "Should load pdf?")
             if resp == QMessageBox.StandardButton.Yes:
                 model.update(only_local=only_local, force_pdf=True)
 
-    def update_status_bar(_selected: QItemSelection,
-                          _deselected: QItemSelection) -> None:
+    def update_status_bar(
+        _selected: QItemSelection, _deselected: QItemSelection
+    ) -> None:
         model.selectionChanged(selection_model, mainui.statusBar())
 
     def remove_jsons_helper() -> None:
         remove_jsons(settings.data_path)
-        QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
+        QMessageBox.information(mainui, "pdf2xls", "Cleanup complete")
 
     def export_helper() -> None:
-        print('export_helper')
-        csvWriter = CsvWriter(Path('/home/zed/Desktop/pdf2xls.csv'))
+        print("export_helper")
+        csvWriter = CsvWriter(Path("/home/zed/Desktop/pdf2xls.csv"))
         csvWriter.write_infos(model.get_rows())
 
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
@@ -132,10 +133,12 @@ def new_mainui(settings: Settings,
     mainui.actionExport.triggered.connect(export_helper)
     settingsui.accepted.connect(update_helper)
 
-    QShortcut(QKeySequence('Ctrl+F'),
-              mainui).activated.connect(mainui.lineEdit.setFocus)
-    QShortcut(QKeySequence('Esc'),
-              mainui).activated.connect(lambda: mainui.lineEdit.setText(''))
+    QShortcut(QKeySequence("Ctrl+F"), mainui).activated.connect(
+        mainui.lineEdit.setFocus
+    )
+    QShortcut(QKeySequence("Esc"), mainui).activated.connect(
+        lambda: mainui.lineEdit.setText("")
+    )
 
     # on startup load only from local, and ask if you really want
     update_helper(only_local=True, force_pdf=False)

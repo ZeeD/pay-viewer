@@ -25,23 +25,24 @@ from .charthover import ChartHover
 from .datetimeaxis import DateTimeAxis
 
 
-def tick_interval(y_max: float, n: int=10) -> float:
-    'return min(10**x) > y_max / n'
+def tick_interval(y_max: float, n: int = 10) -> float:
+    "return min(10**x) > y_max / n"
     goal_step = y_max / n
     exp = 1
     while True:
-        y_step = 10.**exp
+        y_step = 10.0**exp
         if y_step > goal_step:
             return y_step
         exp += 1
 
 
 class ChartView(QChartView):
-
-    def __init__(self,
-                 model: SortFilterViewModel,
-                 parent: QWidget | None,
-                 factory: SeriesModelFactory):
+    def __init__(
+        self,
+        model: SortFilterViewModel,
+        parent: QWidget | None,
+        factory: SeriesModelFactory,
+    ):
         super().__init__(parent)
         self.setMouseTracking(True)
         self._model = model.sourceModel()
@@ -69,7 +70,9 @@ class ChartView(QChartView):
         if chart is None or axis_x is None:
             return
 
-        start_date = self._start_date if self._start_date is not None else axis_x.min_date
+        start_date = (
+            self._start_date if self._start_date is not None else axis_x.min_date
+        )
         end_date = self._end_date if self._end_date is not None else axis_x.max_date
         chart.x_zoom(start_date, end_date)
 
@@ -90,7 +93,7 @@ class ChartView(QChartView):
         for serie in series_model.series:
             serie.attachAxis(axis_y)
         axis_y.setTickType(QValueAxis.TickType.TicksDynamic)
-        axis_y.setTickAnchor(0.)
+        axis_y.setTickAnchor(0.0)
         axis_y.setMinorTickCount(9)
         axis_y.setTickInterval(tick_interval(series_model.y_max))
         axis_y.setMin(series_model.y_min)
@@ -109,8 +112,10 @@ class ChartView(QChartView):
             # find closest x
             # assumption: all series have same x, so I can just one the first one
             series = cast(list[QLineSeries], chart.series())
-            _, index, value = min((abs(event_value.x() - point.x()), i, point)
-                                  for i, point in enumerate(series[0].points()))
+            _, index, value = min(
+                (abs(event_value.x() - point.x()), i, point)
+                for i, point in enumerate(series[0].points())
+            )
 
             for serie in series:
                 serie.deselectAllPoints()
@@ -118,8 +123,10 @@ class ChartView(QChartView):
 
             when = days2date(value.x())
 
-            howmuchs = {serie.name(): (serie.color(), Decimal(f'{serie.at(index).y():.2f}'))
-                        for serie in series}
+            howmuchs = {
+                serie.name(): (serie.color(), Decimal(f"{serie.at(index).y():.2f}"))
+                for serie in series
+            }
 
             self.event_pos = chart.mapToPosition(value)
 
@@ -128,8 +135,7 @@ class ChartView(QChartView):
                 new_x -= self.chart_hover.size().width()
             new_y = 100
 
-            self.chart_hover.set_howmuchs(
-                when, howmuchs, QPointF(new_x, new_y))
+            self.chart_hover.set_howmuchs(when, howmuchs, QPointF(new_x, new_y))
 
         super().mouseMoveEvent(event)
         self.update()
@@ -139,10 +145,8 @@ class ChartView(QChartView):
         if self.event_pos is not None:
             self.setUpdatesEnabled(False)
             try:
-                painter.setPen(
-                    QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
+                painter.setPen(QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
                 x = self.event_pos.x()
-                painter.drawLine(int(x), int(rect.top()),
-                                 int(x), int(rect.bottom()))
+                painter.drawLine(int(x), int(rect.top()), int(x), int(rect.bottom()))
             finally:
                 self.setUpdatesEnabled(True)

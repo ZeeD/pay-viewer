@@ -24,26 +24,24 @@ class ChartHoverUI(QWidget):
 
 
 class ChartHover(QGraphicsWidget):
-    def __init__(self, parent: QGraphicsItem | None=None) -> None:
+    def __init__(self, parent: QGraphicsItem | None = None) -> None:
         super().__init__(parent)
         self.setLayout(QGraphicsLinearLayout(Qt.Orientation.Vertical))
         self.setZValue(11)
 
-        self.widget = cast(ChartHoverUI,
-                           QUiLoader().load(CHARTHOVERUI_UI_PATH))
+        self.widget = cast(ChartHoverUI, QUiLoader().load(CHARTHOVERUI_UI_PATH))
 
         item = QGraphicsProxyWidget(self)
         item.setWidget(self.widget)
         self.keyToValueLabel: dict[str, QLabel] = {}
 
-    def set_howmuchs(self,
-                     when: date,
-                     howmuchs: dict[str, tuple[QColor, Decimal]],
-                     pos: QPointF) -> None:
+    def set_howmuchs(
+        self, when: date, howmuchs: dict[str, tuple[QColor, Decimal]], pos: QPointF
+    ) -> None:
         if pos == self.pos():
             return
 
-        self.widget.label.setText(f'{when:%B %Y}')
+        self.widget.label.setText(f"{when:%B %Y}")
 
         for key, label in self.keyToValueLabel.items():
             if key not in howmuchs:
@@ -57,7 +55,7 @@ class ChartHover(QGraphicsWidget):
             if key in self.keyToValueLabel:
                 continue
             label = QLabel(str(v), self.widget)
-            label.setStyleSheet(f'background-color: {color.name()}')
+            label.setStyleSheet(f"background-color: {color.name()}")
 
             self.widget.ormLayout.addRow(key, label)
             self.keyToValueLabel[key] = label

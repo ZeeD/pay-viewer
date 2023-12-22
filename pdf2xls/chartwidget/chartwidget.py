@@ -8,12 +8,14 @@ from .chartview import ChartView
 
 
 class ChartWidget(QWidget):
-    'composition of a ChartView and a slider'
+    "composition of a ChartView and a slider"
 
-    def __init__(self,
-                 model: SortFilterViewModel,
-                 parent: QWidget | None,
-                 factory: SeriesModelFactory):
+    def __init__(
+        self,
+        model: SortFilterViewModel,
+        parent: QWidget | None,
+        factory: SeriesModelFactory,
+    ):
         super().__init__(parent)
 
         layout = QVBoxLayout(self)

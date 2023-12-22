@@ -1,4 +1,4 @@
-'xls writer'
+"xls writer"
 
 from datetime import date
 from decimal import Decimal
@@ -14,9 +14,9 @@ from .abcwriter import ABCWriter
 
 E = None | str | date | Decimal
 
-NUMBER_FORMAT_TEXT = '@'
-NUMBER_FORMAT_DATE = 'mm-dd-yy'
-NUMBER_FORMAT_NUMBER = '0.00'
+NUMBER_FORMAT_TEXT = "@"
+NUMBER_FORMAT_DATE = "mm-dd-yy"
+NUMBER_FORMAT_NUMBER = "0.00"
 NUMBER_FORMAT_CURRENCY = r'#,##0.00\ "€"'
 
 VALUE_NUMBER_FORMAT = {
@@ -43,34 +43,41 @@ VALUE_NUMBER_FORMAT = {
     ColumnHeader.legenda_ferie: NUMBER_FORMAT_NUMBER,
     ColumnHeader.legenda_reperibilita: NUMBER_FORMAT_NUMBER,
     ColumnHeader.legenda_rol: NUMBER_FORMAT_NUMBER,
-    ColumnHeader.detail: NUMBER_FORMAT_TEXT
+    ColumnHeader.detail: NUMBER_FORMAT_TEXT,
 }
 
 
 class XlsWriter(ABCWriter):
-    'write infos on an .xls'
+    "write infos on an .xls"
 
     def write_infos(self, infos: list[Info]) -> None:
-        'atomically write all the infos'
+        "atomically write all the infos"
 
         def clean(descrizione: str) -> str:
-            for prefix in ('AD.COM.LE DA TR. NEL ',
-                           'AD.REG.LE DA TR. NEL ',
-                           'TICKET PASTO'):
+            for prefix in (
+                "AD.COM.LE DA TR. NEL ",
+                "AD.REG.LE DA TR. NEL ",
+                "TICKET PASTO",
+            ):
                 if descrizione.startswith(prefix):
-                    return f'{prefix}*'
+                    return f"{prefix}*"
 
             return descrizione
 
         # collect all details of all infos:
-        details = list(sorted({clean(additional_detail.descrizione)
-                               for info in infos
-                               for additional_detail in
-                               info.additional_details}))
+        details = list(
+            sorted(
+                {
+                    clean(additional_detail.descrizione)
+                    for info in infos
+                    for additional_detail in info.additional_details
+                }
+            )
+        )
 
         # there are 1 + len(keys)-1 + len(details) columns
 
-        header: list[tuple[E, str]] = [('month', NUMBER_FORMAT_TEXT)]
+        header: list[tuple[E, str]] = [("month", NUMBER_FORMAT_TEXT)]
         for column_header in ColumnHeader:
             if column_header is not ColumnHeader.detail:
                 header.append((column_header.name, NUMBER_FORMAT_TEXT))
@@ -82,50 +89,61 @@ class XlsWriter(ABCWriter):
 
         for info in infos:
             # group columns by column_header
-            columns = {column.header: column
-                       for column in info.columns}
+            columns = {column.header: column for column in info.columns}
             # group additional_details by descrizione
-            additional_details = {clean(additional_detail.descrizione):
-                                  additional_detail
-                                  for additional_detail in
-                                  info.additional_details}
+            additional_details = {
+                clean(additional_detail.descrizione): additional_detail
+                for additional_detail in info.additional_details
+            }
 
             row: list[tuple[E, str]] = [(info.when, NUMBER_FORMAT_DATE)]
             for column_header in ColumnHeader:
                 if column_header is not ColumnHeader.detail:
-                    row.append((columns[column_header].howmuch,
-                                VALUE_NUMBER_FORMAT[column_header])
-                               if column_header in columns
-                               else (None, NUMBER_FORMAT_TEXT))
+                    row.append(
+                        (
+                            columns[column_header].howmuch,
+                            VALUE_NUMBER_FORMAT[column_header],
+                        )
+                        if column_header in columns
+                        else (None, NUMBER_FORMAT_TEXT)
+                    )
                 else:
                     for detail in details:
                         # cosa esportare nell'xls?
                         row.append(
-                            (additional_details[detail].competenze -
-                             additional_details[detail].trattenute,
-                                NUMBER_FORMAT_NUMBER)
+                            (
+                                additional_details[detail].competenze
+                                - additional_details[detail].trattenute,
+                                NUMBER_FORMAT_NUMBER,
+                            )
                             if detail in additional_details
-                            else (None, NUMBER_FORMAT_TEXT))
+                            else (None, NUMBER_FORMAT_TEXT)
+                        )
             rows.append(row)
 
         widths: dict[str, int] = {}
         for row in rows:
             for i, cell in enumerate(row, start=1):
                 column_letter = get_column_letter(i)
-                widths[column_letter] = max(widths.get(column_letter, 0),
-                                            2 * len(str(cell[0])))
+                widths[column_letter] = max(
+                    widths.get(column_letter, 0), 2 * len(str(cell[0]))
+                )
 
         workbook = Workbook(write_only=True)
         try:
             # create the main sheet
-            sheet = workbook.create_sheet('main')
+            sheet = workbook.create_sheet("main")
             # first set the width of the columns
             for column_letter, width in widths.items():
                 sheet.column_dimensions[column_letter].width = width
             # then add the data
             for row in rows:
-                sheet.append([self._cell(sheet, value, number_format)
-                              for value, number_format in row])
+                sheet.append(
+                    [
+                        self._cell(sheet, value, number_format)
+                        for value, number_format in row
+                    ]
+                )
         finally:
             workbook.save(self.name)
 

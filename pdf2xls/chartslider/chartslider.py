@@ -22,14 +22,18 @@ class RangeSlider(QQuickItem):
     second_moved: Signal
 
     @abstractmethod
-    def set_first_value(self,
-                        first_value: float  # @UnusedVariable
-                        ) -> None: ...
+    def set_first_value(
+        self,
+        first_value: float,  # @UnusedVariable
+    ) -> None:
+        ...
 
     @abstractmethod
-    def set_second_value(self,
-                         second_value: float  # @UnusedVariable
-                         ) -> None: ...
+    def set_second_value(
+        self,
+        second_value: float,  # @UnusedVariable
+    ) -> None:
+        ...
 
 
 class ChartSlider(QWidget):
@@ -39,11 +43,9 @@ class ChartSlider(QWidget):
     def dump(self, status: QQuickView.Status) -> None:
         if status is QQuickView.Status.Error:
             for error in self.view.errors():
-                print(f'{error=}')
+                print(f"{error=}")
 
-    def __init__(self,
-                 model: SortFilterViewModel,
-                 parent: QWidget | None = None):
+    def __init__(self, model: SortFilterViewModel, parent: QWidget | None = None):
         super().__init__(parent)
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -63,26 +65,31 @@ class ChartSlider(QWidget):
 
         def _start_date_changed(days: int) -> None:
             self.start_date_changed.emit(days2date(days))
+
         self.range_slider.first_moved.connect(_start_date_changed)
 
         def _end_date_changed(days: int) -> None:
             self.end_date_changed.emit(days2date(days))
+
         self.range_slider.second_moved.connect(_end_date_changed)
 
     @Slot()
     def source_model_reset(self) -> None:
         source_model = self._model.sourceModel()
-        dates: list[date] = [source_model.data(source_model.createIndex(row, 0),
-                                               Qt.ItemDataRole.UserRole)
-                             for row in range(0, source_model.rowCount())]
+        dates: list[date] = [
+            source_model.data(
+                source_model.createIndex(row, 0), Qt.ItemDataRole.UserRole
+            )
+            for row in range(0, source_model.rowCount())
+        ]
         if not dates:
-            print('no dates!')
+            print("no dates!")
             return
         dates.sort()
         minimum = date2days(dates[0])
         maximum = date2days(dates[-1])
 
-        self.range_slider.setProperty('from', minimum)
-        self.range_slider.setProperty('to', maximum)
+        self.range_slider.setProperty("from", minimum)
+        self.range_slider.setProperty("to", maximum)
         self.range_slider.set_first_value(minimum)
         self.range_slider.set_second_value(maximum)

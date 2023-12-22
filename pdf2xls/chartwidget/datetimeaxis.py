@@ -10,19 +10,19 @@ from qtpy.QtCore import QObject
 from pdf2xls.dates import date2days
 
 
-def first_january(d: date, *, before: bool=True) -> date:
+def first_january(d: date, *, before: bool = True) -> date:
     ret_year = d.year if before else d.year + 1
 
     return date(ret_year, 1, 1)
 
 
-def next_first_of_the_month(day: date, *, delta_months: int=1) -> date:
+def next_first_of_the_month(day: date, *, delta_months: int = 1) -> date:
     delta_years, m = divmod(day.month - 1 + delta_months, 12)
 
     return date(day.year + delta_years, m + 1, 1)
 
 
-def create_days(begin: date, end: date, *, step: int=1) -> Iterator[date]:
+def create_days(begin: date, end: date, *, step: int = 1) -> Iterator[date]:
     day = begin
     while True:
         yield day
@@ -33,13 +33,13 @@ def create_days(begin: date, end: date, *, step: int=1) -> Iterator[date]:
 
 
 class DateTimeAxis(QCategoryAxis):
-    def __init__(self,
-                 x_min: QDateTime,
-                 x_max: QDateTime,
-                 parent: QObject | None=None) -> None:
+    def __init__(
+        self, x_min: QDateTime, x_max: QDateTime, parent: QObject | None = None
+    ) -> None:
         super().__init__(parent)
         self.setLabelsPosition(
-            QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue)
+            QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue
+        )
         self.setTruncateLabels(False)
 
         x_min_date = cast(datetime, x_min.toPython()).date()
@@ -63,5 +63,5 @@ class DateTimeAxis(QCategoryAxis):
             days = list(create_days(self.min_date, self.max_date, step=step))
             if len(days) < 200:  # TODO find good split
                 for day in days:
-                    self.append(f'{day:%Y-%m-%d}', date2days(day))
+                    self.append(f"{day:%Y-%m-%d}", date2days(day))
                 break

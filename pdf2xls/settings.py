@@ -9,7 +9,7 @@ from .constants import SETTINGS_USERNAME
 
 class Settings:
     def __init__(self) -> None:
-        self.settings = QSettings('ZeeD', 'pdf2xls')
+        self.settings = QSettings("ZeeD", "pdf2xls")
 
     @property
     def username(self) -> str:
