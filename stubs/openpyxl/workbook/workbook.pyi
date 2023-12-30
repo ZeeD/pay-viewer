@@ -1,19 +1,8 @@
-'stub for openpyxl'
-
-import typing
 from pathlib import Path
 
-import openpyxl.worksheet.worksheet
+from openpyxl.worksheet.worksheet import Worksheet
 
 class Workbook:
-
-    def __init__(self, write_only: bool) -> None:
-        '__init__'
-
-    def create_sheet(self,
-                     title: typing.Optional[str]=None
-                     ) -> openpyxl.worksheet.worksheet.Worksheet:
-        'create_sheet'
-
-    def save(self, filename: Path) -> None:
-        'save'
+    def __init__(self, *, write_only: bool) -> None: ...
+    def create_sheet(self, title: str | None = None) -> Worksheet: ...
+    def save(self, filename: Path) -> None: ...

@@ -1,13 +1,13 @@
-import typing
+from datetime import date
+from decimal import Decimal
 
-import openpyxl.worksheet.worksheet
+from openpyxl.worksheet.worksheet import Worksheet
 
 class Cell:
     number_format: str
     column_letter: str
-    value: typing.Any
+    value: str | date | Decimal | None
 
-    def __init__(self,
-                 worksheet: openpyxl.worksheet.worksheet.Worksheet,
-                 value: typing.Any=None):
-        ...
+    def __init__(
+        self, worksheet: Worksheet, value: str | date | Decimal | None = None
+    ) -> None: ...

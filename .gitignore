@@ -1,7 +1,9 @@
-.mypy_cache/
-.pytest_cache/
-*.egg-info/
-geckodriver.log
-build/
-__pycache__/
+/.git
+
+*.egg-info
+**/__pycache__
+.*_cache
+/.settings/
+/.project
+
 /bin/
