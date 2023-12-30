@@ -1,4 +1,4 @@
-from mainui import main
+from payviewer.mainui import main
 
 if __name__ == '__main__':
     main()

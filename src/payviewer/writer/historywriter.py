@@ -1,11 +1,11 @@
 from json import dump
 
-from model import AdditionalDetail
-from model import Column
-from model import Info
-from reader.historyreader import RawAdditionalDetail
-from reader.historyreader import RawColumn
-from reader.historyreader import RawInfo
+from payviewer.model import AdditionalDetail
+from payviewer.model import Column
+from payviewer.model import Info
+from payviewer.reader.historyreader import RawAdditionalDetail
+from payviewer.reader.historyreader import RawColumn
+from payviewer.reader.historyreader import RawInfo
 
 from .abcwriter import ABCWriter
 

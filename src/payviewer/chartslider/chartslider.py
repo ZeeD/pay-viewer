@@ -12,10 +12,10 @@ from qtpy.QtQuick import QQuickView
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
-from constants import CHARTSLIDER_QML_PATH
-from dates import date2days
-from dates import days2date
-from viewmodel import SortFilterViewModel
+from payviewer.constants import CHARTSLIDER_QML_PATH
+from payviewer.dates import date2days
+from payviewer.dates import days2date
+from payviewer.viewmodel import SortFilterViewModel
 
 
 class RangeSlider(QQuickItem):

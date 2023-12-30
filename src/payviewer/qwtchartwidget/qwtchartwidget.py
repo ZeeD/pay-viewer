@@ -5,9 +5,9 @@ if 'QT_API' not in environ:
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
-from chartslider.chartslider import ChartSlider
-from modelgui import SeriesModelFactory
-from viewmodel import SortFilterViewModel
+from payviewer.chartslider.chartslider import ChartSlider
+from payviewer.modelgui import SeriesModelFactory
+from payviewer.viewmodel import SortFilterViewModel
 
 from .plot import Plot
 

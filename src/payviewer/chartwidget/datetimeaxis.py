@@ -7,7 +7,7 @@ from qtpy.QtCharts import QCategoryAxis
 from qtpy.QtCore import QDateTime
 from qtpy.QtCore import QObject
 
-from dates import date2days
+from payviewer.dates import date2days
 
 
 def first_january(d: date, *, before: bool = True) -> date:

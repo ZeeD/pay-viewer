@@ -27,7 +27,7 @@ devtools = [
 ]
 
 [project.gui-scripts]
-pay-viewer = 'mainui:main'
+pay-viewer = 'payviewer.mainui:main'
 
 
 [tool.setuptools.packages.find]
@@ -41,7 +41,7 @@ warn_unused_configs = true
 always_false = ['PYQT5', 'PYSIDE2', 'PYQT6']
 # exclude = ['src/gen/.*']
 [[tool.mypy.overrides]]
-module = 'automation'
+module = 'payviewer.automation'
 disable_error_code = 'no-untyped-call'
 
 

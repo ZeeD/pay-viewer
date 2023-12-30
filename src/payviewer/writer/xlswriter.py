@@ -2,12 +2,12 @@ from datetime import date
 from decimal import Decimal
 from typing import Final
 
-from model import ColumnHeader
-from model import Info
 from openpyxl.cell import Cell
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.workbook.workbook import Workbook
 from openpyxl.worksheet.worksheet import Worksheet
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
 
 from .abcwriter import ABCWriter
 

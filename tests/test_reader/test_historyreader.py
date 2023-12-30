@@ -3,10 +3,10 @@ from decimal import Decimal
 from pathlib import Path
 from unittest import TestCase
 
-from model import Column
-from model import ColumnHeader
-from model import Info
-from reader.historyreader import HistoryReader
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.reader.historyreader import HistoryReader
 from testsupport import stub_open
 
 

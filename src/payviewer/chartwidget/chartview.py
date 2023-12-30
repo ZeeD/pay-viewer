@@ -18,7 +18,7 @@ from qtpy.QtGui import QMouseEvent
 from qtpy.QtGui import QPainter
 from qtpy.QtGui import QPen
 
-from dates import days2date
+from payviewer.dates import days2date
 
 from .chart import Chart
 from .charthover import ChartHover
@@ -27,8 +27,8 @@ from .datetimeaxis import DateTimeAxis
 if TYPE_CHECKING:
     from qtpy.QtWidgets import QWidget
 
-    from modelgui import SeriesModelFactory
-    from viewmodel import SortFilterViewModel
+    from payviewer.modelgui import SeriesModelFactory
+    from payviewer.viewmodel import SortFilterViewModel
 
 
 def tick_interval(y_max: float, n: int = 10) -> float:

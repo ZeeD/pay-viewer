@@ -7,7 +7,7 @@ from qtpy.QtCharts import QChart
 from qtpy.QtCharts import QLineSeries
 from qtpy.QtCore import Qt
 
-from dates import date2days
+from payviewer.dates import date2days
 
 from .datetimeaxis import DateTimeAxis
 

@@ -7,13 +7,13 @@ from unittest.mock import call
 from unittest.mock import mock_open
 from unittest.mock import patch
 
-from model import AdditionalDetail
-from model import Column
-from model import ColumnHeader
-from model import Info
-from writer.csvwriter import CsvWriter
-from writer.csvwriter import fieldnames
-from writer.csvwriter import rows
+from payviewer.model import AdditionalDetail
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.writer.csvwriter import CsvWriter
+from payviewer.writer.csvwriter import fieldnames
+from payviewer.writer.csvwriter import rows
 
 INFOS: Final = [
     Info(

@@ -4,10 +4,10 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
-from model import Column
-from model import ColumnHeader
-from model import Info
-from writer.xlswriter import XlsWriter
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.writer.xlswriter import XlsWriter
 
 
 class TestXlsWriter(TestCase):

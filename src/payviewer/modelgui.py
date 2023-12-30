@@ -10,10 +10,10 @@ from typing import TYPE_CHECKING
 
 from qtpy.QtCharts import QLineSeries
 
-from dates import date2days
-from dates import date2QDateTime
-from model import ColumnHeader
-from model import Info
+from payviewer.dates import date2days
+from payviewer.dates import date2QDateTime
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
 
 if TYPE_CHECKING:
     from mypy_extensions import Arg

@@ -1,11 +1,11 @@
 from operator import attrgetter
 from pathlib import Path
 
-from model import Info
-from reader.abcreader import ABCReader
-from reader.historyreader import HistoryReader
-from reader.pdfreader import PdfReader
-from writer.historywriter import HistoryWriter
+from payviewer.model import Info
+from payviewer.reader.abcreader import ABCReader
+from payviewer.reader.historyreader import HistoryReader
+from payviewer.reader.pdfreader import PdfReader
+from payviewer.writer.historywriter import HistoryWriter
 
 
 class NoHistoryError(Exception):

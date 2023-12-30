@@ -8,11 +8,11 @@ from pandas import DataFrame
 from pandas import options
 from tabula.io import read_pdf_with_template
 
-from constants import TEMPLATE_PATH
-from model import AdditionalDetail
-from model import Column
-from model import ColumnHeader
-from model import Info
+from payviewer.constants import TEMPLATE_PATH
+from payviewer.model import AdditionalDetail
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
 
 from .abcreader import ABCReader
 

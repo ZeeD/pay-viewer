@@ -15,7 +15,7 @@ from qtpy.QtWidgets import QGraphicsWidget
 from qtpy.QtWidgets import QLabel
 from qtpy.QtWidgets import QWidget
 
-from constants import CHARTHOVERUI_UI_PATH
+from payviewer.constants import CHARTHOVERUI_UI_PATH
 
 
 class ChartHoverUI(QWidget):

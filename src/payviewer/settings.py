@@ -2,9 +2,9 @@ from typing import cast
 
 from qtpy.QtCore import QSettings
 
-from constants import SETTINGS_DATA_PATH
-from constants import SETTINGS_PASSWORD
-from constants import SETTINGS_USERNAME
+from payviewer.constants import SETTINGS_DATA_PATH
+from payviewer.constants import SETTINGS_PASSWORD
+from payviewer.constants import SETTINGS_USERNAME
 
 
 class Settings:

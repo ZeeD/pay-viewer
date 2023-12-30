@@ -17,12 +17,12 @@ from qtpy.QtGui import QBrush
 from qtpy.QtGui import QColor
 from qtpy.QtWidgets import QStatusBar
 
-from automation import try_fetch_new_data
-from loader import load
-from model import ColumnHeader
-from model import Info
-from model import parse_infos
-from settings import Settings
+from payviewer.automation import try_fetch_new_data
+from payviewer.loader import load
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.model import parse_infos
+from payviewer.settings import Settings
 
 
 def by_column(info: Info, i: int) -> Decimal | None:

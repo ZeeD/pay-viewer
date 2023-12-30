@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING
 from qtpy.QtCore import Qt
 from qtpy.QtCore import Slot
 
-from dates import date2days
-from dates import days2date
-from modelgui import SeriesModelFactory
-from modelgui import SeriesModelUnit
+from payviewer.dates import date2days
+from payviewer.dates import days2date
+from payviewer.modelgui import SeriesModelFactory
+from payviewer.modelgui import SeriesModelUnit
 from qwt import QwtPlot
 from qwt import QwtPlotCurve
 from qwt import QwtPlotGrid
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from qtpy.QtWidgets import QWidget
 
-    from viewmodel import SortFilterViewModel
+    from payviewer.viewmodel import SortFilterViewModel
 
 
 def linecolors() -> Iterable[Qt.GlobalColor]:

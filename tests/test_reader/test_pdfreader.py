@@ -2,10 +2,10 @@ from datetime import date
 from decimal import Decimal
 from unittest import TestCase
 
-from model import Column
-from model import ColumnHeader
-from model import Info
-from reader.pdfreader import PdfReader
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.reader.pdfreader import PdfReader
 from testsupport import resource_pdf
 
 

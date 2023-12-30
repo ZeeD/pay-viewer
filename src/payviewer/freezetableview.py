@@ -10,7 +10,7 @@ from qtpy.QtWidgets import QGridLayout
 from qtpy.QtWidgets import QTableView
 from qtpy.QtWidgets import QWidget
 
-from constants import FREEZE_TABLE_VIEW_UI_PATH
+from payviewer.constants import FREEZE_TABLE_VIEW_UI_PATH
 
 
 class TableViewUI(QWidget):

@@ -20,17 +20,17 @@ from qtpy.QtWidgets import QMessageBox
 from qtpy.QtWidgets import QToolButton
 from qtpy.QtWidgets import QWidget
 
-from chartwidget.chartwidget import ChartWidget
-from constants import MAINUI_UI_PATH
-from constants import SETTINGSUI_UI_PATH
-from freezetableview import FreezeTableView
-from loader import NoHistoryError
-from modelgui import SeriesModel
-from qwtchartwidget.qwtchartwidget import QwtChartVidget
-from removejsons import remove_jsons
-from settings import Settings
-from viewmodel import SortFilterViewModel
-from writer.csvwriter import CsvWriter
+from payviewer.chartwidget.chartwidget import ChartWidget
+from payviewer.constants import MAINUI_UI_PATH
+from payviewer.constants import SETTINGSUI_UI_PATH
+from payviewer.freezetableview import FreezeTableView
+from payviewer.loader import NoHistoryError
+from payviewer.modelgui import SeriesModel
+from payviewer.qwtchartwidget.qwtchartwidget import QwtChartVidget
+from payviewer.removejsons import remove_jsons
+from payviewer.settings import Settings
+from payviewer.viewmodel import SortFilterViewModel
+from payviewer.writer.csvwriter import CsvWriter
 
 
 class Settingsui(QDialog):

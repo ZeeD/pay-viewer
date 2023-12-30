@@ -2,12 +2,12 @@ from datetime import date
 from decimal import Decimal
 from unittest import TestCase
 
-from model import AdditionalDetail
-from model import Column
-from model import ColumnHeader
-from model import Info
+from payviewer.model import AdditionalDetail
+from payviewer.model import Column
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.writer.xlswriter import XlsWriter
 from testsupport import resource_xls
-from writer.xlswriter import XlsWriter
 
 
 class TestXlsWriter(TestCase):

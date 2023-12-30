@@ -26,7 +26,7 @@ from selenium.webdriver.support.expected_conditions import (
 from selenium.webdriver.support.expected_conditions import url_contains
 from selenium.webdriver.support.wait import WebDriverWait
 
-from constants import GECKODRIVER_PATH
+from payviewer.constants import GECKODRIVER_PATH
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

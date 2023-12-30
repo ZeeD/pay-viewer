@@ -2,13 +2,13 @@ from abc import ABC
 from abc import abstractmethod
 from pathlib import Path
 
-from model import Info
+from payviewer.model import Info
 
 
-class ABCWriter(ABC):
+class ABCReader(ABC):
     def __init__(self, name: Path) -> None:
         self.name = name
 
     @abstractmethod
-    def write_infos(self, infos: list[Info]) -> None:
+    def read_infos(self) -> list[Info]:
         ...
