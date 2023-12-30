@@ -7,7 +7,7 @@ from math import isnan
 
 from pandas import DataFrame
 from pandas import options
-from tabula import read_pdf_with_template
+from tabula.io import read_pdf_with_template
 
 from ..constants import TEMPLATE_PATH
 from ..model import AdditionalDetail
