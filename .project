@@ -3,7 +3,8 @@
 	<name>pdf2xls</name>
 	<comment></comment>
 	<projects>
-		<project>pdf2xls-data</project>
+		<project>guilib</project>
+		<project>pay-data</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
