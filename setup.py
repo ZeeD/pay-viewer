@@ -13,7 +13,7 @@ setup(name='pdf2xls',
       install_requires=[
           'pandas',
           'pandas-stubs',
-          'tabula-py',
+          'tabula-py[jpype]',
           'openpyxl',
           'qtpy',
           'PySide6',
