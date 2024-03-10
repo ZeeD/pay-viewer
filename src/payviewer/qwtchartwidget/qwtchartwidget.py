@@ -2,10 +2,10 @@ from os import environ
 
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
+from guilib.chartslider.chartslider import ChartSlider
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
-from payviewer.chartslider.chartslider import ChartSlider
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.viewmodel import SortFilterViewModel
 
