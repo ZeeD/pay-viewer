@@ -2,25 +2,27 @@ from os import environ
 
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
+from typing import TYPE_CHECKING
+
 from guilib.chartslider.chartslider import ChartSlider
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
-from payviewer.modelgui import SeriesModelFactory
-from payviewer.viewmodel import SortFilterViewModel
-
 from .plot import Plot
+
+if TYPE_CHECKING:
+    from payviewer.modelgui import SeriesModelFactory
+    from payviewer.viewmodel import SortFilterViewModel
 
 
 class QwtChartVidget(QWidget):
-
-    "Composition of a ChartView and a slider."
+    """Composition of a ChartView and a slider."""
 
     def __init__(
         self,
-        model: SortFilterViewModel,
+        model: 'SortFilterViewModel',
         parent: QWidget | None,
-        factory: SeriesModelFactory,
+        factory: 'SeriesModelFactory',
     ) -> None:
         super().__init__(parent)
 

@@ -1,22 +1,24 @@
+from typing import TYPE_CHECKING
+
 from guilib.chartslider.chartslider import ChartSlider
 from qtpy.QtWidgets import QVBoxLayout
 from qtpy.QtWidgets import QWidget
 
-from payviewer.modelgui import SeriesModelFactory
-from payviewer.viewmodel import SortFilterViewModel
-
 from .chartview import ChartView
+
+if TYPE_CHECKING:
+    from payviewer.modelgui import SeriesModelFactory
+    from payviewer.viewmodel import SortFilterViewModel
 
 
 class ChartWidget(QWidget):
-
-    "Composition of a ChartView and a slider."
+    """Composition of a ChartView and a slider."""
 
     def __init__(
         self,
-        model: SortFilterViewModel,
+        model: 'SortFilterViewModel',
         parent: QWidget | None,
-        factory: SeriesModelFactory,
+        factory: 'SeriesModelFactory',
     ) -> None:
         super().__init__(parent)
 

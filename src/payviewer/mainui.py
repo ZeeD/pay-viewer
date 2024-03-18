@@ -1,10 +1,10 @@
 from os import environ
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import cast
 
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
-from qtpy.QtCore import QItemSelection
 from qtpy.QtGui import QAction
 from qtpy.QtGui import QKeySequence
 from qtpy.QtGui import QShortcut
@@ -31,6 +31,9 @@ from payviewer.removejsons import remove_jsons
 from payviewer.settings import Settings
 from payviewer.viewmodel import SortFilterViewModel
 from payviewer.writer.csvwriter import CsvWriter
+
+if TYPE_CHECKING:
+    from qtpy.QtCore import QItemSelection
 
 
 class Settingsui(QDialog):
@@ -89,7 +92,7 @@ def new_mainui(
                 model.update(only_local=only_local, force_pdf=True)
 
     def update_status_bar(
-        _selected: QItemSelection, _deselected: QItemSelection
+        _selected: 'QItemSelection', _deselected: 'QItemSelection'
     ) -> None:
         model.selection_changed(selection_model, mainui.statusBar())
 

@@ -42,7 +42,7 @@ class Date(NamedTuple):
     month: int
 
     def get_year_months(self) -> Iterable[Date]:
-        "Infinite generator of (year, month) from last."
+        """Infinite generator of (year, month) from last."""
         d = self
         while True:
             if d.month == NOV:  # (year, 13) is extra month's salary

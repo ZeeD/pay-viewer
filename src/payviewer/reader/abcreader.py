@@ -1,13 +1,16 @@
 from abc import ABC
 from abc import abstractmethod
-from pathlib import Path
+from typing import TYPE_CHECKING
 
-from payviewer.model import Info
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from payviewer.model import Info
 
 
 class ABCReader(ABC):
-    def __init__(self, name: Path) -> None:
+    def __init__(self, name: 'Path') -> None:
         self.name = name
 
     @abstractmethod
-    def read_infos(self) -> list[Info]: ...
+    def read_infos(self) -> list['Info']: ...

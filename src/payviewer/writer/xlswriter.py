@@ -1,15 +1,18 @@
 from datetime import date
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from typing import Final
 
 from openpyxl.cell import Cell
 from openpyxl.utils.cell import get_column_letter
 from openpyxl.workbook.workbook import Workbook
-from openpyxl.worksheet.worksheet import Worksheet
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 
 from .abcwriter import ABCWriter
+
+if TYPE_CHECKING:
+    from openpyxl.worksheet.worksheet import Worksheet
 
 E = None | str | date | Decimal
 
@@ -141,7 +144,7 @@ class XlsWriter(ABCWriter):
         finally:
             workbook.save(self.name)
 
-    def _cell(self, sheet: Worksheet, value: E, number_format: str) -> Cell:
+    def _cell(self, sheet: 'Worksheet', value: E, number_format: str) -> Cell:
         cell = Cell(sheet, value=value)
         cell.number_format = number_format
         return cell

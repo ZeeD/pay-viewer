@@ -1,12 +1,15 @@
 from csv import DictWriter
-from datetime import date
-from decimal import Decimal
+from typing import TYPE_CHECKING
 from typing import Final
 
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 
 from .abcwriter import ABCWriter
+
+if TYPE_CHECKING:
+    from datetime import date
+    from decimal import Decimal
 
 MONTH: Final = 'month'
 
@@ -41,7 +44,7 @@ def fieldnames(infos: list[Info]) -> list[str]:
     )
 
 
-def rows(infos: list[Info]) -> list[dict[str, date | Decimal]]:
+def rows(infos: list[Info]) -> list[dict[str, 'date | Decimal']]:
     return [
         {
             MONTH: info.when,

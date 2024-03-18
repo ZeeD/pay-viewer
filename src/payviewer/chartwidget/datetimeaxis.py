@@ -1,13 +1,17 @@
-from collections.abc import Iterator
 from datetime import date
 from datetime import datetime
+from typing import TYPE_CHECKING
 from typing import cast
 
 from qtpy.QtCharts import QCategoryAxis
-from qtpy.QtCore import QDateTime
-from qtpy.QtCore import QObject
 
 from payviewer.dates import date2days
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
+    from qtpy.QtCore import QDateTime
+    from qtpy.QtCore import QObject
 
 
 def first_january(d: date, *, before: bool = True) -> date:
@@ -20,7 +24,7 @@ def next_first_of_the_month(day: date, *, delta_months: int = 1) -> date:
     return date(day.year + delta_years, m + 1, 1)
 
 
-def create_days(begin: date, end: date, *, step: int = 1) -> Iterator[date]:
+def create_days(begin: date, end: date, *, step: int = 1) -> 'Iterator[date]':
     day = begin
     while True:
         yield day
@@ -32,7 +36,10 @@ def create_days(begin: date, end: date, *, step: int = 1) -> Iterator[date]:
 
 class DateTimeAxis(QCategoryAxis):
     def __init__(
-        self, x_min: QDateTime, x_max: QDateTime, parent: QObject | None = None
+        self,
+        x_min: 'QDateTime',
+        x_max: 'QDateTime',
+        parent: 'QObject | None' = None,
     ) -> None:
         super().__init__(parent)
         self.setLabelsPosition(

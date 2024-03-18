@@ -1,9 +1,12 @@
 from dataclasses import dataclass
-from datetime import date
-from decimal import Decimal
 from enum import Enum
 from enum import auto
 from operator import attrgetter
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datetime import date
+    from decimal import Decimal
 
 
 class ColumnHeader(Enum):
@@ -36,7 +39,7 @@ class ColumnHeader(Enum):
 @dataclass(frozen=True)
 class Column:
     header: ColumnHeader
-    howmuch: Decimal | None
+    howmuch: 'Decimal | None'
 
 
 @dataclass(frozen=True)
@@ -45,19 +48,19 @@ class AdditionalDetail:
     fisc: int | None
     cod: int
     descrizione: str
-    ore_o_giorni: Decimal
-    compenso_unitario: Decimal
-    trattenute: Decimal
-    competenze: Decimal
+    ore_o_giorni: 'Decimal'
+    compenso_unitario: 'Decimal'
+    trattenute: 'Decimal'
+    competenze: 'Decimal'
 
 
 @dataclass(frozen=True)
 class Info:
-    when: date
+    when: 'date'
     columns: list[Column]
     additional_details: list[AdditionalDetail]
 
-    def howmuch(self, header: ColumnHeader) -> Decimal | None:
+    def howmuch(self, header: ColumnHeader) -> 'Decimal | None':
         for column in self.columns:
             if column.header == header:
                 return column.howmuch

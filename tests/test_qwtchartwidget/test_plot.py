@@ -2,15 +2,15 @@ from datetime import date
 from os import environ
 from unittest import TestCase
 
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
 from payviewer.dates import date2days
 from payviewer.dates import days2date
 from payviewer.qwtchartwidget.plot import days
 from payviewer.qwtchartwidget.plot import months
 from payviewer.qwtchartwidget.plot import normalized_xdatas
 from payviewer.qwtchartwidget.plot import years
+
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
 
 
 class TestNormalizedXdatas(TestCase):

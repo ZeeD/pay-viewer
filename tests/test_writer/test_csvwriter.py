@@ -102,7 +102,7 @@ class TestCsvWriter(TestCase):
 
     def test_write_infos(self) -> None:
         expected = [
-            'month,periodo,livello_categoria,n_scatti,minimo,scatti,superm,sup_ass,edr,totale_retributivo,ferie_a_prec,ferie_spett,ferie_godute,ferie_saldo,par_a_prec,par_spett,par_godute,par_saldo,netto_da_pagare,legenda_ordinario,legenda_straordinario,legenda_ferie,legenda_reperibilita,legenda_rol,descrizione 1,descrizione 2\r\n',
+            'month,periodo,livello_categoria,n_scatti,minimo,scatti,superm,sup_ass,edr,totale_retributivo,ferie_a_prec,ferie_spett,ferie_godute,ferie_saldo,par_a_prec,par_spett,par_godute,par_saldo,netto_da_pagare,legenda_ordinario,legenda_straordinario,legenda_ferie,legenda_reperibilita,legenda_rol,descrizione 1,descrizione 2\r\n',  # noqa: E501
             '1982-05-11,,,,1,,,,,,,,,,,,,,,,,,,,1,\r\n',
             '1989-07-27,,,,,,,,,,,,,,,,,,,,,4,,,,10\r\n',
         ]

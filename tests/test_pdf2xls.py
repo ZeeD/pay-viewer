@@ -13,8 +13,7 @@ ZERO = Decimal('0')
 
 
 class TestPdf2Xls(TestCase):
-
-    "test pdf2xls functions."
+    """test pdf2xls functions."""
 
     def test_read_real_pdf(self) -> None:
         expected = [

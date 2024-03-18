@@ -1,14 +1,17 @@
-from collections.abc import Iterator
 from contextlib import contextmanager
 from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING
 from typing import Final
 from unittest.mock import MagicMock
 from unittest.mock import patch
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 @contextmanager
-def stub_open(content: str) -> Iterator[MagicMock]:
+def stub_open(content: str) -> 'Iterator[MagicMock]':
     with patch.object(Path, 'open') as mock:
         mock.return_value = StringIO(content)
         yield mock

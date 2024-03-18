@@ -187,8 +187,6 @@ class Plot(QwtPlot):
                 serie.name(),
                 self,
                 linecolor=linecolor,
-                # style=QwtPlotCurve.Dots,
-                # linewidth=5,
                 antialiased=True,
             )
 
@@ -207,7 +205,6 @@ class Plot(QwtPlot):
         )
         self.setAxisScaleDiv(QwtPlot.xBottom, x_scale_div)
 
-        # self.setAxisScale(QwtPlot.xBottom, x_scale_div.lowerBound(), x_scale_div.upperBound())
         self.replot()
 
     @Slot(date)
@@ -217,14 +214,6 @@ class Plot(QwtPlot):
         scale_div = self.axisScaleDiv(QwtPlot.xBottom)
         scale_div.setLowerBound(lower_bound)
 
-        # scale_draw = self.axisScaleDraw(QwtPlot.xBottom)
-        # pos = scale_draw.pos()
-        # length = scale_draw.length()
-        # print(f'{pos=}, {length=}')
-        # scale_draw.move(pos.x()+1, 0)
-        # scale_draw.setLength(length-1)
-
-        # self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
         self.replot()
 
     @Slot(date)
@@ -234,5 +223,4 @@ class Plot(QwtPlot):
         scale_div = self.axisScaleDiv(QwtPlot.xBottom)
         scale_div.setUpperBound(upper_bound)
 
-        # self.setAxisScale(QwtPlot.xBottom, scale_div.lowerBound(), scale_div.upperBound())
         self.replot()

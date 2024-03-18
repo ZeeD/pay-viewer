@@ -1,7 +1,7 @@
-from collections.abc import Iterator
 from datetime import date
 from decimal import Decimal
 from math import isnan
+from typing import TYPE_CHECKING
 from typing import Any
 
 from pandas import DataFrame
@@ -16,10 +16,13 @@ from payviewer.model import Info
 
 from .abcreader import ABCReader
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 class PdfReader(ABCReader):
     def read_infos(self) -> list[Info]:
-        "Read from a file."
+        """Read from a file."""
         for name in dir(options.display):
             if 'max' in name:
                 setattr(options.display, name, 1000)
@@ -36,7 +39,6 @@ class PdfReader(ABCReader):
         table_money = tables[1]
         table_details = tables[2]
         table_netto_pagare = tables[3]
-        # table_dati_fiscali = tables[4]
         table_ferie = tables[5]
         try:
             table_legenda_keys = tables[6]
@@ -119,9 +121,10 @@ class PdfReader(ABCReader):
 
 
 def extract_periodo(table: DataFrame) -> date:
-    "Extract the right row, and parse the date inside."
+    """Extract the right row, and parse the date inside."""
     cell = table.loc[0, 0]
-    assert isinstance(cell, str), type(cell)
+    if not isinstance(cell, str):
+        raise TypeError(type(cell))
     words = cell.split()
 
     day = 31 if words[0] == '13.MA' else 1
@@ -159,44 +162,51 @@ def extract(el: str | float) -> Decimal:
 
 def extract_minimo(table: DataFrame) -> Decimal:
     el = table.loc[1, 0]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_scatti(table: DataFrame) -> Decimal:
     el = table.loc[1, 1]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_superm(table: DataFrame) -> Decimal:
     el = table.loc[1, 4]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_edr(table: DataFrame) -> Decimal:
     el = table.loc[3, 0]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_sup_ass(table: DataFrame) -> Decimal:
     el = table.loc[1, 5]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_totale_retributivo(table: DataFrame) -> Decimal:
     el = table.loc[3, 8]
-    assert isinstance(el, str | float), type(el)
+    if not isinstance(el, str | float):
+        raise TypeError(type(el))
     return extract(el)
 
 
 def extract_netto_da_pagare(table: DataFrame) -> Decimal:
     try:
         el = table.loc[0, 0]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -205,7 +215,8 @@ def extract_netto_da_pagare(table: DataFrame) -> Decimal:
 def extract_ferie_a_prec(table: DataFrame) -> Decimal:
     try:
         el = table.loc[1, 1]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -214,7 +225,8 @@ def extract_ferie_a_prec(table: DataFrame) -> Decimal:
 def extract_ferie_spett(table: DataFrame) -> Decimal:
     try:
         el = table.loc[1, 2]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -223,7 +235,8 @@ def extract_ferie_spett(table: DataFrame) -> Decimal:
 def extract_ferie_godute(table: DataFrame) -> Decimal:
     try:
         el = table.loc[1, 3]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -232,7 +245,8 @@ def extract_ferie_godute(table: DataFrame) -> Decimal:
 def extract_ferie_saldo(table: DataFrame) -> Decimal:
     try:
         el = table.loc[1, 4]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -241,7 +255,8 @@ def extract_ferie_saldo(table: DataFrame) -> Decimal:
 def extract_par_a_prec(table: DataFrame) -> Decimal:
     try:
         el = table.loc[2, 1]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -250,7 +265,8 @@ def extract_par_a_prec(table: DataFrame) -> Decimal:
 def extract_par_spett(table: DataFrame) -> Decimal:
     try:
         el = table.loc[2, 2]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -259,7 +275,8 @@ def extract_par_spett(table: DataFrame) -> Decimal:
 def extract_par_godute(table: DataFrame) -> Decimal:
     try:
         el = table.loc[2, 3]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -268,7 +285,8 @@ def extract_par_godute(table: DataFrame) -> Decimal:
 def extract_par_saldo(table: DataFrame) -> Decimal:
     try:
         el = table.loc[2, 4]
-        assert isinstance(el, str | float), type(el)
+        if not isinstance(el, str | float):
+            raise TypeError(type(el))
         return extract(el)
     except IndexError:
         return Decimal(0)
@@ -288,7 +306,7 @@ class UnknownRowError(Exception):
         super().__init__(row)
 
 
-def extract_details(table: DataFrame) -> Iterator[AdditionalDetail]:
+def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
     for row in table.itertuples(index=False, name=None):
         if len(row) == 8:  # noqa: PLR2004
             yield AdditionalDetail(

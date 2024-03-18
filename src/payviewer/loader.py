@@ -1,11 +1,14 @@
 from operator import attrgetter
 from pathlib import Path
+from typing import TYPE_CHECKING
 
-from payviewer.model import Info
-from payviewer.reader.abcreader import ABCReader
 from payviewer.reader.historyreader import HistoryReader
 from payviewer.reader.pdfreader import PdfReader
 from payviewer.writer.historywriter import HistoryWriter
+
+if TYPE_CHECKING:
+    from payviewer.model import Info
+    from payviewer.reader.abcreader import ABCReader
 
 
 class NoHistoryError(Exception): ...
@@ -16,7 +19,7 @@ def _create_json_from_pdf(pdf_file_name: Path) -> None:
     HistoryWriter(pdf_file_name.with_suffix('.pdf.json')).write_infos(infos)
 
 
-def _get_reader(pdf_file_name: Path, *, force: bool) -> ABCReader:
+def _get_reader(pdf_file_name: Path, *, force: bool) -> 'ABCReader':
     try:
         history_mtime = pdf_file_name.with_suffix('.pdf.json').stat().st_mtime
     except FileNotFoundError as e:
@@ -30,8 +33,8 @@ def _get_reader(pdf_file_name: Path, *, force: bool) -> ABCReader:
     return HistoryReader(pdf_file_name.with_suffix('.pdf.json'))
 
 
-def load(data_path: str, *, force: bool = False) -> list[Info]:
-    infos: list[Info] = []
+def load(data_path: str, *, force: bool = False) -> list['Info']:
+    infos: list['Info'] = []
     for name in Path(data_path).glob('*/*.pdf'):
         infos.extend(_get_reader(name, force=force).read_infos())
     infos.sort(key=attrgetter('when'))

@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from typing import TYPE_CHECKING
 from typing import Literal
 from typing import cast
 from typing import overload
@@ -15,14 +16,17 @@ from qtpy.QtCore import QSortFilterProxyModel
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QBrush
 from qtpy.QtGui import QColor
-from qtpy.QtWidgets import QStatusBar
 
 from payviewer.automation import try_fetch_new_data
 from payviewer.loader import load
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 from payviewer.model import parse_infos
-from payviewer.settings import Settings
+
+if TYPE_CHECKING:
+    from qtpy.QtWidgets import QStatusBar
+
+    from payviewer.settings import Settings
 
 
 def by_column(info: Info, i: int) -> Decimal | None:
@@ -196,7 +200,7 @@ class ViewModel(QAbstractTableModel):
 
 
 class SortFilterViewModel(QSortFilterProxyModel):
-    def __init__(self, settings: Settings) -> None:
+    def __init__(self, settings: 'Settings') -> None:
         super().__init__()
         self.settings = settings
         self.setSourceModel(ViewModel(self, []))
@@ -233,7 +237,7 @@ class SortFilterViewModel(QSortFilterProxyModel):
         self.sourceModel().sort(column, order)
 
     def selection_changed(
-        self, selection_model: QItemSelectionModel, statusbar: QStatusBar
+        self, selection_model: QItemSelectionModel, statusbar: 'QStatusBar'
     ) -> None:
         column = selection_model.currentIndex().column()
         if column == 0:

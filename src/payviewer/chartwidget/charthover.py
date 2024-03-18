@@ -1,11 +1,9 @@
-from datetime import date
-from decimal import Decimal
+from typing import TYPE_CHECKING
 from typing import cast
 
 from qtpy.QtCore import QPointF
 from qtpy.QtCore import QSizeF
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QColor
 from qtpy.QtUiTools import QUiLoader
 from qtpy.QtWidgets import QFormLayout
 from qtpy.QtWidgets import QGraphicsItem
@@ -16,6 +14,12 @@ from qtpy.QtWidgets import QLabel
 from qtpy.QtWidgets import QWidget
 
 from payviewer.constants import CHARTHOVERUI_UI_PATH
+
+if TYPE_CHECKING:
+    from datetime import date
+    from decimal import Decimal
+
+    from qtpy.QtGui import QColor
 
 
 class ChartHoverUI(QWidget):
@@ -37,8 +41,8 @@ class ChartHover(QGraphicsWidget):
 
     def set_howmuchs(
         self,
-        when: date,
-        howmuchs: dict[str, tuple[QColor, Decimal]],
+        when: 'date',
+        howmuchs: dict[str, tuple['QColor', 'Decimal']],
         pos: QPointF,
     ) -> None:
         if pos == self.pos():

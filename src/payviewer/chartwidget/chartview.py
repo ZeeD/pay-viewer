@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 def tick_interval(y_max: float, n: int = 10) -> float:
-    "Return min(10**x) > y_max / n ."
+    """Return min(10**x) > y_max / n ."""
     goal_step = y_max / n
     exp = 1
     while True:
@@ -121,7 +121,7 @@ class ChartView(QChartView):
             event_value = chart.mapToValue(event_pos)
 
             # find closest x
-            # assumption: all series have same x, so I can just one the first one
+            # assumption: all series have same x, so just get the first one
             series = cast(list[QLineSeries], chart.series())
             _, index, value = min(
                 (abs(event_value.x() - point.x()), i, point)
