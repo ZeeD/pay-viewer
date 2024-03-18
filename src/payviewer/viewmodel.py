@@ -204,7 +204,7 @@ class SortFilterViewModel(QSortFilterProxyModel):
         self.setSourceModel(ViewModel(self, []))
         self.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.setSortCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        self.setDynamicSortFilter(True)  # noqa:FBT003
+        self.setDynamicSortFilter(True)
 
     @override
     def filterAcceptsRow(
