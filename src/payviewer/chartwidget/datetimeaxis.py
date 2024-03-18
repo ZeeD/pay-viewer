@@ -38,7 +38,7 @@ class DateTimeAxis(QCategoryAxis):
         self.setLabelsPosition(
             QCategoryAxis.AxisLabelsPosition.AxisLabelsPositionOnValue
         )
-        self.setTruncateLabels(False)  # noqa: FBT003
+        self.setTruncateLabels(False)
 
         x_min_date = cast(datetime, x_min.toPython()).date()
         x_max_date = cast(datetime, x_max.toPython()).date()

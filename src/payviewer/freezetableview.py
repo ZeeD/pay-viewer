@@ -77,4 +77,4 @@ class FreezeTableView(QAbstractItemView):
         self._left.resizeColumnsToContents()
         self._right.resizeColumnsToContents()
 
-        self._right.horizontalHeader().setSectionsMovable(True)  # noqa: FBT003
+        self._right.horizontalHeader().setSectionsMovable(True)

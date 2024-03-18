@@ -10,5 +10,4 @@ class ABCReader(ABC):
         self.name = name
 
     @abstractmethod
-    def read_infos(self) -> list[Info]:
-        ...
+    def read_infos(self) -> list[Info]: ...

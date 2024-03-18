@@ -15,7 +15,7 @@ from .datetimeaxis import DateTimeAxis
 class Chart(QChart):
     def __init__(self) -> None:
         super().__init__()
-        self.setAcceptHoverEvents(True)  # noqa: FBT003
+        self.setAcceptHoverEvents(True)
         self.legend().hide()
         self._series: list[QAbstractSeries] = []
         self.scrolledTo = 0.0

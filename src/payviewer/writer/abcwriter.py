@@ -10,5 +10,4 @@ class ABCWriter(ABC):
         self.name = name
 
     @abstractmethod
-    def write_infos(self, infos: list[Info]) -> None:
-        ...
+    def write_infos(self, infos: list[Info]) -> None: ...

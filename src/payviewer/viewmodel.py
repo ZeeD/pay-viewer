@@ -89,16 +89,14 @@ class ViewModel(QAbstractTableModel):
         # white liar, we need also to add a rule on index --> col 0
         index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
         role: Literal[Qt.ItemDataRole.UserRole],  # @UnusedVariable
-    ) -> date:
-        ...
+    ) -> date: ...
 
     @overload
     def data(
         self,
         index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
         role: int = Qt.ItemDataRole.DisplayRole,  # @UnusedVariable
-    ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush:
-        ...
+    ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush: ...
 
     @override
     def data(  # noqa: PLR0911

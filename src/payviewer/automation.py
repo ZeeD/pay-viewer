@@ -109,10 +109,13 @@ def get_last_local(data_path: str) -> Date:
 
 
 def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  # noqa: C901
-    with TemporaryDirectory() as dtemp, Firefox(
-        service=Service(executable_path=str(GECKODRIVER_PATH)),
-        options=options(dtemp),
-    ) as d:
+    with (
+        TemporaryDirectory() as dtemp,
+        Firefox(
+            service=Service(executable_path=str(GECKODRIVER_PATH)),
+            options=options(dtemp),
+        ) as d
+    ):  # fmt: skip
         wait = WebDriverWait(d, 30)
 
         # do login

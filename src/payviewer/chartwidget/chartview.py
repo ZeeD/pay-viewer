@@ -50,7 +50,7 @@ class ChartView(QChartView):
         factory: SeriesModelFactory,
     ) -> None:
         super().__init__(parent)
-        self.setMouseTracking(True)  # noqa: FBT003
+        self.setMouseTracking(True)
         self._model = model.sourceModel()
         self._model.modelReset.connect(self.model_reset)
         self._axis_x: DateTimeAxis | None = None
@@ -160,7 +160,7 @@ class ChartView(QChartView):
         if self.event_pos is None:
             return
 
-        self.setUpdatesEnabled(False)  # noqa: FBT003
+        self.setUpdatesEnabled(False)
         try:
             painter.setPen(QPen(Qt.GlobalColor.gray, 1, Qt.PenStyle.DashLine))
             x = self.event_pos.x()
@@ -168,4 +168,4 @@ class ChartView(QChartView):
                 int(x), int(rect.top()), int(x), int(rect.bottom())
             )
         finally:
-            self.setUpdatesEnabled(True)  # noqa: FBT003
+            self.setUpdatesEnabled(True)

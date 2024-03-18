@@ -8,8 +8,7 @@ from payviewer.reader.pdfreader import PdfReader
 from payviewer.writer.historywriter import HistoryWriter
 
 
-class NoHistoryError(Exception):
-    ...
+class NoHistoryError(Exception): ...
 
 
 def _create_json_from_pdf(pdf_file_name: Path) -> None:

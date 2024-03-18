@@ -41,11 +41,20 @@ warn_unused_configs = true
 always_false = ['PYQT5', 'PYSIDE2', 'PYQT6']
 # exclude = ['src/gen/.*']
 [[tool.mypy.overrides]]
-module = 'payviewer.automation'
+module = ['payviewer.automation', 'payviewer.automation_cu']
 disable_error_code = 'no-untyped-call'
 
-
 [tool.ruff]
+fix = true
+line-length = 80
+# extend-exclude = ['src/gen']
+src = ['src', 'tests', 'demo', 'stubs']
+
+[tool.ruff.format]
+quote-style = 'single'
+skip-magic-trailing-comma = true
+
+[tool.ruff.lint]
 extend-select = [
     'W', 'E', 'C90', 'I', 'N', 'D', 'UP', 'YTT', 'ANN', 'ASYNC', 'S', 'BLE',
     'FBT', 'B', 'A', 'COM', 'C4', 'DTZ', 'T10', 'DJ', 'EM', 'EXE', 'FA', 'ISC',
@@ -61,19 +70,12 @@ ignore = [
     'D105', 'D107', 'PT009', 'S101',
     'TD002', 'TD003',
 ]
-fix = true
-line-length = 80
-# extend-exclude = ['src/gen']
-src = ['src', 'tests', 'demo', 'stubs']
 
-[tool.ruff.isort]
-force-single-line = true
-
-[tool.ruff.flake8-quotes]
+[tool.ruff.lint.flake8-quotes]
 inline-quotes = 'single'
 
-[tool.ruff.format]
-quote-style = 'single'
-
-[tool.ruff.flake8-annotations]
+[tool.ruff.lint.flake8-annotations]
 allow-star-arg-any = true
+
+[tool.ruff.lint.isort]
+force-single-line = true
