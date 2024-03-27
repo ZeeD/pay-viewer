@@ -1,10 +1,18 @@
-from __future__ import annotations
-
 from datetime import date
 from decimal import Decimal
+from os import environ
 from typing import TYPE_CHECKING
 from typing import cast
 from typing import override
+
+from guilib.chartslider.chartslider import days2date
+
+from .chart import Chart
+from .charthover import ChartHover
+from .datetimeaxis import DateTimeAxis
+
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
 
 from qtpy.QtCharts import QChartView
 from qtpy.QtCharts import QLineSeries
@@ -17,12 +25,6 @@ from qtpy.QtCore import Slot
 from qtpy.QtGui import QMouseEvent
 from qtpy.QtGui import QPainter
 from qtpy.QtGui import QPen
-
-from payviewer.dates import days2date
-
-from .chart import Chart
-from .charthover import ChartHover
-from .datetimeaxis import DateTimeAxis
 
 if TYPE_CHECKING:
     from qtpy.QtWidgets import QWidget
@@ -45,9 +47,9 @@ def tick_interval(y_max: float, n: int = 10) -> float:
 class ChartView(QChartView):
     def __init__(
         self,
-        model: SortFilterViewModel,
-        parent: QWidget | None,
-        factory: SeriesModelFactory,
+        model: 'SortFilterViewModel',
+        parent: 'QWidget | None',
+        factory: 'SeriesModelFactory',
     ) -> None:
         super().__init__(parent)
         self.setMouseTracking(True)

@@ -1,23 +1,26 @@
-from __future__ import annotations
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 from enum import Enum
 from enum import auto
+from os import environ
 from typing import TYPE_CHECKING
 
-from qtpy.QtCharts import QLineSeries
+from guilib.chartslider.chartslider import EPOCH
+from guilib.chartslider.chartslider import date2days
 
-from payviewer.dates import date2days
-from payviewer.dates import date2QDateTime
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
+
+from qtpy.QtCharts import QLineSeries
+from qtpy.QtCore import QDateTime
+
 if TYPE_CHECKING:
     from mypy_extensions import Arg
-    from qtpy.QtCore import QDateTime
 
 
 class SeriesModelUnit(Enum):
@@ -31,6 +34,10 @@ class UnknownColumnError(NotImplementedError):
         super().__init__(f'{info=}, {column_header=}')
 
 
+def date2QDateTime(d: date, *, epoch: date = EPOCH) -> 'QDateTime':  # noqa: N802
+    return QDateTime.fromSecsSinceEpoch(int((d - epoch).total_seconds()))
+
+
 @dataclass
 class SeriesModel:
     series: list[QLineSeries]
@@ -41,7 +48,7 @@ class SeriesModel:
     unit: SeriesModelUnit
 
     @classmethod
-    def money(cls, infos: list[Info]) -> SeriesModel:
+    def money(cls, infos: list[Info]) -> 'SeriesModel':
         return SeriesModel._from_infos(
             infos,
             [
@@ -57,7 +64,7 @@ class SeriesModel:
         )
 
     @classmethod
-    def rol(cls, infos: list[Info]) -> SeriesModel:
+    def rol(cls, infos: list[Info]) -> 'SeriesModel':
         return SeriesModel._from_infos(
             infos,
             [
@@ -71,7 +78,7 @@ class SeriesModel:
         )
 
     @classmethod
-    def ferie(cls, infos: list[Info]) -> SeriesModel:
+    def ferie(cls, infos: list[Info]) -> 'SeriesModel':
         return SeriesModel._from_infos(
             infos,
             [
@@ -90,10 +97,10 @@ class SeriesModel:
         infos: list[Info],
         column_headers: list[
             ColumnHeader
-            | tuple[ColumnHeader, Callable[[Arg(Decimal, 'd')], Decimal]]
+            | tuple[ColumnHeader, "Callable[[Arg(Decimal, 'd')], Decimal]"]
         ],
         unit: SeriesModelUnit,
-    ) -> SeriesModel:
+    ) -> 'SeriesModel':
         series: list[QLineSeries] = []
         for column_header_ in column_headers:
             column_header = (

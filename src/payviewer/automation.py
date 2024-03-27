@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from datetime import UTC
 from datetime import datetime
 from itertools import count
@@ -41,7 +39,7 @@ class Date(NamedTuple):
     year: int
     month: int
 
-    def get_year_months(self) -> Iterable[Date]:
+    def get_year_months(self) -> 'Iterable[Date]':
         """Infinite generator of (year, month) from last."""
         d = self
         while True:

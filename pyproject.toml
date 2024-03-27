@@ -13,6 +13,7 @@ dependencies = [
     'mypy-extensions',
     'PythonQwt',
     'types-setuptools',
+    'guilib',
 ]
 
 

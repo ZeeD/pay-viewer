@@ -1,14 +1,18 @@
+from os import environ
 from typing import TYPE_CHECKING
 from typing import cast
+
+from guilib.chartslider.chartslider import date2days
+
+from .datetimeaxis import DateTimeAxis
+
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
 
 from qtpy.QtCharts import QAbstractSeries
 from qtpy.QtCharts import QChart
 from qtpy.QtCharts import QLineSeries
 from qtpy.QtCore import Qt
-
-from payviewer.dates import date2days
-
-from .datetimeaxis import DateTimeAxis
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

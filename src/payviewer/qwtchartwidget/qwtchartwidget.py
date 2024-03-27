@@ -1,14 +1,15 @@
 from os import environ
-
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
 from typing import TYPE_CHECKING
 
 from guilib.chartslider.chartslider import ChartSlider
-from qtpy.QtWidgets import QVBoxLayout
-from qtpy.QtWidgets import QWidget
 
 from .plot import Plot
+
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
+
+from qtpy.QtWidgets import QVBoxLayout
+from qtpy.QtWidgets import QWidget
 
 if TYPE_CHECKING:
     from payviewer.modelgui import SeriesModelFactory

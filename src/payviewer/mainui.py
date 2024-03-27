@@ -5,6 +5,7 @@ from typing import cast
 
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
+
 from qtpy.QtGui import QAction
 from qtpy.QtGui import QKeySequence
 from qtpy.QtGui import QShortcut

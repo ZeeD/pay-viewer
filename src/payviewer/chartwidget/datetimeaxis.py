@@ -3,9 +3,8 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import cast
 
+from guilib.chartslider.chartslider import date2days
 from qtpy.QtCharts import QCategoryAxis
-
-from payviewer.dates import date2days
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
