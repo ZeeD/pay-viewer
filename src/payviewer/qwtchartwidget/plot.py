@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING
 
 from guilib.chartslider.chartslider import date2days
 from guilib.chartslider.chartslider import days2date
-from qtpy.QtCore import Qt
-from qtpy.QtCore import Slot
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
@@ -20,6 +18,8 @@ from qwt.scale_draw import QwtScaleDraw
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
 
+from qtpy.QtCore import Qt
+from qtpy.QtCore import Slot
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
