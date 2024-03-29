@@ -86,13 +86,13 @@ def wait_download(dtemp: str) -> None:
 def mv_pdf_from_tmp_to_data(
     dtemp: str, year: int, month: int, data_path: str
 ) -> None:
-    Path(f'{data_path}/{year}').mkdir(parents=True)
+    Path(f'{data_path}/{year}').mkdir(parents=True, exist_ok=True)
 
     info('files in dtemp:')
     for dtempfn in listdir(dtemp):
         info('\t%s/%s', dtemp, dtempfn)
     src = f'{dtemp}/{listdir(dtemp)[0]}'
-    dst = f'{data_path}/{year}/Cedolini_{year}_{month: 02}.pdf'
+    dst = f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'
     info("mv'ing '%s' to '%s'", src, dst)
     move(src, dst)
 
@@ -141,11 +141,11 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
             raise ValueError
 
         def download_for_month(month: int) -> None:
-            text = f'{month: 02d}'
+            text = f'{month:02d}'
             for i in count(2):
                 try:
                     row = d.find_element(
-                        By.CSS_SELECTOR, f'.mat-row: nth-child({i})'
+                        By.CSS_SELECTOR, f'.mat-row:nth-child({i})'
                     )
                 except NoSuchElementException:
                     break
