@@ -6,13 +6,12 @@ from typing import cast
 from typing import overload
 from typing import override
 
+from guilib.searchsheet.model import SearchableModel
 from qtpy.QtCore import QAbstractTableModel
 from qtpy.QtCore import QItemSelectionModel
 from qtpy.QtCore import QModelIndex
 from qtpy.QtCore import QObject
 from qtpy.QtCore import QPersistentModelIndex
-from qtpy.QtCore import QRegularExpression
-from qtpy.QtCore import QSortFilterProxyModel
 from qtpy.QtCore import Qt
 from qtpy.QtGui import QBrush
 from qtpy.QtGui import QColor
@@ -52,7 +51,7 @@ _QMODELINDEX = QModelIndex()
 
 
 class ViewModel(QAbstractTableModel):
-    def __init__(self, parent: QObject, infos: list[Info]) -> None:
+    def __init__(self, parent: QObject | None, infos: list[Info]) -> None:
         super().__init__(parent)
         self._set_infos(infos)
 
@@ -199,37 +198,16 @@ class ViewModel(QAbstractTableModel):
             self.endResetModel()
 
 
-class SortFilterViewModel(QSortFilterProxyModel):
-    def __init__(self, settings: 'Settings') -> None:
-        super().__init__()
+class SortFilterViewModel(SearchableModel):
+    def __init__(
+        self, settings: 'Settings', parent: QObject | None = None
+    ) -> None:
+        super().__init__(ViewModel(parent, []), parent)
         self.settings = settings
-        self.setSourceModel(ViewModel(self, []))
-        self.setFilterCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        self.setSortCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
-        self.setDynamicSortFilter(True)
 
     @override
-    def filterAcceptsRow(
-        self,
-        source_row: int,
-        source_parent: QModelIndex | QPersistentModelIndex,
-    ) -> bool:
-        regex = self.filterRegularExpression()
-        source_model = self.sourceModel()
-        column_count = source_model.columnCount(source_parent)
-
-        return any(
-            regex.match(str(source_model.data(index))).hasMatch()
-            for index in (
-                source_model.index(source_row, i, source_parent)
-                for i in range(column_count)
-            )
-        )
-
-    def filter_changed(self, text: str) -> None:
-        text = QRegularExpression.escape(text)
-        options = QRegularExpression.PatternOption.CaseInsensitiveOption
-        self.setFilterRegularExpression(QRegularExpression(text, options))
+    def sourceModel(self) -> ViewModel:
+        return cast(ViewModel, super().sourceModel())
 
     def sort(
         self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder
@@ -268,7 +246,3 @@ class SortFilterViewModel(QSortFilterProxyModel):
     def get_rows(self) -> list[Info]:
         view_model = self.sourceModel()
         return view_model._infos  # noqa: SLF001
-
-    @override
-    def sourceModel(self) -> ViewModel:
-        return cast(ViewModel, super().sourceModel())

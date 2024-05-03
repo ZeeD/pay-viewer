@@ -3,12 +3,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import cast
 
+from guilib.searchsheet.widget import SearchSheet
+
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
 
+from qtpy.QtCore import QCoreApplication
+from qtpy.QtCore import Qt
 from qtpy.QtGui import QAction
-from qtpy.QtGui import QKeySequence
-from qtpy.QtGui import QShortcut
 from qtpy.QtUiTools import QUiLoader
 from qtpy.QtWidgets import QApplication
 from qtpy.QtWidgets import QDialog
@@ -66,7 +68,7 @@ def new_settingsui(settings: Settings) -> Settingsui:
 
 
 class Mainui(QMainWindow):
-    tableView: QWidget  # noqa: N815
+    xls: QWidget
     chart_money: QWidget
     chart_ferie: QWidget
     chart_rol: QWidget
@@ -108,13 +110,14 @@ def new_mainui(
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
     # replace table_view
-    table_view = FreezeTableView(mainui.tableView.parentWidget(), model)
-    mainui.gridLayout_1.replaceWidget(mainui.tableView, table_view)
-    mainui.tableView.deleteLater()
-    mainui.tableView = table_view
+    table_view = FreezeTableView(mainui.xls, model)
+    sheet = SearchSheet(mainui.xls, table_view=table_view)
+    sheet.set_model(model)
+    mainui.gridLayout_1.addWidget(sheet, 0, 0)
+    mainui.tableView = sheet
     # replace table_view
 
-    selection_model = mainui.tableView.selectionModel()
+    selection_model = mainui.tableView.selection_model()
     selection_model.selectionChanged.connect(update_status_bar)
 
     chart_widget_money = ChartWidget(model, mainui, SeriesModel.money)
@@ -129,7 +132,7 @@ def new_mainui(
     qwt_chart_widget_money = QwtChartVidget(model, mainui, SeriesModel.money)
     mainui.qwt_chart_money.layout().addWidget(qwt_chart_widget_money)
 
-    mainui.lineEdit.textChanged.connect(model.filter_changed)
+    # mainui.lineEdit.textChanged.connect(model.setFilterWildcard)
 
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
@@ -137,12 +140,12 @@ def new_mainui(
     mainui.actionExport.triggered.connect(export_helper)
     settingsui.accepted.connect(update_helper)
 
-    QShortcut(QKeySequence('Ctrl+F'), mainui).activated.connect(
-        mainui.lineEdit.setFocus
-    )
-    QShortcut(QKeySequence('Esc'), mainui).activated.connect(
-        lambda: mainui.lineEdit.setText('')
-    )
+    # QShortcut(QKeySequence('Ctrl+F'), mainui).activated.connect(
+        # mainui.lineEdit.setFocus
+    # )
+    # QShortcut(QKeySequence('Esc'), mainui).activated.connect(
+        # lambda: mainui.lineEdit.setText('')
+    # )
 
     # on startup load only from local, and ask if you really want
     update_helper(only_local=True, force_pdf=False)
@@ -151,8 +154,11 @@ def new_mainui(
 
 
 def main() -> None:
-    app = QApplication([__file__])
+    QCoreApplication.setAttribute(
+        Qt.ApplicationAttribute.AA_ShareOpenGLContexts
+    )
 
+    app = QApplication([__file__])
     settings = Settings()
     model = SortFilterViewModel(settings)
     settingsui = new_settingsui(settings)

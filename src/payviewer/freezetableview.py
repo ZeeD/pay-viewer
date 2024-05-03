@@ -1,6 +1,7 @@
 from typing import cast
 from typing import override
 
+from guilib.doubler.doubler import Doubler
 from qtpy.QtCore import QAbstractItemModel
 from qtpy.QtCore import QItemSelectionModel
 from qtpy.QtCore import Qt
@@ -18,16 +19,15 @@ class TableViewUI(QWidget):
     right: QTableView
 
 
-class FreezeTableView(QAbstractItemView):
+class FreezeTableView(Doubler[QTableView], QAbstractItemView):
     def __init__(
         self, parent: QWidget | None, model: QAbstractItemModel
     ) -> None:
-        super().__init__(parent)
+        QAbstractItemView.__init__(self, parent)
         content = cast(
             TableViewUI, QUiLoader(parent).load(FREEZE_TABLE_VIEW_UI_PATH)
         )
-        self._left = content.left
-        self._right = content.right
+        Doubler.__init__(self, content.left, content.right)
         self._model = model
 
         layout = QGridLayout(self)
@@ -78,3 +78,19 @@ class FreezeTableView(QAbstractItemView):
         self._right.resizeColumnsToContents()
 
         self._right.horizontalHeader().setSectionsMovable(True)
+
+    # def setShowGrid(self, show: bool) -> None:
+        # self._left.setShowGrid(show)
+        # self._right.setShowGrid(show)
+        #
+    # def setGridStyle(self, style: Qt.PenStyle) -> None:
+        # self._left.setGridStyle(style)
+        # self._right.setGridStyle(style)
+        #
+    # def setSortingEnabled(self, enable: bool) -> None:
+        # self._left.setSortingEnabled(enable)
+        # self._right.setSortingEnabled(enable)
+        #
+    # def setWordWrap(self, enable: bool) -> None:
+        # self._left.setWordWrap(enable)
+        # self._right.setWordWrap(enable)
