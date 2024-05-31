@@ -145,7 +145,7 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
             for i in count(2):
                 try:
                     row = d.find_element(
-                        By.CSS_SELECTOR, f'.mat-row:nth-child({i})'
+                        By.CSS_SELECTOR, f'mat-row:nth-child({i})'
                     )
                 except NoSuchElementException:
                     break
