@@ -308,11 +308,14 @@ class UnknownRowError(Exception):
 
 def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
     for row in table.itertuples(index=False, name=None):
+        if row[2] in ('Com.', 'Reg.'):
+            continue
+
         if len(row) == 8:  # noqa: PLR2004
             yield AdditionalDetail(
                 prev=(None if isnan(row[0]) else int(row[0])),
                 fisc=(None if isnan(row[1]) else int(row[1])),
-                cod=row[2],
+                cod=int(row[2]),
                 descrizione=row[3],
                 ore_o_giorni=extract(row[4]),
                 compenso_unitario=extract(row[5]),
@@ -325,7 +328,7 @@ def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
             yield AdditionalDetail(
                 prev=(None if isnan(row[0]) else int(row[0])),
                 fisc=(None if isnan(row[1]) else int(row[1])),
-                cod=row[2],
+                cod=int(row[2]),
                 descrizione=row[3],
                 ore_o_giorni=extract(row[5]),
                 compenso_unitario=extract(row[6]),
