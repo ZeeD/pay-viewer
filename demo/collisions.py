@@ -9,12 +9,16 @@ from pathlib import Path
 
 COLLISIONS = defaultdict[int, set[str]](set)
 BACKWARD = defaultdict[str, set[int]](set)
-for filename in sorted(Path(__file__).parent.glob('../../pay-data/**/*.pdf.json')):
+for filename in sorted(
+    Path(__file__).parent.glob('../../pay-data/**/*.pdf.json')
+):
     with filename.open(encoding='utf-8') as fp:
         for obj in load(fp):
             for additional_detail in obj['additional_details']:
                 cod = additional_detail['cod']
-                assert isinstance(cod, int), f'{filename=}, {cod=}, {type(cod)=}'
+                assert isinstance(
+                    cod, int
+                ), f'{filename=}, {cod=}, {type(cod)=}'
                 descrizione = additional_detail['descrizione']
                 COLLISIONS[cod].add(descrizione)
                 BACKWARD[descrizione].add(cod)

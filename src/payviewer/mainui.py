@@ -141,10 +141,10 @@ def new_mainui(
     settingsui.accepted.connect(update_helper)
 
     # QShortcut(QKeySequence('Ctrl+F'), mainui).activated.connect(
-        # mainui.lineEdit.setFocus
+    # mainui.lineEdit.setFocus
     # )
     # QShortcut(QKeySequence('Esc'), mainui).activated.connect(
-        # lambda: mainui.lineEdit.setText('')
+    # lambda: mainui.lineEdit.setText('')
     # )
 
     # on startup load only from local, and ask if you really want
