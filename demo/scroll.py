@@ -16,7 +16,7 @@ layout = QVBoxLayout(root)
 
 plot = QwtPlot(root)
 QwtPlotCurve.make([0, 9], [0, 9], '', plot)
-plot.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(0, 9, [], [], range(10)))
+plot.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(0, 9))
 
 slider = QSlider(Qt.Orientation.Horizontal, root)
 slider.setRange(0, 9)
