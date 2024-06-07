@@ -9,9 +9,9 @@ from guilib.chartslider.chartslider import days2date
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
-from qwt import QwtPlot
 from qwt import QwtPlotCurve
 from qwt import QwtPlotGrid
+from qwt.plot import QwtPlot
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
 
@@ -209,8 +209,8 @@ class Plot(QwtPlot):
     def start_date_changed(self, start_date: date) -> None:
         lower_bound = date2days(start_date)
 
-        scale_div = self.axisScaleDiv(QwtPlot.xBottom)
-        scale_div.setLowerBound(lower_bound)
+        interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
+        self.setAxisScale(QwtPlot.xBottom, lower_bound, interval.maxValue())
 
         self.replot()
 
@@ -218,7 +218,7 @@ class Plot(QwtPlot):
     def end_date_changed(self, end_date: date) -> None:
         upper_bound = date2days(end_date)
 
-        scale_div = self.axisScaleDiv(QwtPlot.xBottom)
-        scale_div.setUpperBound(upper_bound)
+        interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
+        self.setAxisScale(QwtPlot.xBottom, interval.minValue(), upper_bound)
 
         self.replot()

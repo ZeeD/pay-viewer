@@ -16,9 +16,8 @@ for filename in sorted(
         for obj in load(fp):
             for additional_detail in obj['additional_details']:
                 cod = additional_detail['cod']
-                assert isinstance(
-                    cod, int
-                ), f'{filename=}, {cod=}, {type(cod)=}'
+                if not isinstance(cod, int):
+                    raise TypeError(cod)
                 descrizione = additional_detail['descrizione']
                 COLLISIONS[cod].add(descrizione)
                 BACKWARD[descrizione].add(cod)

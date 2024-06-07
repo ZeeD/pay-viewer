@@ -4,13 +4,13 @@ from typing import TYPE_CHECKING
 from typing import cast
 
 from guilib.searchsheet.widget import SearchSheet
+from PySide6.QtWidgets import QTableView
 
 if 'QT_API' not in environ:
     environ['QT_API'] = 'pyside6'
 
 from qtpy.QtCore import QCoreApplication
 from qtpy.QtCore import Qt
-from qtpy.QtGui import QAction
 from qtpy.QtUiTools import QUiLoader
 from qtpy.QtWidgets import QApplication
 from qtpy.QtWidgets import QDialog
@@ -37,6 +37,7 @@ from payviewer.writer.csvwriter import CsvWriter
 
 if TYPE_CHECKING:
     from qtpy.QtCore import QItemSelection
+    from qtpy.QtGui import QAction
 
 
 class Settingsui(QDialog):
@@ -74,11 +75,12 @@ class Mainui(QMainWindow):
     chart_rol: QWidget
     qwt_chart_money: QWidget
     lineEdit: QLineEdit  # noqa: N815
-    actionCleanup: QAction  # noqa: N815
-    actionSettings: QAction  # noqa: N815
-    actionUpdate: QAction  # noqa: N815
-    actionExport: QAction  # noqa: N815
+    actionCleanup: 'QAction'  # noqa: N815
+    actionSettings: 'QAction'  # noqa: N815
+    actionUpdate: 'QAction'  # noqa: N815
+    actionExport: 'QAction'  # noqa: N815
     gridLayout_1: QGridLayout  # noqa: N815
+    tableView: QWidget  # noqa: N815
 
 
 def new_mainui(
@@ -111,7 +113,7 @@ def new_mainui(
 
     # replace table_view
     table_view = FreezeTableView(mainui.xls, model)
-    sheet = SearchSheet(mainui.xls, table_view=table_view)
+    sheet = SearchSheet(mainui.xls, table_view=cast(QTableView, table_view))
     sheet.set_model(model)
     mainui.gridLayout_1.addWidget(sheet, 0, 0)
     mainui.tableView = sheet
@@ -132,20 +134,11 @@ def new_mainui(
     qwt_chart_widget_money = QwtChartVidget(model, mainui, SeriesModel.money)
     mainui.qwt_chart_money.layout().addWidget(qwt_chart_widget_money)
 
-    # mainui.lineEdit.textChanged.connect(model.setFilterWildcard)
-
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
     mainui.actionCleanup.triggered.connect(remove_jsons_helper)
     mainui.actionExport.triggered.connect(export_helper)
     settingsui.accepted.connect(update_helper)
-
-    # QShortcut(QKeySequence('Ctrl+F'), mainui).activated.connect(
-    # mainui.lineEdit.setFocus
-    # )
-    # QShortcut(QKeySequence('Esc'), mainui).activated.connect(
-    # lambda: mainui.lineEdit.setText('')
-    # )
 
     # on startup load only from local, and ask if you really want
     update_helper(only_local=True, force_pdf=False)

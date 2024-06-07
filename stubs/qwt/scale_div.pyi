@@ -1,6 +1,8 @@
 from collections.abc import Sequence
 from typing import overload
 
+from qwt.interval import QwtInterval
+
 class QwtScaleDiv:
     @overload
     def __init__(self) -> None: ...
@@ -28,3 +30,4 @@ class QwtScaleDiv:
     ) -> None: ...
     def setLowerBound(self, lowerBound: float) -> None: ...  # noqa:N802,N803
     def setUpperBound(self, upperBound: float) -> None: ...  # noqa:N802,N803
+    def interval(self) -> QwtInterval: ...

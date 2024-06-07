@@ -78,19 +78,3 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
         self._right.resizeColumnsToContents()
 
         self._right.horizontalHeader().setSectionsMovable(True)
-
-    # def setShowGrid(self, show: bool) -> None:
-    # self._left.setShowGrid(show)
-    # self._right.setShowGrid(show)
-    #
-    # def setGridStyle(self, style: Qt.PenStyle) -> None:
-    # self._left.setGridStyle(style)
-    # self._right.setGridStyle(style)
-    #
-    # def setSortingEnabled(self, enable: bool) -> None:
-    # self._left.setSortingEnabled(enable)
-    # self._right.setSortingEnabled(enable)
-    #
-    # def setWordWrap(self, enable: bool) -> None:
-    # self._left.setWordWrap(enable)
-    # self._right.setWordWrap(enable)
