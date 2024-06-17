@@ -45,18 +45,6 @@ def linecolors() -> 'Iterable[Qt.GlobalColor]':
     return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
 
 
-def normalized_xdatas(
-    min_xdata: float, max_xdata: float
-) -> tuple[float, float]:
-    lower = days2date(min_xdata)
-    upper = days2date(max_xdata)
-
-    return (
-        date2days(date(lower.year, 1, 1)),
-        date2days(date(upper.year + 1, 1, 1)),
-    )
-
-
 def days(min_xdata: float, max_xdata: float) -> list[float]:
     lower = days2date(min_xdata)
     upper = days2date(max_xdata)
@@ -185,23 +173,20 @@ class Plot(QwtPlot):
                 serie.name(),
                 self,
                 linecolor=linecolor,
+                linewidth=2,
                 antialiased=True,
             )
 
         if min_xdata is None or max_xdata is None:
             raise NoXDataError
-        normalized_min_xdata, normalized_max_xdata = normalized_xdatas(
-            min_xdata, max_xdata
-        )
 
-        x_scale_div = QwtScaleDiv(
+        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
             min_xdata,
             max_xdata,
-            days(normalized_min_xdata, normalized_max_xdata),
-            months(normalized_min_xdata, normalized_max_xdata),
-            years(normalized_min_xdata, normalized_max_xdata),
-        )
-        self.setAxisScaleDiv(QwtPlot.xBottom, x_scale_div)
+            days(min_xdata, max_xdata),
+            months(min_xdata, max_xdata),
+            years(min_xdata, max_xdata),
+        ))
 
         self.replot()
 
@@ -210,7 +195,13 @@ class Plot(QwtPlot):
         lower_bound = date2days(start_date)
 
         interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
-        self.setAxisScale(QwtPlot.xBottom, lower_bound, interval.maxValue())
+        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
+            lower_bound,
+            interval.maxValue(),
+            days(lower_bound, interval.maxValue()),
+            months(lower_bound, interval.maxValue()),
+            years(lower_bound, interval.maxValue()),
+        ))
 
         self.replot()
 
@@ -219,6 +210,12 @@ class Plot(QwtPlot):
         upper_bound = date2days(end_date)
 
         interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
-        self.setAxisScale(QwtPlot.xBottom, interval.minValue(), upper_bound)
+        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
+            interval.minValue(),
+            upper_bound,
+            days(interval.minValue(), upper_bound),
+            months(interval.minValue(), upper_bound),
+            years(interval.minValue(), upper_bound),
+        ))
 
         self.replot()
