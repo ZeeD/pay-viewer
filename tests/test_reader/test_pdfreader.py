@@ -116,6 +116,11 @@ class TestPdfReader(TestCase):
 
         self.assertEqual(info.when, date(2012, 9, 1))
 
+    def test_congedo_2024_05(self) -> None:
+        infos = PdfReader(resource_pdf(2024, 5)).read_infos()
+
+        self.assertEqual(88, extract(infos, ColumnHeader.legenda_congedo))
+
 
 def extract(infos: list[Info], key: ColumnHeader) -> Decimal | None:
     for info in infos:

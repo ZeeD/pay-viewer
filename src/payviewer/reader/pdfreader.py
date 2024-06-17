@@ -84,6 +84,9 @@ class PdfReader(ABCReader):
         legenda_rol = extract_legenda(
             table_legenda_keys, table_legenda_values, 'RL'
         )
+        legenda_congedo = extract_legenda(
+            table_legenda_keys, table_legenda_values, 'CM'
+        )
 
         additional_details = extract_details(table_details)
 
@@ -112,6 +115,7 @@ class PdfReader(ABCReader):
                 Column(ColumnHeader.legenda_ferie, legenda_ferie),
                 Column(ColumnHeader.legenda_reperibilita, legenda_reperibilita),
                 Column(ColumnHeader.legenda_rol, legenda_rol),
+                Column(ColumnHeader.legenda_congedo, legenda_congedo),
             ],
             additional_details=list(additional_details),
         )
@@ -297,7 +301,10 @@ def extract_legenda(
 ) -> Decimal:
     for i, row in table_keys.itertuples():
         if row.startswith(f'{key}='):
-            return extract(table_values.iloc[i, 0])
+            value = table_values.iloc[i, 0]
+            if isinstance(value, str) and ' ' in value:
+                return extract(value.split()[-1])
+            return extract(value)
     return Decimal(0)
 
 

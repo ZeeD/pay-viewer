@@ -33,6 +33,7 @@ class ColumnHeader(Enum):
     legenda_ferie = auto()
     legenda_reperibilita = auto()
     legenda_rol = auto()
+    legenda_congedo = auto()
     detail = auto()
 
 
