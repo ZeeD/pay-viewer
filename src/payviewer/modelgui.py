@@ -7,8 +7,8 @@ from enum import auto
 from os import environ
 from typing import TYPE_CHECKING
 
-from guilib.chartslider.chartslider import EPOCH
-from guilib.chartslider.chartslider import date2days
+from guilib.dates.converters import date2days
+from guilib.dates.converters import date2QDateTime
 
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
@@ -32,11 +32,6 @@ class SeriesModelUnit(Enum):
 class UnknownColumnError(NotImplementedError):
     def __init__(self, info: Info, column_header: ColumnHeader) -> None:
         super().__init__(f'{info=}, {column_header=}')
-
-
-def date2QDateTime(d: date, *, epoch: date = EPOCH) -> 'QDateTime':  # noqa: N802
-    return QDateTime.fromSecsSinceEpoch(int((d - epoch).total_seconds()))
-
 
 @dataclass
 class SeriesModel:

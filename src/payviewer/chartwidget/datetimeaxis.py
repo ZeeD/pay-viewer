@@ -1,36 +1,21 @@
-from datetime import date
 from datetime import datetime
+from os import environ
 from typing import TYPE_CHECKING
 from typing import cast
 
-from guilib.chartslider.chartslider import date2days
+from guilib.dates.converters import date2days
+from guilib.dates.generators import create_days
+from guilib.dates.generators import next_first_of_the_year
+
+if 'QT_API' not in environ:
+    environ['QT_API'] = 'pyside6'
+
 from qtpy.QtCharts import QCategoryAxis
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
 
     from qtpy.QtCore import QDateTime
     from qtpy.QtCore import QObject
-
-
-def first_january(d: date, *, before: bool = True) -> date:
-    ret_year = d.year if before else d.year + 1
-    return date(ret_year, 1, 1)
-
-
-def next_first_of_the_month(day: date, *, delta_months: int = 1) -> date:
-    delta_years, m = divmod(day.month - 1 + delta_months, 12)
-    return date(day.year + delta_years, m + 1, 1)
-
-
-def create_days(begin: date, end: date, *, step: int = 1) -> 'Iterator[date]':
-    day = begin
-    while True:
-        yield day
-        next_day = next_first_of_the_month(day, delta_months=step)
-        if next_day > end:
-            break
-        day = next_day
 
 
 class DateTimeAxis(QCategoryAxis):
@@ -51,8 +36,8 @@ class DateTimeAxis(QCategoryAxis):
 
         self.setStartValue(date2days(x_min_date))
 
-        self.min_date = first_january(x_min_date, before=True)
-        self.max_date = first_january(x_max_date, before=False)
+        self.min_date = next_first_of_the_year(x_min_date, delta=0)
+        self.max_date = next_first_of_the_year(x_max_date)
 
         self.setMin(date2days(self.min_date))
         self.setMax(date2days(self.max_date))
@@ -69,3 +54,4 @@ class DateTimeAxis(QCategoryAxis):
                 for day in days:
                     self.append(f'{day:%Y-%m-%d}', date2days(day))
                 break
+

@@ -1,11 +1,13 @@
 from datetime import date
-from datetime import timedelta
 from itertools import cycle
 from os import environ
 from typing import TYPE_CHECKING
 
-from guilib.chartslider.chartslider import date2days
-from guilib.chartslider.chartslider import days2date
+from guilib.dates.converters import date2days
+from guilib.dates.converters import days2date
+from guilib.dates.generators import days
+from guilib.dates.generators import months
+from guilib.dates.generators import years
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
@@ -44,54 +46,6 @@ def linecolors() -> 'Iterable[Qt.GlobalColor]':
     }
     return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
 
-
-def days(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = days2date(min_xdata)
-    upper = days2date(max_xdata)
-
-    def it() -> 'Iterable[float]':
-        when = lower
-        while when <= upper:
-            yield date2days(when)
-            when += timedelta(days=7)
-
-    return list(it())
-
-
-def months(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = days2date(min_xdata)
-    upper = days2date(max_xdata)
-
-    ly, lm = (lower.year, lower.month)
-    uy, um = (upper.year, upper.month)
-
-    def it() -> 'Iterable[float]':
-        wy, wm = ly, lm
-        while (wy, wm) <= (uy, um):
-            yield date2days(date(wy, wm, 1))
-            if wm < 12:  # noqa: PLR2004
-                wm += 1
-            else:
-                wy += 1
-                wm = 1
-
-    return list(it())
-
-
-def years(min_xdata: float, max_xdata: float) -> list[float]:
-    lower = days2date(min_xdata)
-    upper = days2date(max_xdata)
-
-    ly = lower.year
-    uy = upper.year
-
-    def it() -> 'Iterable[float]':
-        wy = ly
-        while wy <= uy:
-            yield date2days(date(wy, 1, 1))
-            wy += 1
-
-    return list(it())
 
 
 class FmtScaleDraw(QwtScaleDraw):
