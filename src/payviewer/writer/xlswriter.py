@@ -50,7 +50,7 @@ VALUE_NUMBER_FORMAT = {
 
 
 class XlsWriter(ABCWriter):
-    def write_infos(self, infos: list[Info]) -> None:  # noqa: C901, PLR0912
+    def write_infos(self, infos: list[Info]) -> None:  # noqa: C901
         def clean(descrizione: str) -> str:
             for prefix in (
                 'AD.COM.LE DA TR. NEL ',

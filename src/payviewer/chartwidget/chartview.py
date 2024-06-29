@@ -1,33 +1,28 @@
 from datetime import date
 from decimal import Decimal
-from os import environ
 from typing import TYPE_CHECKING
 from typing import cast
 from typing import override
 
-from guilib.chartslider.chartslider import days2date
+from guilib.dates.converters import days2date
+from PySide6.QtCharts import QChartView
+from PySide6.QtCharts import QLineSeries
+from PySide6.QtCharts import QValueAxis
+from PySide6.QtCore import QPointF
+from PySide6.QtCore import QRect
+from PySide6.QtCore import QRectF
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Slot
+from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QPainter
+from PySide6.QtGui import QPen
 
 from .chart import Chart
 from .charthover import ChartHover
 from .datetimeaxis import DateTimeAxis
 
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
-from qtpy.QtCharts import QChartView
-from qtpy.QtCharts import QLineSeries
-from qtpy.QtCharts import QValueAxis
-from qtpy.QtCore import QPointF
-from qtpy.QtCore import QRect
-from qtpy.QtCore import QRectF
-from qtpy.QtCore import Qt
-from qtpy.QtCore import Slot
-from qtpy.QtGui import QMouseEvent
-from qtpy.QtGui import QPainter
-from qtpy.QtGui import QPen
-
 if TYPE_CHECKING:
-    from qtpy.QtWidgets import QWidget
+    from PySide6.QtWidgets import QWidget
 
     from payviewer.modelgui import SeriesModelFactory
     from payviewer.viewmodel import SortFilterViewModel

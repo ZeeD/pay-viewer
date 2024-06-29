@@ -4,20 +4,15 @@ from datetime import date
 from decimal import Decimal
 from enum import Enum
 from enum import auto
-from os import environ
 from typing import TYPE_CHECKING
 
 from guilib.dates.converters import date2days
 from guilib.dates.converters import date2QDateTime
+from PySide6.QtCharts import QLineSeries
+from PySide6.QtCore import QDateTime
 
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
-
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
-from qtpy.QtCharts import QLineSeries
-from qtpy.QtCore import QDateTime
 
 if TYPE_CHECKING:
     from mypy_extensions import Arg
@@ -32,6 +27,7 @@ class SeriesModelUnit(Enum):
 class UnknownColumnError(NotImplementedError):
     def __init__(self, info: Info, column_header: ColumnHeader) -> None:
         super().__init__(f'{info=}, {column_header=}')
+
 
 @dataclass
 class SeriesModel:

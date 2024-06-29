@@ -2,14 +2,14 @@ from typing import cast
 from typing import override
 
 from guilib.doubler.doubler import Doubler
-from qtpy.QtCore import QAbstractItemModel
-from qtpy.QtCore import QItemSelectionModel
-from qtpy.QtCore import Qt
-from qtpy.QtUiTools import QUiLoader
-from qtpy.QtWidgets import QAbstractItemView
-from qtpy.QtWidgets import QGridLayout
-from qtpy.QtWidgets import QTableView
-from qtpy.QtWidgets import QWidget
+from PySide6.QtCore import QAbstractItemModel
+from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtCore import Qt
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QAbstractItemView
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QTableView
+from PySide6.QtWidgets import QWidget
 
 from payviewer.constants import FREEZE_TABLE_VIEW_UI_PATH
 

@@ -1,6 +1,5 @@
 from datetime import date
 from itertools import cycle
-from os import environ
 from typing import TYPE_CHECKING
 
 from guilib.dates.converters import date2days
@@ -8,6 +7,8 @@ from guilib.dates.converters import days2date
 from guilib.dates.generators import days
 from guilib.dates.generators import months
 from guilib.dates.generators import years
+from PySide6.QtCore import Qt
+from PySide6.QtCore import Slot
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
@@ -17,16 +18,10 @@ from qwt.plot import QwtPlot
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
 
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
-from qtpy.QtCore import Qt
-from qtpy.QtCore import Slot
-
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from qtpy.QtWidgets import QWidget
+    from PySide6.QtWidgets import QWidget
 
     from payviewer.viewmodel import SortFilterViewModel
 
@@ -45,7 +40,6 @@ def linecolors() -> 'Iterable[Qt.GlobalColor]':
         Qt.GlobalColor.transparent,
     }
     return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
-
 
 
 class FmtScaleDraw(QwtScaleDraw):
@@ -134,13 +128,16 @@ class Plot(QwtPlot):
         if min_xdata is None or max_xdata is None:
             raise NoXDataError
 
-        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
-            min_xdata,
-            max_xdata,
-            days(min_xdata, max_xdata),
-            months(min_xdata, max_xdata),
-            years(min_xdata, max_xdata),
-        ))
+        self.setAxisScaleDiv(
+            QwtPlot.xBottom,
+            QwtScaleDiv(
+                min_xdata,
+                max_xdata,
+                days(min_xdata, max_xdata),
+                months(min_xdata, max_xdata),
+                years(min_xdata, max_xdata),
+            ),
+        )
 
         self.replot()
 
@@ -149,13 +146,16 @@ class Plot(QwtPlot):
         lower_bound = date2days(start_date)
 
         interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
-        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
-            lower_bound,
-            interval.maxValue(),
-            days(lower_bound, interval.maxValue()),
-            months(lower_bound, interval.maxValue()),
-            years(lower_bound, interval.maxValue()),
-        ))
+        self.setAxisScaleDiv(
+            QwtPlot.xBottom,
+            QwtScaleDiv(
+                lower_bound,
+                interval.maxValue(),
+                days(lower_bound, interval.maxValue()),
+                months(lower_bound, interval.maxValue()),
+                years(lower_bound, interval.maxValue()),
+            ),
+        )
 
         self.replot()
 
@@ -164,12 +164,15 @@ class Plot(QwtPlot):
         upper_bound = date2days(end_date)
 
         interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
-        self.setAxisScaleDiv(QwtPlot.xBottom, QwtScaleDiv(
-            interval.minValue(),
-            upper_bound,
-            days(interval.minValue(), upper_bound),
-            months(interval.minValue(), upper_bound),
-            years(interval.minValue(), upper_bound),
-        ))
+        self.setAxisScaleDiv(
+            QwtPlot.xBottom,
+            QwtScaleDiv(
+                interval.minValue(),
+                upper_bound,
+                days(interval.minValue(), upper_bound),
+                months(interval.minValue(), upper_bound),
+                years(interval.minValue(), upper_bound),
+            ),
+        )
 
         self.replot()

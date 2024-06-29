@@ -1,29 +1,11 @@
 from datetime import date
 from unittest import TestCase
 
-from guilib.chartslider.chartslider import date2days
-from guilib.chartslider.chartslider import days2date
-
-from payviewer.qwtchartwidget.plot import days
-from payviewer.qwtchartwidget.plot import months
-from payviewer.qwtchartwidget.plot import normalized_xdatas
-from payviewer.qwtchartwidget.plot import years
-
-
-class TestNormalizedXdatas(TestCase):
-    def test_normalized_xdatas(self) -> None:
-        min_date = date(1982, 5, 11)
-        max_date = date(1982, 5, 24)
-        expected = [date(1982, 1, 1), date(1983, 1, 1)]
-
-        actual = list(
-            map(
-                days2date,
-                normalized_xdatas(date2days(min_date), date2days(max_date)),
-            )
-        )
-
-        self.assertListEqual(expected, actual)
+from guilib.dates.converters import date2days
+from guilib.dates.converters import days2date
+from guilib.dates.generators import days
+from guilib.dates.generators import months
+from guilib.dates.generators import years
 
 
 class TestDays(TestCase):

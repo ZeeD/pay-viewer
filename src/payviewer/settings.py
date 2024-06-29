@@ -1,6 +1,6 @@
 from typing import cast
 
-from qtpy.QtCore import QSettings
+from PySide6.QtCore import QSettings
 
 from payviewer.constants import SETTINGS_DATA_PATH
 from payviewer.constants import SETTINGS_PASSWORD

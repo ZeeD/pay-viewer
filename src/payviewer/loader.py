@@ -33,8 +33,8 @@ def _get_reader(pdf_file_name: Path, *, force: bool) -> 'ABCReader':
     return HistoryReader(pdf_file_name.with_suffix('.pdf.json'))
 
 
-def load(data_path: str, *, force: bool = False) -> list['Info']:
-    infos: list['Info'] = []
+def load(data_path: str, *, force: bool = False) -> 'list[Info]':
+    infos = []
     for name in Path(data_path).glob('*/*.pdf'):
         infos.extend(_get_reader(name, force=force).read_infos())
     infos.sort(key=attrgetter('when'))

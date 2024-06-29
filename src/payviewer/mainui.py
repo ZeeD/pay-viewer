@@ -1,27 +1,22 @@
-from os import environ
 from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import cast
 
 from guilib.searchsheet.widget import SearchSheet
+from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import Qt
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QApplication
+from PySide6.QtWidgets import QDialog
+from PySide6.QtWidgets import QDialogButtonBox
+from PySide6.QtWidgets import QFileDialog
+from PySide6.QtWidgets import QGridLayout
+from PySide6.QtWidgets import QLineEdit
+from PySide6.QtWidgets import QMainWindow
+from PySide6.QtWidgets import QMessageBox
 from PySide6.QtWidgets import QTableView
-
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
-from qtpy.QtCore import QCoreApplication
-from qtpy.QtCore import Qt
-from qtpy.QtUiTools import QUiLoader
-from qtpy.QtWidgets import QApplication
-from qtpy.QtWidgets import QDialog
-from qtpy.QtWidgets import QDialogButtonBox
-from qtpy.QtWidgets import QFileDialog
-from qtpy.QtWidgets import QGridLayout
-from qtpy.QtWidgets import QLineEdit
-from qtpy.QtWidgets import QMainWindow
-from qtpy.QtWidgets import QMessageBox
-from qtpy.QtWidgets import QToolButton
-from qtpy.QtWidgets import QWidget
+from PySide6.QtWidgets import QToolButton
+from PySide6.QtWidgets import QWidget
 
 from payviewer.chartwidget.chartwidget import ChartWidget
 from payviewer.constants import MAINUI_UI_PATH
@@ -36,8 +31,8 @@ from payviewer.viewmodel import SortFilterViewModel
 from payviewer.writer.csvwriter import CsvWriter
 
 if TYPE_CHECKING:
-    from qtpy.QtCore import QItemSelection
-    from qtpy.QtGui import QAction
+    from PySide6.QtCore import QItemSelection
+    from PySide6.QtGui import QAction
 
 
 class Settingsui(QDialog):

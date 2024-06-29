@@ -7,14 +7,14 @@ from typing import overload
 from typing import override
 
 from guilib.searchsheet.model import SearchableModel
-from qtpy.QtCore import QAbstractTableModel
-from qtpy.QtCore import QItemSelectionModel
-from qtpy.QtCore import QModelIndex
-from qtpy.QtCore import QObject
-from qtpy.QtCore import QPersistentModelIndex
-from qtpy.QtCore import Qt
-from qtpy.QtGui import QBrush
-from qtpy.QtGui import QColor
+from PySide6.QtCore import QAbstractTableModel
+from PySide6.QtCore import QItemSelectionModel
+from PySide6.QtCore import QModelIndex
+from PySide6.QtCore import QObject
+from PySide6.QtCore import QPersistentModelIndex
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QBrush
+from PySide6.QtGui import QColor
 
 from payviewer.automation import try_fetch_new_data
 from payviewer.loader import load
@@ -23,7 +23,7 @@ from payviewer.model import Info
 from payviewer.model import parse_infos
 
 if TYPE_CHECKING:
-    from qtpy.QtWidgets import QStatusBar
+    from PySide6.QtWidgets import QStatusBar
 
     from payviewer.settings import Settings
 

@@ -1,17 +1,17 @@
 from typing import TYPE_CHECKING
 from typing import cast
 
-from qtpy.QtCore import QPointF
-from qtpy.QtCore import QSizeF
-from qtpy.QtCore import Qt
-from qtpy.QtUiTools import QUiLoader
-from qtpy.QtWidgets import QFormLayout
-from qtpy.QtWidgets import QGraphicsItem
-from qtpy.QtWidgets import QGraphicsLinearLayout
-from qtpy.QtWidgets import QGraphicsProxyWidget
-from qtpy.QtWidgets import QGraphicsWidget
-from qtpy.QtWidgets import QLabel
-from qtpy.QtWidgets import QWidget
+from PySide6.QtCore import QPointF
+from PySide6.QtCore import QSizeF
+from PySide6.QtCore import Qt
+from PySide6.QtUiTools import QUiLoader
+from PySide6.QtWidgets import QFormLayout
+from PySide6.QtWidgets import QGraphicsItem
+from PySide6.QtWidgets import QGraphicsLinearLayout
+from PySide6.QtWidgets import QGraphicsProxyWidget
+from PySide6.QtWidgets import QGraphicsWidget
+from PySide6.QtWidgets import QLabel
+from PySide6.QtWidgets import QWidget
 
 from payviewer.constants import CHARTHOVERUI_UI_PATH
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from datetime import date
     from decimal import Decimal
 
-    from qtpy.QtGui import QColor
+    from PySide6.QtGui import QColor
 
 
 class ChartHoverUI(QWidget):

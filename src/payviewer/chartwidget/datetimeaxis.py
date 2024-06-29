@@ -1,21 +1,15 @@
 from datetime import datetime
-from os import environ
 from typing import TYPE_CHECKING
 from typing import cast
 
 from guilib.dates.converters import date2days
 from guilib.dates.generators import create_days
 from guilib.dates.generators import next_first_of_the_year
-
-if 'QT_API' not in environ:
-    environ['QT_API'] = 'pyside6'
-
-from qtpy.QtCharts import QCategoryAxis
+from PySide6.QtCharts import QCategoryAxis
 
 if TYPE_CHECKING:
-
-    from qtpy.QtCore import QDateTime
-    from qtpy.QtCore import QObject
+    from PySide6.QtCore import QDateTime
+    from PySide6.QtCore import QObject
 
 
 class DateTimeAxis(QCategoryAxis):
@@ -54,4 +48,3 @@ class DateTimeAxis(QCategoryAxis):
                 for day in days:
                     self.append(f'{day:%Y-%m-%d}', date2days(day))
                 break
-

@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from guilib.chartslider.chartslider import ChartSlider
-from qtpy.QtWidgets import QVBoxLayout
-from qtpy.QtWidgets import QWidget
+from PySide6.QtWidgets import QVBoxLayout
+from PySide6.QtWidgets import QWidget
 
 from .chartview import ChartView
 
