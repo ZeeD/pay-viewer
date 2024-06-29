@@ -9,5 +9,8 @@ class Cell:
     value: str | date | Decimal | None
 
     def __init__(
-        self, worksheet: Worksheet, value: str | date | Decimal | None = None
+        self,
+        worksheet: Worksheet,
+        column: int | None = None,
+        value: str | date | Decimal | None = None,
     ) -> None: ...

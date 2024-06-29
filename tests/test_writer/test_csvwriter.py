@@ -78,7 +78,8 @@ class TestCsvWriter(TestCase):
             'legenda_ferie',
             'legenda_reperibilita',
             'legenda_rol',
-'legenda_congedo',            'descrizione 1',
+            'legenda_congedo',
+            'descrizione 1',
             'descrizione 2',
         ]
         actual = fieldnames(INFOS)
