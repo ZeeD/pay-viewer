@@ -145,6 +145,6 @@ class XlsWriter(ABCWriter):
             workbook.save(self.name)
 
     def _cell(self, sheet: 'Worksheet', value: E, number_format: str) -> Cell:
-        cell = Cell(sheet, value=value)
+        cell = Cell(sheet, value=value, column=1)
         cell.number_format = number_format
         return cell

@@ -40,6 +40,7 @@ class TestPdf2Xls(TestCase):
                     Column(ColumnHeader.legenda_ferie, Decimal('72')),
                     Column(ColumnHeader.legenda_reperibilita, Decimal('64.5')),
                     Column(ColumnHeader.legenda_rol, Decimal('2')),
+                    Column(ColumnHeader.legenda_congedo, Decimal('0')),
                 ],
                 [
                     AdditionalDetail(

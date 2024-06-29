@@ -12,7 +12,7 @@ from payviewer.writer.xlswriter import XlsWriter
 
 class TestXlsWriter(TestCase):
     def test_write_infos(self) -> None:
-        with patch('writer.xlswriter.Workbook') as mock:
+        with patch('payviewer.writer.xlswriter.Workbook') as mock:
             XlsWriter(Path()).write_infos(
                 [
                     Info(
