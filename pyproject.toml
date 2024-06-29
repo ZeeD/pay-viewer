@@ -1,5 +1,6 @@
 [project]
 name = "pay-viewer"
+version = "0.0.0"
 requires-python = "==3.12.*"
 dependencies = [
     "pandas>=2.2.2",
@@ -16,7 +17,7 @@ Homepage = "https://github.com/ZeeD/pay-viewer"
 Repository = "https://github.com/ZeeD/pay-viewer.git"
 
 [tool.pdm]
-distribution = false
+distribution = true
 
 [project.optional-dependencies]
 dev = [
@@ -44,7 +45,6 @@ disable_error_code = "no-untyped-call"
 [tool.ruff]
 fix = true
 line-length = 80
-# extend-exclude = ["src/gen"]
 src = ["src", "tests", "demo", "stubs"]
 
 [tool.ruff.format]
