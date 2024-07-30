@@ -1,0 +1,158 @@
+from collections import defaultdict
+from decimal import Decimal
+from logging import INFO
+from logging import basicConfig
+from logging import getLogger
+from statistics import mean
+from typing import NamedTuple
+
+from urllib3 import request
+
+from payviewer.loader import load
+from payviewer.model import ColumnHeader
+from payviewer.model import Info
+from payviewer.settings import Settings
+
+logger = getLogger(__name__)
+
+
+def istat_client(year: int, mean_: Decimal) -> Decimal:
+    somma = f'{mean_:.2f}'.replace('.', '%2C')
+    response = request(
+        'POST',
+        'https://rivaluta.istat.it/Rivaluta/Widget/CalcolatoreCoefficientiAction.action',
+        body=f'PERIODO=1&meseDa=Media%20Annua&annoDa={year}&meseA=Giugno&annoA=2024&SOMMA={somma}&EUROLIRE=true&',
+        headers={'Content-Type': 'application/x-www-form-urlencoded'},
+    )
+    raw_html = response.data.decode('latin1')
+    try:
+        raw_line = raw_html.splitlines()[38]
+    except IndexError:
+        return mean_
+    raw_value = raw_line.split('"')[5]
+    return Decimal(raw_value.replace('.', '').replace(',', '.'))
+
+
+def get_yearly_incomes(infos: list[Info]) -> dict[int, list[Decimal]]:
+    yearly_incomes = defaultdict[int, list[Decimal]](list)
+    for info in infos:
+        year = info.when.year
+        income = info.howmuch(ColumnHeader.netto_da_pagare)
+        if income is None:
+            raise ValueError
+
+        yearly_incomes[year].append(income)
+    return yearly_incomes
+
+
+def get_yearly_means(
+    yearly_incomes: dict[int, list[Decimal]],
+) -> dict[int, Decimal]:
+    return {year: mean(incomes) for year, incomes in yearly_incomes.items()}
+
+
+class MeanIstat(NamedTuple):
+    mean: Decimal
+    istat: Decimal
+
+
+def get_yearly_means_istat(
+    yearly_means: dict[int, Decimal],
+) -> dict[int, MeanIstat]:
+    return {
+        year: MeanIstat(mean_, istat_client(year, mean_))
+        for year, mean_ in yearly_means.items()
+    }
+
+
+class MeanIstatDelta(NamedTuple):
+    mean: Decimal
+    istat: Decimal
+    delta: Decimal
+    delta_istat: Decimal
+
+
+def get_yearly_means_istat_delta(
+    yearly_means_istat: dict[int, MeanIstat],
+) -> dict[int, MeanIstatDelta]:
+    (year, (mean_, istat)), *tail = sorted(yearly_means_istat.items())
+
+    ret = {}
+    ret[year] = MeanIstatDelta(mean_, istat, Decimal(0), Decimal(0))
+    prev_mean = mean_
+    prev_istat = istat
+    for year, (mean_, istat) in tail:
+        delta = mean_ - prev_mean
+        delta_istat = istat - prev_istat
+        ret[year] = MeanIstatDelta(mean_, istat, delta, delta_istat)
+        prev_mean = mean_
+        prev_istat = istat
+    return ret
+
+
+class HMeanIstat(NamedTuple):
+    h_year: str
+    h_mean: str
+    h_istat: str
+
+
+class HMeanIstatDelta(NamedTuple):
+    h_year: str
+    h_mean: str
+    h_istat: str
+    h_delta: str
+    h_delta_istat: str
+
+
+def dump(
+    yearly_infos: dict[int, MeanIstat] | dict[int, MeanIstatDelta],
+    headers: HMeanIstat | HMeanIstatDelta,
+) -> None:
+    if isinstance(headers, HMeanIstat):
+        logger.info('%s,%s,%s', headers.h_year,
+                    headers.h_mean, headers.h_istat)
+    else:
+        logger.info(
+            '%s,%s,%s,%s,%s',
+            headers.h_year,
+            headers.h_mean,
+            headers.h_istat,
+            headers.h_delta,
+            headers.h_delta_istat,
+        )
+
+    for year, infos in sorted(yearly_infos.items()):
+        if isinstance(infos, MeanIstat):
+            logger.info('%s,%.2f,%.2f', year, infos.mean, infos.istat)
+        elif isinstance(infos, MeanIstatDelta):
+            logger.info(
+                '%s,%.2f,%.2f,%.2f,%.2f',
+                year,
+                infos.mean,
+                infos.istat,
+                infos.delta,
+                infos.delta_istat,
+            )
+        else:
+            raise TypeError(type(infos))
+
+
+def main() -> None:
+    basicConfig(level=INFO, format='')
+
+    infos = load(Settings().data_path)
+    yearly_incomes = get_yearly_incomes(infos)
+    yearly_means = get_yearly_means(yearly_incomes)
+
+    yearly_means_istat = get_yearly_means_istat(yearly_means)
+    dump(yearly_means_istat, HMeanIstat('year', 'mean', 'istat'))
+
+    yearly_means_istat_delta = get_yearly_means_istat_delta(yearly_means_istat)
+    dump(
+        yearly_means_istat_delta,
+        HMeanIstatDelta('year', 'mean', 'istat', 'delta', 'delta istat'),
+    )
+
+
+if __name__ == '__main__':
+    main()
