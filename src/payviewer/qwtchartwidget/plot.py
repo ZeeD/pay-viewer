@@ -128,51 +128,37 @@ class Plot(QwtPlot):
         if min_xdata is None or max_xdata is None:
             raise NoXDataError
 
-        self.setAxisScaleDiv(
-            QwtPlot.xBottom,
-            QwtScaleDiv(
-                min_xdata,
-                max_xdata,
-                days(min_xdata, max_xdata),
-                months(min_xdata, max_xdata),
-                years(min_xdata, max_xdata),
-            ),
-        )
-
-        self.replot()
+        self._date_changed(min_xdata, max_xdata)
 
     @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
         lower_bound = date2days(start_date)
+        upper_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().maxValue()
 
-        interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
-        self.setAxisScaleDiv(
-            QwtPlot.xBottom,
-            QwtScaleDiv(
-                lower_bound,
-                interval.maxValue(),
-                days(lower_bound, interval.maxValue()),
-                months(lower_bound, interval.maxValue()),
-                years(lower_bound, interval.maxValue()),
-            ),
-        )
-
-        self.replot()
+        self._date_changed(lower_bound, upper_bound)
 
     @Slot(date)
     def end_date_changed(self, end_date: date) -> None:
+        lower_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().minValue()
         upper_bound = date2days(end_date)
 
-        interval = self.axisScaleDiv(QwtPlot.xBottom).interval()
+        self._date_changed(lower_bound, upper_bound)
+
+    def _date_changed(self, lower_bound: float, upper_bound: float) -> None:
+        ds = days(lower_bound, upper_bound)
+        ms = months(lower_bound, upper_bound)
+        ys = years(lower_bound, upper_bound)
+
+        # ticks cannot be of len==1
+        if len(ds) == 1:
+            ds = []
+        if len(ms) == 1:
+            ms = []
+        if len(ys) == 1:
+            ys = []
+
         self.setAxisScaleDiv(
-            QwtPlot.xBottom,
-            QwtScaleDiv(
-                interval.minValue(),
-                upper_bound,
-                days(interval.minValue(), upper_bound),
-                months(interval.minValue(), upper_bound),
-                years(interval.minValue(), upper_bound),
-            ),
+            QwtPlot.xBottom, QwtScaleDiv(lower_bound, upper_bound, ds, ms, ys)
         )
 
         self.replot()
