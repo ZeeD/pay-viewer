@@ -1,8 +1,5 @@
 from collections import defaultdict
 from decimal import Decimal
-from logging import INFO
-from logging import basicConfig
-from logging import getLogger
 from statistics import mean
 from typing import NamedTuple
 
@@ -12,8 +9,6 @@ from payviewer.loader import load
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 from payviewer.settings import Settings
-
-logger = getLogger(__name__)
 
 
 def istat_client(year: int, mean_: Decimal) -> Decimal:
@@ -109,44 +104,32 @@ def dump(
     headers: HMeanIstat | HMeanIstatDelta,
 ) -> None:
     if isinstance(headers, HMeanIstat):
-        logger.info('%s,%s,%s', headers.h_year,
-                    headers.h_mean, headers.h_istat)
+        h_year, h_mean, h_istat = headers
+        print(f'{h_year},{h_mean},{h_istat}')  # noqa: T201
     else:
-        logger.info(
-            '%s,%s,%s,%s,%s',
-            headers.h_year,
-            headers.h_mean,
-            headers.h_istat,
-            headers.h_delta,
-            headers.h_delta_istat,
+        h_year, h_mean, h_istat, h_delta, h_delta_istat = headers
+        print(  # noqa: T201
+            f'{h_year},{h_mean},{h_istat},{h_delta},{h_delta_istat}'
         )
 
     for year, infos in sorted(yearly_infos.items()):
         if isinstance(infos, MeanIstat):
-            logger.info('%s,%.2f,%.2f', year, infos.mean, infos.istat)
+            mean, istat = infos
+            print(f'{year},{mean:.2f},{istat:.2f}')  # noqa: T201
         elif isinstance(infos, MeanIstatDelta):
-            logger.info(
-                '%s,%.2f,%.2f,%.2f,%.2f',
-                year,
-                infos.mean,
-                infos.istat,
-                infos.delta,
-                infos.delta_istat,
+            mean, istat, delta, delta_istat = infos
+            print(  # noqa: T201
+                f'{year},{mean:.2f},{istat:.2f},{delta:.2f},{delta_istat:.2f}'
             )
         else:
             raise TypeError(type(infos))
 
 
 def main() -> None:
-    basicConfig(level=INFO, format='')
-
     infos = load(Settings().data_path)
     yearly_incomes = get_yearly_incomes(infos)
     yearly_means = get_yearly_means(yearly_incomes)
-
     yearly_means_istat = get_yearly_means_istat(yearly_means)
-    dump(yearly_means_istat, HMeanIstat('year', 'mean', 'istat'))
-
     yearly_means_istat_delta = get_yearly_means_istat_delta(yearly_means_istat)
     dump(
         yearly_means_istat_delta,
