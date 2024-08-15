@@ -25,6 +25,7 @@ dev = [
     "ruff>=0.5.0",
     "coverage>=7.5.4",
     "pandas-stubs>=2.2.2.240603",
+    "pyproject-fmt>=2.2.1",
 ]
 
 [build-system]
@@ -57,8 +58,6 @@ select = ["ALL"]
 ignore = [
     # disabled by me
     "D1","ANN1","PT009","PT027","PD",
-    # temp
-    "TCH001", "TCH002", "TCH003",
     # incompatibilities
     "D203", # D211
     "D213", # D212
@@ -89,6 +88,10 @@ source = ["src", "tests"]
 show_missing = true
 sort = "Cover"
 skip_empty = true
+
+[tool.pyproject-fmt]
+column_width = 80
+indent = 4
 
 [tool.pdm.scripts]
 _.env = { PYTHONPATH = "src:tests:demo:stubs" }

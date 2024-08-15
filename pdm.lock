@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:5f2c442d335b4a2d84448267f2f4e3761ae9365df08fb289e17eda5db3e3edc3"
+content_hash = "sha256:8e2ba297b2b77422d404685bbaee177edac7df4e4ddcb4bb81de92f95576b4da"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -300,6 +300,43 @@ marker = "os_name == \"nt\" and implementation_name != \"pypy\""
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
+]
+
+[[package]]
+name = "pyproject-fmt"
+version = "2.2.1"
+requires_python = ">=3.8"
+summary = "Format your pyproject.toml file"
+groups = ["dev"]
+dependencies = [
+    "pyproject-fmt-rust==1.1.6",
+    "tomli>=2.0.1; python_version < \"3.11\"",
+]
+files = [
+    {file = "pyproject_fmt-2.2.1-py3-none-any.whl", hash = "sha256:ec9d00df6238027c6f7ea09c403cd1030d8e0f87b97110d7d880864ebdbe278f"},
+    {file = "pyproject_fmt-2.2.1.tar.gz", hash = "sha256:0b69d314bb28028596b1dcdd58300122613d6ffcb492becb297ab62f7ea27e60"},
+]
+
+[[package]]
+name = "pyproject-fmt-rust"
+version = "1.1.6"
+requires_python = ">=3.8"
+summary = "Format your pyproject.toml file"
+groups = ["dev"]
+files = [
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:9a4567191f81200cfacf445ab1f859ab90cc0def9aa0cb4c2c09bdd96a6159e2"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:10b7c0317481ea172fac7bb74cdbb48b969f9c9521900d642df66cb80aa464b1"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:941a82e9f63b101c034c969470b9f85f67616e5b1639d59741be37db623c339f"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:e551a0c3f22da8436974ea0dab42d05d3e38b174d739280f56089973dc23fd4a"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:7e2f89c3ad55f5571c2bdb67f0b5cd0a78256accb3183105c8bcf82936de469b"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:7c66bf1d14759d4553a459ea195e9dcd0f9226605130fb2a8fcd5df054e75b84"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a8f1d86711d7b0057bdb5340bcae7e01c4983bf9b0e4fea97d6e67081143144d"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:a32df0c9a487aea68a4bc123e747e22bf4a0e165c2f84fba5505f4a399252d37"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-musllinux_1_1_i686.whl", hash = "sha256:b009e7d2ba0ce2f887ac3c4923fefe6feea06c5d61898b616c6ee814c1f670d3"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:f698de4354f93222cea56039ba383a2c52e1e800fa68d826b4b654feb4a61938"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-win32.whl", hash = "sha256:06666da8e95158b92f4fb65c15ebb6348be508bd87c45f9d7c6ff3ecfc5f216f"},
+    {file = "pyproject_fmt_rust-1.1.6-cp38-abi3-win_amd64.whl", hash = "sha256:0137e6e8fa9a1d51e1cb63e41b61e5b9b3531cf380410208a51a3e2036985a4d"},
+    {file = "pyproject_fmt_rust-1.1.6.tar.gz", hash = "sha256:396b432d44f03ba2d757479bb4036b0dc8e71e530391f74895a2908c90b0b5c4"},
 ]
 
 [[package]]
