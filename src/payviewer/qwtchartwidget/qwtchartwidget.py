@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class QwtChartVidget(QWidget):
-    """Composition of a ChartView and a slider."""
+    """Composition of a Plot and a slider."""
 
     def __init__(
         self,
@@ -22,9 +22,10 @@ class QwtChartVidget(QWidget):
     ) -> None:
         super().__init__(parent)
 
-        layout = QVBoxLayout(self)
         plot = Plot(model, self, factory)
         chart_slider = ChartSlider(model, self)
+
+        layout = QVBoxLayout(self)
         layout.addWidget(plot)
         layout.addWidget(chart_slider)
         self.setLayout(layout)

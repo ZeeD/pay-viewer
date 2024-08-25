@@ -1,6 +1,9 @@
 from datetime import date
+from datetime import timedelta
 from itertools import cycle
 from typing import TYPE_CHECKING
+from typing import cast
+from typing import override
 
 from guilib.dates.converters import date2days
 from guilib.dates.converters import days2date
@@ -9,18 +12,23 @@ from guilib.dates.generators import months
 from guilib.dates.generators import years
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QFont
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
-from qwt import QwtPlotCurve
-from qwt import QwtPlotGrid
+from qwt.legend import QwtLegend
+from qwt.legend import QwtLegendLabel
 from qwt.plot import QwtPlot
+from qwt.plot_curve import QwtPlotCurve
+from qwt.plot_grid import QwtPlotGrid
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
+from qwt.text import QwtText
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from PySide6.QtGui import QMouseEvent
     from PySide6.QtWidgets import QWidget
 
     from payviewer.viewmodel import SortFilterViewModel
@@ -81,12 +89,15 @@ class Plot(QwtPlot):
         super().__init__(parent)
         self.factory = factory
         self._model = model.sourceModel()
-
+        self._model.modelReset.connect(self.model_reset)
         self.setCanvasBackground(Qt.GlobalColor.white)
         QwtPlotGrid.make(self, enableminor=(False, True))
         self.setAxisScaleDraw(QwtPlot.xBottom, YearMonthScaleDraw())
-
-        self._model.modelReset.connect(self.model_reset)
+        # https://github.com/PlotPyStack/PythonQwt/issues/88
+        self.canvas().setMouseTracking(True)
+        self.setMouseTracking(True)
+        self.insertLegend(QwtLegend())
+        self.curves: dict[str, QwtPlotCurve] = {}
 
     @Slot()
     def model_reset(self) -> None:
@@ -95,6 +106,8 @@ class Plot(QwtPlot):
         self.setAxisScaleDraw(
             QwtPlot.yLeft, FmtScaleDraw.from_unit(series_model.unit)
         )
+
+        self.curves.clear()
 
         min_xdata: float | None = None
         max_xdata: float | None = None
@@ -115,10 +128,13 @@ class Plot(QwtPlot):
             if max_xdata is None or tmp > max_xdata:
                 max_xdata = tmp
 
-            QwtPlotCurve.make(
+            name = serie.name()
+            self.curves[name] = QwtPlotCurve.make(
                 xdata,
                 ydata,
-                serie.name(),
+                QwtText.make(
+                    f'{name} - ...', weight=QFont.Weight.Bold, color=linecolor
+                ),
                 self,
                 linecolor=linecolor,
                 linewidth=2,
@@ -162,3 +178,41 @@ class Plot(QwtPlot):
         )
 
         self.replot()
+
+    @override
+    def mouseMoveEvent(self, event: 'QMouseEvent') -> None:
+        event_pos = event.position()
+
+        scale_map = self.canvasMap(QwtPlot.xBottom)
+        event_pos_x = event_pos.x()
+
+        magic_offset = 75  # minimum event_pos_x - TODO: find origin
+
+        dt_hover = days2date(scale_map.invTransform(event_pos_x - magic_offset))
+
+        for name, curve in self.curves.items():
+            legend = cast(
+                QwtLegendLabel,
+                cast(QwtLegend, self.legend()).legendWidget(curve),
+            )
+
+            data = curve.data()
+            if data is None:
+                raise ValueError
+
+            y_closest = None
+            td_min = timedelta.max
+            for x_data, y_data in zip(data.xData(), data.yData(), strict=True):
+                dt_x = days2date(x_data)
+                td = dt_hover - dt_x if dt_hover > dt_x else dt_x - dt_hover
+                if td < td_min:
+                    y_closest = y_data
+                    td_min = td
+
+            legend.setText(
+                QwtText.make(
+                    f'{name} - € {y_closest:_.2f}',
+                    weight=QFont.Weight.Bold,
+                    color=curve.pen().color(),
+                )
+            )

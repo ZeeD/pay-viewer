@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING
 from guilib.dates.converters import date2days
 from guilib.dates.converters import date2QDateTime
 from PySide6.QtCharts import QLineSeries
-from PySide6.QtCore import QDateTime
 
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 
 if TYPE_CHECKING:
     from mypy_extensions import Arg
+    from PySide6.QtCore import QDateTime
 
 
 class SeriesModelUnit(Enum):
@@ -32,8 +32,8 @@ class UnknownColumnError(NotImplementedError):
 @dataclass
 class SeriesModel:
     series: list[QLineSeries]
-    x_min: QDateTime
-    x_max: QDateTime
+    x_min: 'QDateTime'
+    x_max: 'QDateTime'
     y_min: float
     y_max: float
     unit: SeriesModelUnit

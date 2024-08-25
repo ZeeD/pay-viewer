@@ -26,6 +26,7 @@ optional-dependencies.dev = [
     "mypy>=1.10.1",
     "pandas-stubs>=2.2.2.240603",
     "pyproject-fmt>=2.2.1",
+    "pytest>=8.3.2",
     "ruff>=0.5",
 ]
 urls.Homepage = "https://github.com/ZeeD/pay-viewer"
@@ -39,12 +40,12 @@ distribution = true
 _.env = { PYTHONPATH = "src:tests:demo:stubs" }
 lint = { composite = [
     "pyproject-fmt pyproject.toml",
-    "ruff format .",
-    "ruff check .",
-    "dmypy run .",
+    "ruff format {args:.}",
+    "ruff check {args:.}",
+    "dmypy run {args:.}",
 ], keep_going = true }
 tests = { composite = [
-    "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests",
+    "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests {args}",
     "coverage report",
     "coverage erase",
 ] }
@@ -71,6 +72,14 @@ lint.ignore = [
     "Q001",   # conflicts with formatter
     "Q002",   # conflicts with formatter
     "S603",   # incompatibility with S602
+]
+lint.extend-per-file-ignores."stubs/**/*.pyi" = [
+    "FBT001",
+    "FBT002",
+    "N802",
+    "N803",
+    "N815",
+    "PLR0913",
 ]
 lint.flake8-annotations.allow-star-arg-any = true
 lint.flake8-quotes.docstring-quotes = "single"

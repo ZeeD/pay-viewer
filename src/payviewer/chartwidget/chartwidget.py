@@ -22,9 +22,10 @@ class ChartWidget(QWidget):
     ) -> None:
         super().__init__(parent)
 
-        layout = QVBoxLayout(self)
         chart_view = ChartView(model, self, factory)
         chart_slider = ChartSlider(model, self)
+
+        layout = QVBoxLayout(self)
         layout.addWidget(chart_view)
         layout.addWidget(chart_slider)
         self.setLayout(layout)
