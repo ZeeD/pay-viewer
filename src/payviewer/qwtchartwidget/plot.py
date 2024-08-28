@@ -10,8 +10,10 @@ from guilib.dates.converters import days2date
 from guilib.dates.generators import days
 from guilib.dates.generators import months
 from guilib.dates.generators import years
+from PySide6.QtCore import QSize
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
+from PySide6.QtGui import QBrush
 from PySide6.QtGui import QFont
 
 from payviewer.modelgui import SeriesModelFactory
@@ -21,8 +23,10 @@ from qwt.legend import QwtLegendLabel
 from qwt.plot import QwtPlot
 from qwt.plot_curve import QwtPlotCurve
 from qwt.plot_grid import QwtPlotGrid
+from qwt.plot_marker import QwtPlotMarker
 from qwt.scale_div import QwtScaleDiv
 from qwt.scale_draw import QwtScaleDraw
+from qwt.symbol import QwtSymbol
 from qwt.text import QwtText
 
 if TYPE_CHECKING:
@@ -98,6 +102,7 @@ class Plot(QwtPlot):
         self.setMouseTracking(True)
         self.insertLegend(QwtLegend())
         self.curves: dict[str, QwtPlotCurve] = {}
+        self.markers: dict[str, QwtPlotMarker] = {}
 
     @Slot()
     def model_reset(self) -> None:
@@ -138,6 +143,20 @@ class Plot(QwtPlot):
                 self,
                 linecolor=linecolor,
                 linewidth=2,
+                antialiased=True,
+            )
+            self.markers[name] = QwtPlotMarker.make(
+                symbol=QwtSymbol.make(
+                    style=QwtSymbol.Diamond,
+                    brush=QBrush(linecolor),
+                    size=QSize(9, 9),
+                ),
+                plot=self,
+                align=Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop,
+                linestyle=QwtPlotMarker.Cross,
+                color=Qt.GlobalColor.gray,
+                width=1,
+                style=Qt.PenStyle.DashLine,
                 antialiased=True,
             )
 
@@ -200,19 +219,27 @@ class Plot(QwtPlot):
             if data is None:
                 raise ValueError
 
+            x_closest = None
             y_closest = None
             td_min = timedelta.max
             for x_data, y_data in zip(data.xData(), data.yData(), strict=True):
                 dt_x = days2date(x_data)
                 td = dt_hover - dt_x if dt_hover > dt_x else dt_x - dt_hover
                 if td < td_min:
+                    x_closest = x_data
                     y_closest = y_data
                     td_min = td
 
-            legend.setText(
-                QwtText.make(
-                    f'{name} - € {y_closest:_.2f}',
-                    weight=QFont.Weight.Bold,
-                    color=curve.pen().color(),
-                )
+            text = QwtText.make(
+                f'{name} - € {y_closest: _.2f}',
+                weight=QFont.Weight.Bold,
+                color=curve.pen().color(),
             )
+            legend.setText(text)
+            if x_closest is not None:
+                self.markers[name].setXValue(x_closest)
+            if y_closest is not None:
+                self.markers[name].setYValue(y_closest)
+            self.markers[name].setLabel(text)
+
+        self.replot()
