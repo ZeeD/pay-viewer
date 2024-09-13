@@ -1,5 +1,6 @@
 from collections import defaultdict
 from decimal import Decimal
+from itertools import chain
 from statistics import mean
 from typing import NamedTuple
 
@@ -8,6 +9,7 @@ from PySide6.QtCharts import QBarSeries
 from PySide6.QtCharts import QBarSet
 from PySide6.QtCharts import QChart
 from PySide6.QtCharts import QChartView
+from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from urllib3 import request
@@ -137,38 +139,34 @@ def main() -> None:
     yearly_incomes = get_yearly_incomes(infos)
     yearly_means = get_yearly_means(yearly_incomes)
     yearly_means_istat = get_yearly_means_istat(yearly_means)
-    yearly_means_istat_delta = get_yearly_means_istat_delta(yearly_means_istat)
-    dump(
-        yearly_means_istat_delta,
-        HMeanIstatDelta('year', 'mean', 'istat', 'delta', 'delta istat'),
-    )
 
     app = QApplication([__file__])
-    ms, is_, ds,dis = zip(*yearly_means_istat_delta.values(), strict=True)
+    ms, is_ = zip(*yearly_means_istat.values(), strict=True)
     mean = QBarSet('mean')
     mean.append([float(m) for m in ms])
     istat = QBarSet('istat')
     istat.append(is_)
-    delta = QBarSet('delta')
-    delta.append(ds)
-    delta_istat = QBarSet('delta istat')
-    delta_istat.append(dis)
+
+    categories = QBarCategoryAxis()
+    categories.append([str(y) for y in yearly_means_istat])
+    axis_y  = QValueAxis()
+    axis_y.setRange(min(chain(ms, is_)), max(chain(ms, is_)))
 
     series = QBarSeries()
     series.append(mean)
     series.append(istat)
-#    series.append(delta)
-#    series.append(delta_istat)
+    series.attachAxis(categories)
+    series.attachAxis(axis_y)
 
     chart = QChart()
     chart.addSeries(series)
-    categories = QBarCategoryAxis()
-    categories.append([str(y) for y in yearly_means_istat_delta])
     chart.addAxis(categories, Qt.AlignmentFlag.AlignBottom)
-    series.attachAxis(categories)
+    chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
+
 
     mainui = QChartView()
     mainui.setChart(chart)
+    mainui.resize(1024, 600)
     mainui.show()
 
     raise SystemExit(app.exec())
