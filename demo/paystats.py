@@ -3,6 +3,13 @@ from decimal import Decimal
 from statistics import mean
 from typing import NamedTuple
 
+from PySide6.QtCharts import QBarCategoryAxis
+from PySide6.QtCharts import QBarSeries
+from PySide6.QtCharts import QBarSet
+from PySide6.QtCharts import QChart
+from PySide6.QtCharts import QChartView
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QApplication
 from urllib3 import request
 
 from payviewer.loader import load
@@ -135,6 +142,36 @@ def main() -> None:
         yearly_means_istat_delta,
         HMeanIstatDelta('year', 'mean', 'istat', 'delta', 'delta istat'),
     )
+
+    app = QApplication([__file__])
+    ms, is_, ds,dis = zip(*yearly_means_istat_delta.values(), strict=True)
+    mean = QBarSet('mean')
+    mean.append([float(m) for m in ms])
+    istat = QBarSet('istat')
+    istat.append(is_)
+    delta = QBarSet('delta')
+    delta.append(ds)
+    delta_istat = QBarSet('delta istat')
+    delta_istat.append(dis)
+
+    series = QBarSeries()
+    series.append(mean)
+    series.append(istat)
+#    series.append(delta)
+#    series.append(delta_istat)
+
+    chart = QChart()
+    chart.addSeries(series)
+    categories = QBarCategoryAxis()
+    categories.append([str(y) for y in yearly_means_istat_delta])
+    chart.addAxis(categories, Qt.AlignmentFlag.AlignBottom)
+    series.attachAxis(categories)
+
+    mainui = QChartView()
+    mainui.setChart(chart)
+    mainui.show()
+
+    raise SystemExit(app.exec())
 
 
 if __name__ == '__main__':
