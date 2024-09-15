@@ -1,9 +1,12 @@
+from contextlib import contextmanager
 from datetime import date
 from decimal import Decimal
 from math import isnan
+from os import environ
 from typing import TYPE_CHECKING
 from typing import Any
 
+from jdk4py import JAVA_HOME
 from pandas import DataFrame
 from pandas import options
 from tabula.io import read_pdf_with_template
@@ -20,6 +23,19 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
+@contextmanager
+def set_java_home() -> 'Iterator[None]':
+    orig = environ.get('JAVA_HOME', default=None)
+    environ['JAVA_HOME'] = str(JAVA_HOME)
+    try:
+        yield None
+    finally:
+        if orig is None:
+            del environ['JAVA_HOME']
+        else:
+            environ['JAVA_HOME'] = orig
+
+
 class PdfReader(ABCReader):
     def read_infos(self) -> list[Info]:
         """Read from a file."""
@@ -27,13 +43,14 @@ class PdfReader(ABCReader):
             if 'max' in name:
                 setattr(options.display, name, 1000)
 
-        tables = read_pdf_with_template(
-            self.name,
-            TEMPLATE_PATH,
-            pandas_options={'header': None},
-            pages=1,
-            stream=True,
-        )
+        with set_java_home():
+            tables = read_pdf_with_template(
+                self.name,
+                TEMPLATE_PATH,
+                pandas_options={'header': None},
+                pages=1,
+                stream=True,
+            )
 
         table_periodo = tables[0]
         table_money = tables[1]

@@ -19,6 +19,7 @@ dependencies = [
     "pythonqwt>=0.12.5",
     "selenium>=4.22",
     "tabula-py[jpype]>=2.9.3",
+    "jdk4py>=21.0.4.1",
 ]
 
 optional-dependencies.dev = [
@@ -44,6 +45,7 @@ lint = { composite = [
     "ruff check {args:.}",
     "dmypy run {args:.}",
 ], keep_going = true }
+start = "pay-viewer"
 tests = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests {args}",
     "coverage report",

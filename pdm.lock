@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:be71eedef5211739acccdca4cc6fcb4219d8651ae8167801ca8fdf65e8fed64a"
+content_hash = "sha256:43e1c92add51f2ff9d2656d44836af136c6a00ec3dc44d4ec2313813193d49a6"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -117,7 +117,7 @@ files = [
 name = "guilib"
 version = "0.0.0"
 requires_python = "==3.12.*"
-path = "../guilib"
+path = "/home/zed/eclipse-workspace/guilib"
 summary = ""
 groups = ["default"]
 dependencies = [
@@ -158,6 +158,20 @@ groups = ["dev"]
 files = [
     {file = "iniconfig-2.0.0-py3-none-any.whl", hash = "sha256:b6a85871a79d2e3b22d2d1b94ac2824226a63c6b741c88f7ae975f18b6778374"},
     {file = "iniconfig-2.0.0.tar.gz", hash = "sha256:2d91e135bf72d31a410b17c16da610a82cb55f6b0477d1a902134b24a455b8b3"},
+]
+
+[[package]]
+name = "jdk4py"
+version = "21.0.4.1"
+requires_python = ">=3.10"
+summary = "A JDK shipped in a Python package"
+groups = ["default"]
+files = [
+    {file = "jdk4py-21.0.4.1-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:786888fe44811ddf8788bf6e454119e4b5d820a167e3ec9fa2098f4e07d5420f"},
+    {file = "jdk4py-21.0.4.1-py3-none-macosx_11_0_arm64.whl", hash = "sha256:0efda61573596c05c53554dc7ca73748b3ba17f4817519f0a1e14e6c92e75be0"},
+    {file = "jdk4py-21.0.4.1-py3-none-manylinux_2_17_aarch64.whl", hash = "sha256:7d6dc78001a7a1852b2da2be4702468419675bf58122d55928ee000990a46b56"},
+    {file = "jdk4py-21.0.4.1-py3-none-manylinux_2_17_x86_64.whl", hash = "sha256:0604994e2baf94eeb4a788dafadaa1c8593aa474d3e4d7e7f1dd69c3524908f7"},
+    {file = "jdk4py-21.0.4.1-py3-none-win_amd64.whl", hash = "sha256:b81d689623f24a9241f50258d0994f7e9c8630c892ae0d5f5fe8b91ac8349845"},
 ]
 
 [[package]]
