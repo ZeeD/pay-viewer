@@ -149,7 +149,7 @@ def main() -> None:
 
     categories = QBarCategoryAxis()
     categories.append([str(y) for y in yearly_means_istat])
-    axis_y  = QValueAxis()
+    axis_y = QValueAxis()
     axis_y.setRange(min(chain(ms, is_)), max(chain(ms, is_)))
 
     series = QBarSeries()
@@ -162,7 +162,6 @@ def main() -> None:
     chart.addSeries(series)
     chart.addAxis(categories, Qt.AlignmentFlag.AlignBottom)
     chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
-
 
     mainui = QChartView()
     mainui.setChart(chart)

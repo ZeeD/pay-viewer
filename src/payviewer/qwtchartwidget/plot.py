@@ -135,12 +135,13 @@ class Plot(QwtPlot):
 
             name = serie.name()
             self.curves[name] = QwtPlotCurve.make(
-                xdata,
-                ydata,
-                QwtText.make(
+                xdata=xdata,
+                ydata=ydata,
+                title=QwtText.make(
                     f'{name} - ...', weight=QFont.Weight.Bold, color=linecolor
                 ),
-                self,
+                plot=self,
+                style=QwtPlotCurve.Lines,
                 linecolor=linecolor,
                 linewidth=2,
                 antialiased=True,

@@ -13,13 +13,13 @@ classifiers = [
 ]
 dependencies = [
     "guilib @ file:///home/zed/eclipse-workspace/guilib",
+    "jdk4py>=21.0.4.1",
     "openpyxl>=3.1.5",
     "pandas>=2.2.2",
     "pyside6>=6.7.2",
     "pythonqwt>=0.12.5",
     "selenium>=4.22",
     "tabula-py[jpype]>=2.9.3",
-    "jdk4py>=21.0.4.1",
 ]
 
 optional-dependencies.dev = [
