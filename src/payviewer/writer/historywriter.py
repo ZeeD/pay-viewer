@@ -1,7 +1,7 @@
 from json import dump
 from typing import TYPE_CHECKING
 
-from .abcwriter import ABCWriter
+from payviewer.writer.abcwriter import ABCWriter
 
 if TYPE_CHECKING:
     from payviewer.model import AdditionalDetail

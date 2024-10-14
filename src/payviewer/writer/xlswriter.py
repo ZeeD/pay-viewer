@@ -8,8 +8,7 @@ from openpyxl.utils.cell import get_column_letter
 from openpyxl.workbook.workbook import Workbook
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
-
-from .abcwriter import ABCWriter
+from payviewer.writer.abcwriter import ABCWriter
 
 if TYPE_CHECKING:
     from openpyxl.worksheet.worksheet import Worksheet

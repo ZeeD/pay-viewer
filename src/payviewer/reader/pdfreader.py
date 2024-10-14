@@ -16,8 +16,7 @@ from payviewer.model import AdditionalDetail
 from payviewer.model import Column
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
-
-from .abcreader import ABCReader
+from payviewer.reader.abcreader import ABCReader
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

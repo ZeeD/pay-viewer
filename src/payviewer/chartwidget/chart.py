@@ -7,7 +7,7 @@ from PySide6.QtCharts import QChart
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import Qt
 
-from .datetimeaxis import DateTimeAxis
+from payviewer.chartwidget.datetimeaxis import DateTimeAxis
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

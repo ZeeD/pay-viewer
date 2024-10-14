@@ -17,9 +17,9 @@ from PySide6.QtGui import QMouseEvent
 from PySide6.QtGui import QPainter
 from PySide6.QtGui import QPen
 
-from .chart import Chart
-from .charthover import ChartHover
-from .datetimeaxis import DateTimeAxis
+from payviewer.chartwidget.chart import Chart
+from payviewer.chartwidget.charthover import ChartHover
+from payviewer.chartwidget.datetimeaxis import DateTimeAxis
 
 if TYPE_CHECKING:
     from PySide6.QtWidgets import QWidget

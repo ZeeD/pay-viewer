@@ -4,7 +4,7 @@ from guilib.chartslider.chartslider import ChartSlider
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
-from .plot import Plot
+from payviewer.qwtchartwidget.plot import Plot
 
 if TYPE_CHECKING:
     from payviewer.modelgui import SeriesModelFactory

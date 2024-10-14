@@ -4,8 +4,7 @@ from typing import Final
 
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
-
-from .abcwriter import ABCWriter
+from payviewer.writer.abcwriter import ABCWriter
 
 if TYPE_CHECKING:
     from datetime import date

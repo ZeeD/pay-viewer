@@ -1,4 +1,4 @@
-from .plot import QwtPlot
+from qwt.plot import QwtPlot
 
 class QwtPlotGrid:
     @classmethod
