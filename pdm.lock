@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:ff8bc2ccea216c1f229fee80ed54c31674362950469f9d513a24038f52809800"
+content_hash = "sha256:0208c14b56602826f6d7190d0c2681fd57c2960fad5bd42ef6252414595964e5"
 
 [[metadata.targets]]
 requires_python = "==3.12.*"
@@ -111,17 +111,6 @@ groups = ["default"]
 files = [
     {file = "et_xmlfile-1.1.0-py3-none-any.whl", hash = "sha256:a2ba85d1d6a74ef63837eed693bcb89c3f752169b0e3e7ae5b16ca5e1b3deada"},
     {file = "et_xmlfile-1.1.0.tar.gz", hash = "sha256:8eb9e2bc2f8c97e37a2dc85a09ecdcdec9d8a396530a6d5a33b30b9a92da0c5c"},
-]
-
-[[package]]
-name = "guilib"
-version = "0.0.0"
-requires_python = "==3.12.*"
-path = "/home/zed/eclipse-workspace/guilib"
-summary = ""
-groups = ["default"]
-dependencies = [
-    "pyside6!=6.8,>=6.7",
 ]
 
 [[package]]
@@ -763,4 +752,18 @@ dependencies = [
 files = [
     {file = "wsproto-1.2.0-py3-none-any.whl", hash = "sha256:b9acddd652b585d75b20477888c56642fdade28bdfd3579aa24a4d2c037dd736"},
     {file = "wsproto-1.2.0.tar.gz", hash = "sha256:ad565f26ecb92588a3e43bc3d96164de84cd9902482b130d0ddbaa9664a85065"},
+]
+
+[[package]]
+name = "zeed-guilib"
+version = "0.0.2"
+requires_python = "==3.12.*"
+summary = ""
+groups = ["default"]
+dependencies = [
+    "pyside6!=6.8,!=6.8.0.1,>=6.7",
+]
+files = [
+    {file = "zeed_guilib-0.0.2-py3-none-any.whl", hash = "sha256:b8304bf450f22281e3a08786359fa4e6d594a0e8dab660808bedd6cee23d2df7"},
+    {file = "zeed_guilib-0.0.2.tar.gz", hash = "sha256:fb952dc0b014d53a0090cc8d580cac5fa61c8ece6484c7302ee636ff87481ebe"},
 ]
