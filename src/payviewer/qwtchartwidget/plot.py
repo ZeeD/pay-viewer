@@ -100,7 +100,7 @@ class Plot(QwtPlot):
         # https://github.com/PlotPyStack/PythonQwt/issues/88
         self.canvas().setMouseTracking(True)
         self.setMouseTracking(True)
-        self.insertLegend(QwtLegend())
+        self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
         self.curves: dict[str, QwtPlotCurve] = {}
         self.markers: dict[str, QwtPlotMarker] = {}
 
@@ -232,7 +232,7 @@ class Plot(QwtPlot):
                     td_min = td
 
             text = QwtText.make(
-                f'{name} - € {y_closest: _.2f}',
+                f'{name} - € {y_closest:_.2f}',
                 weight=QFont.Weight.Bold,
                 color=curve.pen().color(),
             )
