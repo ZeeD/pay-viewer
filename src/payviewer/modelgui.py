@@ -83,6 +83,14 @@ class SeriesModel:
         )
 
     @classmethod
+    def ticket(cls, infos: list[Info]) -> 'SeriesModel':
+        return SeriesModel._from_infos(
+            infos,
+            [ColumnHeader.ticket_pasto],
+            SeriesModelUnit.EURO,
+        )
+
+    @classmethod
     def _from_infos(  # noqa: C901
         cls,
         infos: list[Info],

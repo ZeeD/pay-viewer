@@ -50,6 +50,12 @@
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6"/>
       </widget>
+      <widget class="QWidget" name="qwt_chart_ticket">
+       <attribute name="title">
+        <string>Ticket pasto</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_7"/>
+      </widget>
      </widget>
     </item>
    </layout>

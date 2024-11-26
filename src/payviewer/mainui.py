@@ -69,6 +69,7 @@ class Mainui(QMainWindow):
     chart_ferie: QWidget
     chart_rol: QWidget
     qwt_chart_money: QWidget
+    qwt_chart_ticket: QWidget
     lineEdit: QLineEdit  # noqa: N815
     actionCleanup: 'QAction'  # noqa: N815
     actionSettings: 'QAction'  # noqa: N815
@@ -128,6 +129,9 @@ def new_mainui(
 
     qwt_chart_widget_money = QwtChartVidget(model, mainui, SeriesModel.money)
     mainui.qwt_chart_money.layout().addWidget(qwt_chart_widget_money)
+
+    qwt_chart_widget_ticket = QwtChartVidget(model, mainui, SeriesModel.ticket)
+    mainui.qwt_chart_ticket.layout().addWidget(qwt_chart_widget_ticket)
 
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
