@@ -35,6 +35,7 @@ class ColumnHeader(Enum):
     legenda_rol = auto()
     legenda_congedo = auto()
     detail = auto()
+    ticket_pasto = auto()
 
 
 @dataclass(frozen=True)

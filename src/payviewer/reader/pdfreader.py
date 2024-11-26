@@ -104,7 +104,9 @@ class PdfReader(ABCReader):
             table_legenda_keys, table_legenda_values, 'CM'
         )
 
-        additional_details = extract_details(table_details)
+        additional_details = list(extract_details(table_details))
+
+        ticket_pasto = extract_ticket_pasto(additional_details)
 
         info = Info(
             when=when,
@@ -132,8 +134,9 @@ class PdfReader(ABCReader):
                 Column(ColumnHeader.legenda_reperibilita, legenda_reperibilita),
                 Column(ColumnHeader.legenda_rol, legenda_rol),
                 Column(ColumnHeader.legenda_congedo, legenda_congedo),
+                Column(ColumnHeader.ticket_pasto, ticket_pasto)
             ],
-            additional_details=list(additional_details),
+            additional_details=additional_details,
         )
 
         # there is only an info object in a pdf
@@ -360,3 +363,11 @@ def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
             )
         else:
             raise UnknownRowError(row)
+
+def extract_ticket_pasto(additional_details: list[AdditionalDetail]) -> Decimal:
+    ret = Decimal(0)
+    for detail in additional_details:
+        if detail.cod not in {2302, 2308}:
+            continue
+        ret += detail.ore_o_giorni * detail.compenso_unitario
+    return ret
