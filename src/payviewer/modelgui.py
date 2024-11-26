@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 
 from guilib.dates.converters import date2days
 from guilib.dates.converters import date2QDateTime
+from guilib.dates.converters import days2date
 from PySide6.QtCharts import QLineSeries
 
 from payviewer.model import ColumnHeader
@@ -84,10 +85,10 @@ class SeriesModel:
 
     @classmethod
     def ticket(cls, infos: list[Info]) -> 'SeriesModel':
-        return SeriesModel._from_infos(
-            infos,
-            [ColumnHeader.ticket_pasto],
-            SeriesModelUnit.EURO,
+        return SeriesModel._with_yearly_sum(
+            SeriesModel._from_infos(
+                infos, [ColumnHeader.ticket_pasto], SeriesModelUnit.EURO
+            )
         )
 
     @classmethod
@@ -155,6 +156,36 @@ class SeriesModel:
             float(y_min),
             float(y_max),
             unit,
+        )
+
+    @classmethod
+    def _with_yearly_sum(cls, series_model: 'SeriesModel') -> 'SeriesModel':
+        series = []
+        for serie in series_model.series:
+            series.append(serie)
+            yearly_sum_serie = QLineSeries()
+            yearly_sum_serie.setName(f'yearly sum for {serie.name()}')
+
+            prev_year: None | int = None
+            yearly_sum = 0.0
+            for point in serie.points():
+                when = days2date(point.x())
+                if when.year != prev_year:
+                    yearly_sum = 0.0
+                    prev_year = when.year
+
+                yearly_sum += point.y()
+                yearly_sum_serie.append(date2days(when), float(yearly_sum))
+
+            series.append(yearly_sum_serie)
+
+        return cls(
+            series,
+            series_model.x_min,
+            series_model.x_max,
+            series_model.y_min,
+            series_model.y_max,
+            series_model.unit,
         )
 
 

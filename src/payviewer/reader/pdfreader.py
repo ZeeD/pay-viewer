@@ -134,7 +134,7 @@ class PdfReader(ABCReader):
                 Column(ColumnHeader.legenda_reperibilita, legenda_reperibilita),
                 Column(ColumnHeader.legenda_rol, legenda_rol),
                 Column(ColumnHeader.legenda_congedo, legenda_congedo),
-                Column(ColumnHeader.ticket_pasto, ticket_pasto)
+                Column(ColumnHeader.ticket_pasto, ticket_pasto),
             ],
             additional_details=additional_details,
         )
@@ -363,6 +363,7 @@ def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
             )
         else:
             raise UnknownRowError(row)
+
 
 def extract_ticket_pasto(additional_details: list[AdditionalDetail]) -> Decimal:
     ret = Decimal(0)
