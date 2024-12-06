@@ -1,7 +1,6 @@
 from datetime import UTC
 from datetime import datetime
-from itertools import count
-from logging import info
+from logging import info, warn
 from os import listdir
 from pathlib import Path
 from shutil import move
@@ -11,7 +10,6 @@ from typing import TYPE_CHECKING
 from typing import Final
 from typing import NamedTuple
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -92,7 +90,13 @@ def mv_pdf_from_tmp_to_data(
     info('files in dtemp:')
     for dtempfn in listdir(dtemp):
         info('\t%s/%s', dtemp, dtempfn)
-    src = f'{dtemp}/{listdir(dtemp)[0]}'
+        if f'Cedolini_{year}_{month:02}.pdf' == dtempfn:
+            info('\t(matched)')
+            src = f'{dtemp}/Cedolini_{year}_{month:02}.pdf'
+            break
+    else:
+        warn('\t(NOT matched)')
+        src = f'{dtemp}/{listdir(dtemp)[0]}'
     dst = f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'
     info("mv'ing '%s' to '%s'", src, dst)
     move(src, dst)
