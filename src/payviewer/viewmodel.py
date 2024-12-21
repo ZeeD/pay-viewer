@@ -41,7 +41,7 @@ def max_min_this(
 ) -> tuple[Decimal, Decimal, Decimal]:
     ds = (
         [Decimal(date.fromisoformat(datum[1]).toordinal()) for datum in data]
-        if column in {0,1}
+        if column in {0, 1}
         else [Decimal(datum[column]) for datum in data]
     )
     return max(ds), min(ds), ds[row]
@@ -147,7 +147,7 @@ class ViewModel(QAbstractTableModel):
             return QBrush(QColor.fromHsl(hue, saturation, lightness))
 
         if role == Qt.ItemDataRole.UserRole:
-            if column in {0,1}:
+            if column in {0, 1}:
                 return self._infos[row].when
 
             value = self._data[row][column]
@@ -181,7 +181,7 @@ class ViewModel(QAbstractTableModel):
         self, index: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder
     ) -> None:
         def key(row: list[str]) -> date | Decimal:
-            if index in {0,1}:
+            if index in {0, 1}:
                 return date.fromisoformat(row[1])
             return Decimal(row[index])
 
