@@ -137,6 +137,7 @@ class PdfReader(ABCReader):
                 Column(ColumnHeader.ticket_pasto, ticket_pasto),
             ],
             additional_details=additional_details,
+            path=self.name,
         )
 
         # there is only an info object in a pdf

@@ -21,7 +21,10 @@ class TestHistoryReader(TestCase):
             [actual] = HistoryReader(Path()).read_infos()
 
         expected = Info(
-            date(1982, 5, 11), [Column(ColumnHeader.minimo, Decimal('1'))], []
+            date(1982, 5, 11),
+            [Column(ColumnHeader.minimo, Decimal('1'))],
+            [],
+            Path('/'),
         )
 
         self.assertEqual(actual, expected)

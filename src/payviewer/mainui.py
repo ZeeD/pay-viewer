@@ -108,7 +108,7 @@ def new_mainui(
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
     # replace table_view
-    table_view = FreezeTableView(mainui.xls, model)
+    table_view = FreezeTableView(mainui.xls, model, fixed_columns=2)
     sheet = SearchSheet(mainui.xls, table_view=cast(QTableView, table_view))
     sheet.set_model(model)
     mainui.gridLayout_1.addWidget(sheet, 0, 0)

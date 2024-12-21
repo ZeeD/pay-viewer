@@ -1,6 +1,7 @@
 from datetime import date
 from decimal import Decimal
 from json import load
+from typing import TYPE_CHECKING
 from typing import TypedDict
 
 from payviewer.model import AdditionalDetail
@@ -8,6 +9,9 @@ from payviewer.model import Column
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 from payviewer.reader.abcreader import ABCReader
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class RawColumn(TypedDict):
@@ -58,7 +62,7 @@ def _additional_detail(
     )
 
 
-def _info(raw_info: RawInfo) -> Info:
+def _info(raw_info: RawInfo, path: 'Path') -> Info:
     return Info(
         when=date.fromisoformat(raw_info['when']),
         columns=[_column(raw_column) for raw_column in raw_info['columns']],
@@ -66,10 +70,11 @@ def _info(raw_info: RawInfo) -> Info:
             _additional_detail(raw_additional_detail)
             for raw_additional_detail in raw_info['additional_details']
         ],
+        path=path,
     )
 
 
 class HistoryReader(ABCReader):
     def read_infos(self) -> list[Info]:
         with self.name.open(encoding='utf-8') as fp:
-            return [_info(raw_info) for raw_info in load(fp)]
+            return [_info(raw_info, self.name) for raw_info in load(fp)]

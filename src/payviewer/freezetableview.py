@@ -21,9 +21,13 @@ class TableViewUI(QWidget):
 
 class FreezeTableView(Doubler[QTableView], QAbstractItemView):
     def __init__(
-        self, parent: QWidget | None, model: QAbstractItemModel
+        self,
+        parent: QWidget | None,
+        model: QAbstractItemModel,
+        fixed_columns: int = 1,
     ) -> None:
         QAbstractItemView.__init__(self, parent)
+        self.fixed_columns = fixed_columns
         content = cast(
             TableViewUI, QUiLoader(parent).load(FREEZE_TABLE_VIEW_UI_PATH)
         )
@@ -59,10 +63,10 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
     def _reset_columns(self) -> None:
         # hide all-but-first column in left, first column in right
         for col in range(self._model.columnCount()):
-            self._left.setColumnHidden(col, col != 0)
+            self._left.setColumnHidden(col, col >= self.fixed_columns)
             self._right.setColumnHidden(
                 col,
-                col == 0
+                col < self.fixed_columns
                 or not any(
                     self._model.data(self._model.index(row, col))
                     for row in range(self._model.rowCount())
@@ -70,9 +74,10 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
             )
 
         # force sort
-        self._left.sortByColumn(
-            0, Qt.SortOrder.DescendingOrder
-        )  # @UndefinedVariable
+        for i in range(self.fixed_columns, -1, -1):
+            self._left.sortByColumn(
+                i, Qt.SortOrder.DescendingOrder
+            )  # @UndefinedVariable
 
         self._left.resizeColumnsToContents()
         self._right.resizeColumnsToContents()

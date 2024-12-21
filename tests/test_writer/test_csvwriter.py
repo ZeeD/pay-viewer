@@ -31,6 +31,7 @@ INFOS: Final = [
                 Decimal(3),
             )
         ],
+        Path('/'),
     ),
     Info(
         date(1989, 7, 27),
@@ -47,6 +48,7 @@ INFOS: Final = [
                 Decimal(60),
             )
         ],
+        Path('/'),
     ),
 ]
 

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from datetime import date
     from decimal import Decimal
+    from pathlib import Path
 
 
 class ColumnHeader(Enum):
@@ -61,6 +62,7 @@ class Info:
     when: 'date'
     columns: list[Column]
     additional_details: list[AdditionalDetail]
+    path: 'Path'
 
     def howmuch(self, header: ColumnHeader) -> 'Decimal | None':
         for column in self.columns:
@@ -81,7 +83,7 @@ def get_descrizione(additional_detail: AdditionalDetail) -> str:
 
 
 def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
-    headers: list[str] = ['when']
+    headers: list[str] = ['preview', 'when']
     data: list[list[str]] = []
 
     indexes: dict[str, int] = {}
@@ -89,8 +91,9 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
     for info in sorted(infos, key=attrgetter('when'), reverse=True):
         row = ['0'] * len(headers)
 
-        # when
-        row[0] = str(info.when)
+        # preview+when
+        row[0] = str(info.path)
+        row[1] = str(info.when)
 
         # columns
         for columns in sorted(

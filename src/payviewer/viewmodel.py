@@ -40,8 +40,8 @@ def max_min_this(
     data: list[list[str]], row: int, column: int
 ) -> tuple[Decimal, Decimal, Decimal]:
     ds = (
-        [Decimal(date.fromisoformat(datum[0]).toordinal()) for datum in data]
-        if column == 0
+        [Decimal(date.fromisoformat(datum[1]).toordinal()) for datum in data]
+        if column in {0,1}
         else [Decimal(datum[column]) for datum in data]
     )
     return max(ds), min(ds), ds[row]
@@ -123,6 +123,8 @@ class ViewModel(QAbstractTableModel):
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole}:
             value = self._data[row][column]
             if column == 0:
+                return str(value)
+            if column == 1:
                 return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
             return None if value == '0' else value
 
@@ -145,7 +147,7 @@ class ViewModel(QAbstractTableModel):
             return QBrush(QColor.fromHsl(hue, saturation, lightness))
 
         if role == Qt.ItemDataRole.UserRole:
-            if column == 0:
+            if column in {0,1}:
                 return self._infos[row].when
 
             value = self._data[row][column]
@@ -179,8 +181,9 @@ class ViewModel(QAbstractTableModel):
         self, index: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder
     ) -> None:
         def key(row: list[str]) -> date | Decimal:
-            raw = row[index]
-            return date.fromisoformat(raw) if index == 0 else Decimal(raw)
+            if index in {0,1}:
+                return date.fromisoformat(row[1])
+            return Decimal(row[index])
 
         self.layoutAboutToBeChanged.emit()
         try:
@@ -218,7 +221,7 @@ class SortFilterViewModel(SearchableModel):
         self, selection_model: QItemSelectionModel, statusbar: 'QStatusBar'
     ) -> None:
         column = selection_model.currentIndex().column()
-        if column == 0:
+        if column in {0, 1}:
             message = ''
         else:
             bigsum = sum(

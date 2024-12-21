@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from unittest import TestCase
 
 from payviewer.model import AdditionalDetail
@@ -45,6 +46,7 @@ class TestXlsWriter(TestCase):
                             Decimal('0'),
                         ),
                     ],
+                    Path('/'),
                 )
             ]
         )
@@ -56,16 +58,19 @@ class TestXlsWriter(TestCase):
                     date(2019, 1, 1),
                     [Column(ColumnHeader.minimo, Decimal('4'))],
                     [],
+                    Path('/'),
                 ),
                 Info(
                     date(2019, 2, 1),
                     [Column(ColumnHeader.edr, Decimal('5'))],
                     [],
+                    Path('/'),
                 ),
                 Info(
                     date(2019, 3, 1),
                     [Column(ColumnHeader.n_scatti, Decimal('6'))],
                     [],
+                    Path('/'),
                 ),
             ]
         )

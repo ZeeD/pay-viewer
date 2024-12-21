@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from unittest import TestCase
 
 from payviewer.model import AdditionalDetail
@@ -217,6 +218,7 @@ class TestPdf2Xls(TestCase):
                         Decimal('.74'),
                     ),
                 ],
+                Path('/'),
             )
         ]
 
