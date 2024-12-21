@@ -1,7 +1,6 @@
 from datetime import UTC
 from datetime import datetime
-from itertools import count
-from logging import info
+from logging import info, warn
 from os import listdir
 from pathlib import Path
 from shutil import move
@@ -11,7 +10,6 @@ from typing import TYPE_CHECKING
 from typing import Final
 from typing import NamedTuple
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import Firefox
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -25,6 +23,7 @@ from selenium.webdriver.support.expected_conditions import url_contains
 from selenium.webdriver.support.wait import WebDriverWait
 
 from payviewer.constants import GECKODRIVER_PATH
+from selenium.webdriver.common.action_chains import ActionChains
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -91,7 +90,13 @@ def mv_pdf_from_tmp_to_data(
     info('files in dtemp:')
     for dtempfn in listdir(dtemp):
         info('\t%s/%s', dtemp, dtempfn)
-    src = f'{dtemp}/{listdir(dtemp)[0]}'
+        if f'Cedolini_{year}_{month:02}.pdf' == dtempfn:
+            info('\t(matched)')
+            src = f'{dtemp}/Cedolini_{year}_{month:02}.pdf'
+            break
+    else:
+        warn('\t(NOT matched)')
+        src = f'{dtemp}/{listdir(dtemp)[0]}'
     dst = f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'
     info("mv'ing '%s' to '%s'", src, dst)
     move(src, dst)
@@ -115,6 +120,7 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
         ) as d
     ):  # fmt: skip
         wait = WebDriverWait(d, 30)
+        action = ActionChains(d)
 
         # do login
         d.get('https://login.myareaf2a.com/login/user')
@@ -127,34 +133,32 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
 
         def change_year(year: int) -> int:
             # open year dropdown
-            d.find_element(
-                By.CSS_SELECTOR, '.mat-form-field-type-mat-select'
-            ).click()
+            d.find_element(By.CSS_SELECTOR, '.mat-mdc-select-trigger').click()
             # select year
-            for mat_option in d.find_elements(
-                By.CSS_SELECTOR, '.mat-select-panel mat-option'
-            ):
-                if mat_option.text == str(year):
+            for mat_option in d.find_elements(By.CSS_SELECTOR, '#mat-select-0-panel mat-option'):
+                if mat_option.get_attribute('textContent') == f' {year} ':
                     mat_option.click()
+                    sleep(1)
                     return year
 
             raise ValueError
 
-        def download_for_month(month: int) -> None:
-            text = f'{month:02d}'
-            for i in count(2):
-                try:
-                    row = d.find_element(
-                        By.CSS_SELECTOR, f'mat-row:nth-child({i})'
-                    )
-                except NoSuchElementException:
-                    break
-                mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-mese')
-                if not mese or mese.text != text:
+        def download_for_month(year: int, month: int) -> None:
+            text = f'{month:02d}/{year:04d}'
+            for row in d.find_elements(By.CSS_SELECTOR, '.mat-mdc-row'):
+                mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-label')
+                if not mese or not mese.get_attribute('textContent').endswith(text):
                     continue
-                row.find_element(
-                    By.CSS_SELECTOR, '.cdk-column-download button'
-                ).click()
+                button = row.find_element(By.CSS_SELECTOR, '.cdk-column-download button')
+                try:
+                    d.execute_script('arguments[0].scrollIntoView({block: "center"})', button)
+                    action.move_to_element(button).perform()
+                except:
+                    raise
+                try:
+                    button.click()
+                except:
+                    raise
                 wait_download(dtemp)
                 return
             raise ValueError
@@ -168,7 +172,7 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
                     break
 
             try:
-                download_for_month(month)
+                download_for_month(year, month)
             except ValueError:
                 break
             else:

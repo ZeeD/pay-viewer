@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import cast
 
@@ -29,7 +28,9 @@ from payviewer.removejsons import remove_jsons
 from payviewer.settings import Settings
 from payviewer.viewmodel import SortFilterViewModel
 from payviewer.writer.csvwriter import CsvWriter
-
+from logging import INFO
+from logging import basicConfig
+from pathlib import Path
 if TYPE_CHECKING:
     from PySide6.QtCore import QItemSelection
     from PySide6.QtGui import QAction
@@ -146,6 +147,7 @@ def new_mainui(
 
 
 def main() -> None:
+    basicConfig(level=INFO, format='%(message)s')
     QCoreApplication.setAttribute(
         Qt.ApplicationAttribute.AA_ShareOpenGLContexts
     )

@@ -126,12 +126,13 @@ class Plot(QwtPlot):
                 xdata.append(when)
                 ydata.append(howmuch)
 
-            tmp = min(xdata)
-            if min_xdata is None or tmp < min_xdata:
-                min_xdata = tmp
-            tmp = max(xdata)
-            if max_xdata is None or tmp > max_xdata:
-                max_xdata = tmp
+            if xdata:
+                tmp = min(xdata)
+                if min_xdata is None or tmp < min_xdata:
+                    min_xdata = tmp
+                tmp = max(xdata)
+                if max_xdata is None or tmp > max_xdata:
+                    max_xdata = tmp
 
             name = serie.name()
             self.curves[name] = QwtPlotCurve.make(
