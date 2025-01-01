@@ -15,6 +15,7 @@ from PySide6.QtCore import QPersistentModelIndex
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QColor
+from PySide6.QtGui import QIcon
 
 from payviewer.automation import try_fetch_new_data
 from payviewer.loader import load
@@ -23,6 +24,8 @@ from payviewer.model import Info
 from payviewer.model import parse_infos
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from PySide6.QtWidgets import QStatusBar
 
     from payviewer.settings import Settings
@@ -99,31 +102,30 @@ class ViewModel(QAbstractTableModel):
         self,
         index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
         role: int = Qt.ItemDataRole.DisplayRole,  # @UnusedVariable
-    ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush: ...
+    ) -> (
+        'str | Qt.AlignmentFlag | None | date | Decimal | QBrush | QIcon | Path'
+    ): ...
 
     @override
     def data(  # noqa: PLR0911
         self,
         index: QModelIndex | QPersistentModelIndex,
         role: int = Qt.ItemDataRole.DisplayRole,
-    ) -> str | Qt.AlignmentFlag | None | date | Decimal | QBrush:
-        if role in {
-            Qt.ItemDataRole.DecorationRole,
-            Qt.ItemDataRole.StatusTipRole,
-            Qt.ItemDataRole.FontRole,
-            Qt.ItemDataRole.ForegroundRole,
-            Qt.ItemDataRole.CheckStateRole,
-            Qt.ItemDataRole.SizeHintRole,
-        }:
-            return None
-
+    ) -> (
+        'str | Qt.AlignmentFlag | None | date | Decimal | QBrush | QIcon | Path'
+    ):
         column = index.column()
         row = index.row()
+
+        if role == Qt.ItemDataRole.DecorationRole:
+            if column != 0:
+                return None
+            return QIcon.fromTheme(QIcon.ThemeIcon.DocumentPrintPreview)
 
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole}:
             value = self._data[row][column]
             if column == 0:
-                return str(value)
+                return self._infos[row].path.name
             if column == 1:
                 return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
             return None if value == '0' else value
@@ -147,7 +149,9 @@ class ViewModel(QAbstractTableModel):
             return QBrush(QColor.fromHsl(hue, saturation, lightness))
 
         if role == Qt.ItemDataRole.UserRole:
-            if column in {0, 1}:
+            if column == 0:
+                return self._infos[row].path
+            if column == 1:
                 return self._infos[row].when
 
             value = self._data[row][column]

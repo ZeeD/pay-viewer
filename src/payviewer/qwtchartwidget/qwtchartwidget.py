@@ -23,7 +23,7 @@ class QwtChartVidget(QWidget):
         super().__init__(parent)
 
         plot = Plot(model, self, factory)
-        chart_slider = ChartSlider(model, self)
+        chart_slider = ChartSlider(model, self, dates_column=1)
 
         layout = QVBoxLayout(self)
         layout.addWidget(plot)
