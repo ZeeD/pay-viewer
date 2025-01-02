@@ -84,16 +84,16 @@ class Mainui(QMainWindow):
     tableView: QWidget  # noqa: N815
 
 
-WIDGET: QWidget
+WIDGETS: list[QWidget] = []
 
 
 def onclick(model: SortFilterViewModel, index: QModelIndex) -> None:
     if index.column() != 0:
         return
     data = model.data(index, Qt.ItemDataRole.UserRole)
-    global WIDGET
-    WIDGET = view_pdf(data)
-    WIDGET.show()
+    widget = view_pdf(data)
+    widget.show()
+    WIDGETS.append(widget)
 
 
 def new_mainui(

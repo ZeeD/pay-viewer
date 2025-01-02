@@ -93,7 +93,7 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
 
         # preview+when
         row[0] = str(info.path)
-        row[1] = str(info.when)
+        row[1] = info.when.isoformat()
 
         # columns
         for columns in sorted(

@@ -1,5 +1,6 @@
 from datetime import date
 from decimal import Decimal
+from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Literal
 from typing import cast
@@ -24,8 +25,6 @@ from payviewer.model import Info
 from payviewer.model import parse_infos
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from PySide6.QtWidgets import QStatusBar
 
     from payviewer.settings import Settings
@@ -125,7 +124,7 @@ class ViewModel(QAbstractTableModel):
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole}:
             value = self._data[row][column]
             if column == 0:
-                return self._infos[row].path.name
+                return 'preview'
             if column == 1:
                 return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
             return None if value == '0' else value
@@ -149,12 +148,12 @@ class ViewModel(QAbstractTableModel):
             return QBrush(QColor.fromHsl(hue, saturation, lightness))
 
         if role == Qt.ItemDataRole.UserRole:
-            if column == 0:
-                return self._infos[row].path
-            if column == 1:
-                return self._infos[row].when
-
             value = self._data[row][column]
+            if column == 0:
+                return Path(value)
+            if column == 1:
+                return date.fromisoformat(value)
+
             return Decimal(value) if value is not None else None
 
         # DisplayRole 0
