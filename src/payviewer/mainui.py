@@ -1,3 +1,4 @@
+from functools import partial
 from logging import INFO
 from logging import basicConfig
 from pathlib import Path
@@ -6,6 +7,7 @@ from typing import cast
 
 from guilib.searchsheet.widget import SearchSheet
 from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QModelIndex
 from PySide6.QtCore import Qt
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
@@ -26,6 +28,7 @@ from payviewer.constants import SETTINGSUI_UI_PATH
 from payviewer.freezetableview import FreezeTableView
 from payviewer.loader import NoHistoryError
 from payviewer.modelgui import SeriesModel
+from payviewer.pdfviewer import view_pdf
 from payviewer.qwtchartwidget.qwtchartwidget import QwtChartVidget
 from payviewer.removejsons import remove_jsons
 from payviewer.settings import Settings
@@ -81,6 +84,18 @@ class Mainui(QMainWindow):
     tableView: QWidget  # noqa: N815
 
 
+WIDGET: QWidget
+
+
+def onclick(model: SortFilterViewModel, index: QModelIndex) -> None:
+    if index.column() != 0:
+        return
+    data = model.data(index, Qt.ItemDataRole.UserRole)
+    global WIDGET
+    WIDGET = view_pdf(data)
+    WIDGET.show()
+
+
 def new_mainui(
     settings: Settings, model: SortFilterViewModel, settingsui: Settingsui
 ) -> QWidget:
@@ -111,6 +126,8 @@ def new_mainui(
 
     # replace table_view
     table_view = FreezeTableView(mainui.xls, model, fixed_columns=2)
+    table_view.clicked.connect(partial(onclick, model))
+
     sheet = SearchSheet(mainui.xls, table_view=cast(QTableView, table_view))
     sheet.set_model(model)
     mainui.gridLayout_1.addWidget(sheet, 0, 0)

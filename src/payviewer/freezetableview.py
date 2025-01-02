@@ -56,6 +56,10 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
         self._selection_model = self._right.selectionModel()
         self._left.setSelectionModel(self._selection_model)
 
+        # expose click event
+        self._left.clicked.connect(self.clicked.emit)
+        self._right.clicked.connect(self.clicked.emit)
+
     @override
     def selectionModel(self) -> QItemSelectionModel:
         return self._selection_model

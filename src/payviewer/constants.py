@@ -20,5 +20,5 @@ GECKODRIVER_PATH: Final = _resource(
 
 
 SETTINGS_USERNAME: Final = 'username'
-SETTINGS_PASSWORD: Final = 'password' # noqa: S105
+SETTINGS_PASSWORD: Final = 'password'  # noqa: S105
 SETTINGS_DATA_PATH: Final = 'dataPath'
