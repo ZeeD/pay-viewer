@@ -1,6 +1,7 @@
 from datetime import date
 from datetime import timedelta
 from itertools import cycle
+from math import inf
 from typing import TYPE_CHECKING
 from typing import cast
 from typing import override
@@ -197,6 +198,22 @@ class Plot(QwtPlot):
         self.setAxisScaleDiv(
             QwtPlot.xBottom, QwtScaleDiv(lower_bound, upper_bound, ds, ms, ys)
         )
+
+        y_min, y_max = inf, -inf
+        for curve in self.curves.values():
+            data = curve.data()
+            if data is None:
+                raise ValueError
+            ys = data.yData()
+            ys2 = [
+                ys[idx]
+                for idx, x in enumerate(data.xData())
+                if lower_bound <= x <= upper_bound
+            ]
+            y_min = min(y_min, *ys2)
+            y_max = max(y_max, *ys2)
+
+        self.setAxisScale(QwtPlot.yLeft, y_min, y_max)
 
         self.replot()
 
