@@ -1,10 +1,13 @@
 from dataclasses import dataclass
-from datetime import date
 from decimal import Decimal
 from enum import Enum
 from enum import auto
 from operator import attrgetter
-from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datetime import date
+    from pathlib import Path
 
 ZERO = Decimal(0)
 

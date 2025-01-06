@@ -1,6 +1,4 @@
-from datetime import date
 from decimal import Decimal
-from pathlib import Path
 from typing import TYPE_CHECKING
 from typing import Literal
 from typing import cast
@@ -26,6 +24,9 @@ from payviewer.model import Info
 from payviewer.model import parse_infos
 
 if TYPE_CHECKING:
+    from datetime import date
+    from pathlib import Path
+
     from PySide6.QtWidgets import QStatusBar
 
     from payviewer.settings import Settings
@@ -40,7 +41,7 @@ def by_column(info: Info, i: int) -> Decimal | None:
 
 
 def max_min_whens(
-    whens: list[tuple[Path, date]], row: int
+    whens: list[tuple['Path', 'date']], row: int
 ) -> tuple[Decimal, Decimal, Decimal]:
     ds = [Decimal(when.toordinal()) for _, when in whens]
     return max(ds), min(ds), ds[row]
@@ -100,7 +101,7 @@ class ViewModel(QAbstractTableModel):
         # white liar, we need also to add a rule on index --> col 0
         index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
         role: Literal[Qt.ItemDataRole.UserRole],  # @UnusedVariable
-    ) -> date: ...
+    ) -> 'date': ...
 
     @overload
     def data(
