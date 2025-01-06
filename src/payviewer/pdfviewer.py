@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 
+from PySide6.QtGui import QGuiApplication
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 
@@ -18,4 +19,9 @@ def view_pdf(path: 'Path') -> 'QWidget':
     view.setDocument(document)
     view.setPageMode(QPdfView.PageMode.SinglePage)
     view.setZoomMode(QPdfView.ZoomMode.FitToWidth)
+
+    scren_size = QGuiApplication.primaryScreen().size()
+    view.resize(scren_size.width() // 2, scren_size.height() // 2)
+    view.setWindowTitle(pdf_path)
+
     return view

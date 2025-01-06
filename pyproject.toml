@@ -46,7 +46,7 @@ lint = { composite = [
     "pyproject-fmt pyproject.toml",
     "ruff format {args:.}",
     "ruff check {args:.}",
-    "dmypy run {args:.}",
+    "mypy {args:.}",
 ], keep_going = true }
 start = "pay-viewer"
 tests = { composite = [

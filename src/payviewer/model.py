@@ -1,13 +1,12 @@
 from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal
 from enum import Enum
 from enum import auto
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from pathlib import Path
 
-if TYPE_CHECKING:
-    from datetime import date
-    from decimal import Decimal
-    from pathlib import Path
+ZERO = Decimal(0)
 
 
 class ColumnHeader(Enum):
@@ -82,32 +81,34 @@ def get_descrizione(additional_detail: AdditionalDetail) -> str:
     }.get(additional_detail.cod, additional_detail.descrizione)
 
 
-def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
-    headers: list[str] = ['preview', 'when']
-    data: list[list[str]] = []
+def parse_infos(
+    infos: list[Info],
+) -> 'tuple[list[str], list[tuple[Path, date]], list[list[Decimal]]]':
+    headers: list[str] = ['when']
+    whens: list[tuple[Path, date]] = []
+    data: list[list[Decimal]] = []
 
     indexes: dict[str, int] = {}
 
     for info in sorted(infos, key=attrgetter('when'), reverse=True):
-        row = ['0'] * len(headers)
+        row = [ZERO] * (len(headers) - 1)
 
         # preview+when
-        row[0] = str(info.path)
-        row[1] = info.when.isoformat()
+        whens.append((info.path, info.when))
 
         # columns
         for columns in sorted(
             info.columns, key=lambda column: column.header.name
         ):
             key = columns.header.name
-            value = str(columns.howmuch)
+            value = ZERO if columns.howmuch is None else columns.howmuch
             if key in indexes:
                 row[indexes[key]] = value
             else:
-                indexes[key] = len(headers)
+                indexes[key] = len(headers) - 1
                 headers.append(key)
                 for other_row in data:
-                    other_row.append('0')
+                    other_row.append(ZERO)
                 row.append(value)
 
         # additional_details
@@ -115,7 +116,7 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
             info.additional_details, key=attrgetter('descrizione')
         ):
             key = str(additional_detail.cod)
-            value = str(
+            value = (
                 -additional_detail.trattenute
                 if additional_detail.trattenute
                 else additional_detail.competenze
@@ -123,12 +124,12 @@ def parse_infos(infos: list[Info]) -> tuple[list[str], list[list[str]]]:
             if key in indexes:
                 row[indexes[key]] = value
             else:
-                indexes[key] = len(headers)
+                indexes[key] = len(headers) - 1
                 headers.append(get_descrizione(additional_detail))  # first one
                 for other_row in data:
-                    other_row.append('0')
+                    other_row.append(ZERO)
                 row.append(value)
 
         data.append(row)
 
-    return headers, data
+    return headers, whens, data

@@ -32,6 +32,7 @@ from payviewer.pdfviewer import view_pdf
 from payviewer.qwtchartwidget.qwtchartwidget import QwtChartVidget
 from payviewer.removejsons import remove_jsons
 from payviewer.settings import Settings
+from payviewer.viewmodel import PATH_ROLE
 from payviewer.viewmodel import SortFilterViewModel
 from payviewer.writer.csvwriter import CsvWriter
 
@@ -90,7 +91,7 @@ WIDGETS: list[QWidget] = []
 def onclick(model: SortFilterViewModel, index: QModelIndex) -> None:
     if index.column() != 0:
         return
-    data = model.data(index, Qt.ItemDataRole.UserRole)
+    data = model.data(index, PATH_ROLE)
     widget = view_pdf(data)
     widget.show()
     WIDGETS.append(widget)
@@ -125,7 +126,7 @@ def new_mainui(
     mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
 
     # replace table_view
-    table_view = FreezeTableView(mainui.xls, model, fixed_columns=2)
+    table_view = FreezeTableView(mainui.xls, model)
     table_view.clicked.connect(partial(onclick, model))
 
     sheet = SearchSheet(mainui.xls, table_view=cast(QTableView, table_view))

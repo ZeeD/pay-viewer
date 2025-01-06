@@ -78,10 +78,8 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
             )
 
         # force sort
-        for i in range(self.fixed_columns, -1, -1):
-            self._left.sortByColumn(
-                i, Qt.SortOrder.DescendingOrder
-            )  # @UndefinedVariable
+        for i in range(self.fixed_columns, 0, -1):
+            self._left.sortByColumn(i, Qt.SortOrder.DescendingOrder)
 
         self._left.resizeColumnsToContents()
         self._right.resizeColumnsToContents()

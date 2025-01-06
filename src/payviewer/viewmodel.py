@@ -20,6 +20,7 @@ from PySide6.QtGui import QIcon
 
 from payviewer.automation import try_fetch_new_data
 from payviewer.loader import load
+from payviewer.model import ZERO
 from payviewer.model import ColumnHeader
 from payviewer.model import Info
 from payviewer.model import parse_infos
@@ -38,18 +39,23 @@ def by_column(info: Info, i: int) -> Decimal | None:
     return None
 
 
-def max_min_this(
-    data: list[list[str]], row: int, column: int
+def max_min_whens(
+    whens: list[tuple[Path, date]], row: int
 ) -> tuple[Decimal, Decimal, Decimal]:
-    ds = (
-        [Decimal(date.fromisoformat(datum[1]).toordinal()) for datum in data]
-        if column in {0, 1}
-        else [Decimal(datum[column]) for datum in data]
-    )
+    ds = [Decimal(when.toordinal()) for _, when in whens]
+    return max(ds), min(ds), ds[row]
+
+
+def max_min_this(
+    data: list[list[Decimal]], row: int, column: int
+) -> tuple[Decimal, Decimal, Decimal]:
+    ds = [datum[column] for datum in data]
     return max(ds), min(ds), ds[row]
 
 
 _QMODELINDEX = QModelIndex()
+
+PATH_ROLE = Qt.ItemDataRole.UserRole + 1
 
 
 class ViewModel(QAbstractTableModel):
@@ -58,7 +64,7 @@ class ViewModel(QAbstractTableModel):
         self._set_infos(infos)
 
     def _set_infos(self, infos: list[Info]) -> None:
-        self._headers, self._data = parse_infos(infos)
+        self._headers, self._whens, self._data = parse_infos(infos)
         self._infos = infos
 
     @override
@@ -117,23 +123,25 @@ class ViewModel(QAbstractTableModel):
         row = index.row()
 
         if role == Qt.ItemDataRole.DecorationRole:
-            if column != 0:
-                return None
-            return QIcon.fromTheme(QIcon.ThemeIcon.DocumentPrintPreview)
+            if column == 0:
+                return QIcon.fromTheme(QIcon.ThemeIcon.DocumentPrintPreview)
+            return None
 
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole}:
-            value = self._data[row][column]
             if column == 0:
-                return 'preview'
-            if column == 1:
-                return value[:-3] if value.endswith('01') else f'{value[:-5]}13'
-            return None if value == '0' else value
+                when = self._whens[row][1]
+                return f'{when}' if when.day == 1 else f'{when:%Y-%m}-13'
+            value = self._data[row][column - 1]
+            return None if value == ZERO else str(value)
 
         if role == Qt.ItemDataRole.TextAlignmentRole:
             return Qt.AlignmentFlag.AlignCenter
 
         if role == Qt.ItemDataRole.BackgroundRole:
-            max_, min_, val = max_min_this(self._data, row, column)
+            if column == 0:
+                max_, min_, val = max_min_whens(self._whens, row)
+            else:
+                max_, min_, val = max_min_this(self._data, row, column - 1)
             if val == 0:
                 return None
 
@@ -148,13 +156,15 @@ class ViewModel(QAbstractTableModel):
             return QBrush(QColor.fromHsl(hue, saturation, lightness))
 
         if role == Qt.ItemDataRole.UserRole:
-            value = self._data[row][column]
             if column == 0:
-                return Path(value)
-            if column == 1:
-                return date.fromisoformat(value)
+                return self._whens[row][1]
 
-            return Decimal(value) if value is not None else None
+            return self._data[row][column - 1]
+
+        if role == PATH_ROLE:
+            if column == 0:
+                return self._whens[row][0]
+            raise ValueError
 
         # DisplayRole 0
         # DecorationRole 1
@@ -183,16 +193,18 @@ class ViewModel(QAbstractTableModel):
     def sort(
         self, index: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder
     ) -> None:
-        def key(row: list[str]) -> date | Decimal:
-            if index in {0, 1}:
-                return date.fromisoformat(row[1])
-            return Decimal(row[index])
+        idxs = list(range(len(self._whens)))
+        key = (
+            self._whens.__getitem__
+            if index == 0
+            else lambda i: self._data[i][index - 1]
+        )
+        idxs.sort(key=key, reverse=order == Qt.SortOrder.AscendingOrder)
 
         self.layoutAboutToBeChanged.emit()
         try:
-            self._data.sort(
-                key=key, reverse=order == Qt.SortOrder.AscendingOrder
-            )
+            self._whens[:] = map(self._whens.__getitem__, idxs)
+            self._data[:] = map(self._data.__getitem__, idxs)
         finally:
             self.layoutChanged.emit()
 
@@ -224,7 +236,7 @@ class SortFilterViewModel(SearchableModel):
         self, selection_model: QItemSelectionModel, statusbar: 'QStatusBar'
     ) -> None:
         column = selection_model.currentIndex().column()
-        if column in {0, 1}:
+        if column == 0:
             message = ''
         else:
             bigsum = sum(
