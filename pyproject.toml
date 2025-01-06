@@ -6,7 +6,7 @@ requires = [ "pdm-backend" ]
 name = "zeed-pay-viewer"
 version = "0.0.0"
 description = "python+qt based pay viewer"
-license = { text = "AGPL-3.0-or-later" }
+license = { file = "LICENSE" }
 authors = [
     { name = "ZeeD", email = "vito.detullio@gmail.com" },
 ]
