@@ -131,7 +131,7 @@ class ViewModel(QAbstractTableModel):
         if role in {Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.ToolTipRole}:
             if column == 0:
                 when = self._whens[row][1]
-                return f'{when}' if when.day == 1 else f'{when:%Y-%m}-13'
+                return f'{when:%Y-%m}' if when.day == 1 else f'{when:%Y}-13'
             value = self._data[row][column - 1]
             return None if value == ZERO else str(value)
 
