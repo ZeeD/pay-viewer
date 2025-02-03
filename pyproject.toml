@@ -10,10 +10,11 @@ license = { file = "LICENSE" }
 authors = [
     { name = "ZeeD", email = "vito.detullio@gmail.com" },
 ]
-requires-python = "==3.12.*"
+requires-python = ">=3.12,<3.14"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
 ]
 dependencies = [
     "jdk4py>=21.0.4.1",
