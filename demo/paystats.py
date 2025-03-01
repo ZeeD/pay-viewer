@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from collections import defaultdict
 from decimal import Decimal
 from itertools import chain

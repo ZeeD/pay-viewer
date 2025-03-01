@@ -57,12 +57,12 @@ class ChartView(QChartView):
         self.event_pos: QPointF | None = None
         self.factory = factory
 
-    @Slot(date)
+    @Slot(date)  # type: ignore[arg-type]
     def start_date_changed(self, start_date: date) -> None:
         self._start_date = start_date
         self._date_changed()
 
-    @Slot(date)
+    @Slot(date)  # type: ignore[arg-type]
     def end_date_changed(self, end_date: date) -> None:
         self._end_date = end_date
         self._date_changed()

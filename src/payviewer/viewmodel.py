@@ -99,21 +99,21 @@ class ViewModel(QAbstractTableModel):
     def data(
         self,
         # white liar, we need also to add a rule on index --> col 0
-        index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
-        role: Literal[Qt.ItemDataRole.UserRole],  # @UnusedVariable
+        index: QModelIndex | QPersistentModelIndex,
+        role: Literal[Qt.ItemDataRole.UserRole],
     ) -> 'date': ...
 
     @overload
     def data(
         self,
-        index: QModelIndex | QPersistentModelIndex,  # @UnusedVariable
-        role: int = Qt.ItemDataRole.DisplayRole,  # @UnusedVariable
+        index: QModelIndex | QPersistentModelIndex,
+        role: int = Qt.ItemDataRole.DisplayRole,
     ) -> (
         'str | Qt.AlignmentFlag | None | date | Decimal | QBrush | QIcon | Path'
     ): ...
 
     @override
-    def data(  # noqa: PLR0911
+    def data(  # noqa: C901 PLR0911 PLR0912
         self,
         index: QModelIndex | QPersistentModelIndex,
         role: int = Qt.ItemDataRole.DisplayRole,
@@ -147,7 +147,7 @@ class ViewModel(QAbstractTableModel):
                 return None
 
             perc = (
-                (val - min_) / (max_ - min_) if max_ != min_ else Decimal(0.5)
+                (val - min_) / (max_ - min_) if max_ != min_ else Decimal('0.5')
             )
 
             hue = int(perc * 120)  # 0..359 ; red=0, green=120

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from pathlib import Path
 
 from PySide6.QtGui import QGuiApplication
@@ -15,6 +17,7 @@ def main() -> None:
     viewer.show()
 
     app.exec()
+
 
 if __name__ == '__main__':
     main()

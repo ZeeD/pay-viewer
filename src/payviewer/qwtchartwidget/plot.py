@@ -168,14 +168,14 @@ class Plot(QwtPlot):
 
         self._date_changed(min_xdata, max_xdata)
 
-    @Slot(date)
+    @Slot(date)  # type: ignore[arg-type]
     def start_date_changed(self, start_date: date) -> None:
         lower_bound = date2days(start_date)
         upper_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().maxValue()
 
         self._date_changed(lower_bound, upper_bound)
 
-    @Slot(date)
+    @Slot(date)  # type: ignore[arg-type]
     def end_date_changed(self, end_date: date) -> None:
         lower_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().minValue()
         upper_bound = date2days(end_date)

@@ -97,7 +97,7 @@ def onclick(model: SortFilterViewModel, index: QModelIndex) -> None:
     WIDGETS.append(widget)
 
 
-def new_mainui(
+def new_mainui(  # noqa: C901
     settings: Settings, model: SortFilterViewModel, settingsui: Settingsui
 ) -> QWidget:
     def update_helper(
@@ -117,7 +117,12 @@ def new_mainui(
 
     def remove_jsons_helper() -> None:
         remove_jsons(settings.data_path)
-        QMessageBox.information(mainui, 'pdf2xls', 'Cleanup complete')
+        QMessageBox.information(
+            mainui,
+            'pdf2xls',
+            'Cleanup complete',
+            QMessageBox.StandardButton.Close,
+        )
 
     def export_helper() -> None:
         writer = CsvWriter(Path('/home/zed/Desktop/pdf2xls.csv'))
@@ -138,20 +143,30 @@ def new_mainui(
     selection_model = mainui.tableView.selection_model()
     selection_model.selectionChanged.connect(update_status_bar)
 
-    chart_widget_money = ChartWidget(model, mainui, SeriesModel.money)
-    mainui.chart_money.layout().addWidget(chart_widget_money)
+    money_layout = mainui.chart_money.layout()
+    if money_layout is None:
+        raise ValueError
+    money_layout.addWidget(ChartWidget(model, mainui, SeriesModel.money))
 
-    chart_widget_ferie = ChartWidget(model, mainui, SeriesModel.ferie)
-    mainui.chart_ferie.layout().addWidget(chart_widget_ferie)
+    ferie_layout = mainui.chart_ferie.layout()
+    if ferie_layout is None:
+        raise ValueError
+    ferie_layout.addWidget(ChartWidget(model, mainui, SeriesModel.ferie))
 
-    chart_widget_rol = ChartWidget(model, mainui, SeriesModel.rol)
-    mainui.chart_rol.layout().addWidget(chart_widget_rol)
+    rol_layout = mainui.chart_rol.layout()
+    if rol_layout is None:
+        raise ValueError
+    rol_layout.addWidget(ChartWidget(model, mainui, SeriesModel.rol))
 
-    qwt_chart_widget_money = QwtChartVidget(model, mainui, SeriesModel.money)
-    mainui.qwt_chart_money.layout().addWidget(qwt_chart_widget_money)
+    money_layout_qwt = mainui.qwt_chart_money.layout()
+    if money_layout_qwt is None:
+        raise ValueError
+    money_layout_qwt.addWidget(QwtChartVidget(model, mainui, SeriesModel.money))
 
-    qwt_chart_widget_ticket = QwtChartVidget(model, mainui, SeriesModel.ticket)
-    mainui.qwt_chart_ticket.layout().addWidget(qwt_chart_widget_ticket)
+    ticket_layout = mainui.qwt_chart_ticket.layout()
+    if ticket_layout is None:
+        raise ValueError
+    ticket_layout.addWidget(QwtChartVidget(model, mainui, SeriesModel.ticket))
 
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)
