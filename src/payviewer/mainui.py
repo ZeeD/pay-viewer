@@ -83,6 +83,7 @@ class Mainui(QMainWindow):
     actionExport: 'QAction'  # noqa: N815
     gridLayout_1: QGridLayout  # noqa: N815
     tableView: QWidget  # noqa: N815
+    qwt_chart_ferie_rol: QWidget
 
 
 WIDGETS: list[QWidget] = []
@@ -167,6 +168,13 @@ def new_mainui(  # noqa: C901
     if ticket_layout is None:
         raise ValueError
     ticket_layout.addWidget(QwtChartVidget(model, mainui, SeriesModel.ticket))
+
+    ferie_rol_layout = mainui.qwt_chart_ferie_rol.layout()
+    if ferie_rol_layout is None:
+        raise ValueError
+    ferie_rol_layout.addWidget(
+        QwtChartVidget(model, mainui, SeriesModel.ferie_rol)
+    )
 
     mainui.actionUpdate.triggered.connect(update_helper)
     mainui.actionSettings.triggered.connect(settingsui.show)

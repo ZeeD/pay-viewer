@@ -15,7 +15,6 @@ from payviewer.model import ColumnHeader
 from payviewer.model import Info
 
 if TYPE_CHECKING:
-    from mypy_extensions import Arg
     from PySide6.QtCore import QDateTime
 
 
@@ -41,7 +40,7 @@ class SeriesModel:
 
     @classmethod
     def money(cls, infos: list[Info]) -> 'SeriesModel':
-        return SeriesModel._from_infos(
+        return cls._from_infos(
             infos,
             [
                 ColumnHeader.minimo,
@@ -57,7 +56,7 @@ class SeriesModel:
 
     @classmethod
     def rol(cls, infos: list[Info]) -> 'SeriesModel':
-        return SeriesModel._from_infos(
+        return cls._from_infos(
             infos,
             [
                 ColumnHeader.par_a_prec,
@@ -71,7 +70,7 @@ class SeriesModel:
 
     @classmethod
     def ferie(cls, infos: list[Info]) -> 'SeriesModel':
-        return SeriesModel._from_infos(
+        return cls._from_infos(
             infos,
             [
                 ColumnHeader.ferie_a_prec,
@@ -85,10 +84,25 @@ class SeriesModel:
 
     @classmethod
     def ticket(cls, infos: list[Info]) -> 'SeriesModel':
-        return SeriesModel._with_yearly_sum(
-            SeriesModel._from_infos(
+        return cls._with_yearly_sum(
+            cls._from_infos(
                 infos, [ColumnHeader.ticket_pasto], SeriesModelUnit.EURO
             )
+        )
+
+    @classmethod
+    def ferie_rol(cls, infos: list[Info]) -> 'SeriesModel':
+        return cls._from_infos(
+            infos,
+            [
+                ColumnHeader.ferie_saldo,
+                (ColumnHeader.par_saldo, lambda rol: rol / 8),
+                (
+                    (ColumnHeader.ferie_saldo, ColumnHeader.par_saldo),
+                    lambda ferie, rol: ferie + (rol / 8),
+                )
+            ],
+            SeriesModelUnit.DAY,
         )
 
     @classmethod
@@ -97,19 +111,25 @@ class SeriesModel:
         infos: list[Info],
         column_headers: list[
             ColumnHeader
-            | tuple[ColumnHeader, "Callable[[Arg(Decimal, 'd')], Decimal]"]
+            | tuple[ColumnHeader, 'Callable[[Decimal], Decimal]']
+            | tuple[
+                tuple[ColumnHeader, ColumnHeader],
+                'Callable[[Decimal, Decimal], Decimal]',
+            ]
         ],
         unit: SeriesModelUnit,
     ) -> 'SeriesModel':
         series: list[QLineSeries] = []
         for column_header_ in column_headers:
-            column_header = (
-                column_header_
+            column_header_name = (
+                column_header_.name
                 if isinstance(column_header_, ColumnHeader)
-                else column_header_[0]
+                else column_header_[0].name
+                if isinstance(column_header_[0], ColumnHeader)
+                else ' - '.join(ch.name for ch in column_header_[0])
             )
             serie = QLineSeries()
-            serie.setName(column_header.name)
+            serie.setName(column_header_name)
             series.append(serie)
 
         x_min = date.max
@@ -131,14 +151,34 @@ class SeriesModel:
             for serie, column_header_ in zip(
                 series, column_headers, strict=False
             ):
+                column_headers_: tuple[ColumnHeader, ...]
+                op1: Callable[[Decimal], Decimal] | None = None
+                op2: Callable[[Decimal, Decimal], Decimal] | None = None
                 if isinstance(column_header_, ColumnHeader):
-                    column_header = column_header_
+                    column_headers_ = (column_header_,)
 
-                    def op(d: Decimal) -> Decimal:
+                    def op1(d: Decimal) -> Decimal:
                         return d
+
+                    op2 = None
+                elif isinstance(column_header_[0], ColumnHeader):
+                    column_headers_ = (column_header_[0],)
+                    op1 = column_header_[1]
+                    op2 = None
                 else:
-                    column_header, op = column_header_
-                howmuch = op(get_howmuch(info, column_header))
+                    column_headers_ = column_header_[0]
+                    op1 = None
+                    op2 = column_header_[1]
+
+                if op1 is not None:
+                    howmuch = op1(get_howmuch(info, column_headers_[0]))
+                elif op2 is not None:
+                    howmuch = op2(
+                        *(get_howmuch(info, ch) for ch in column_headers_)
+                    )
+                else:
+                    msg = f'{column_header_=}'
+                    raise ValueError(msg)
                 howmuchs.append(howmuch)
                 serie.append(date2days(when), float(howmuch))
 
