@@ -100,7 +100,7 @@ class SeriesModel:
                 (
                     (ColumnHeader.ferie_saldo, ColumnHeader.par_saldo),
                     lambda ferie, rol: ferie + (rol / 8),
-                )
+                ),
             ],
             SeriesModelUnit.DAY,
         )

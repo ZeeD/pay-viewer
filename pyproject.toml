@@ -26,7 +26,12 @@ dependencies = [
     "tabula-py[jpype]>=2.9.3",
     "zeed-guilib>=0.0.4",
 ]
-optional-dependencies.dev = [
+urls.Homepage = "https://github.com/ZeeD/pay-viewer"
+urls.Repository = "https://github.com/ZeeD/pay-viewer.git"
+gui-scripts.pay-viewer = "payviewer.mainui:main"
+
+[dependency-groups]
+dev = [
     "coverage>=7.6.10",
     "mypy>=1.10.1",
     "pandas-stubs>=2.2.2.240603",
@@ -34,12 +39,13 @@ optional-dependencies.dev = [
     "pytest>=8.3.2",
     "ruff>=0.5",
 ]
-urls.Homepage = "https://github.com/ZeeD/pay-viewer"
-urls.Repository = "https://github.com/ZeeD/pay-viewer.git"
-gui-scripts.pay-viewer = "payviewer.mainui:main"
 
 [tool.pdm]
 distribution = true
+plugins = [ "pdm-bump" ]
+
+[tool.pdm.build]
+excludes = [ "tests" ]
 
 [tool.pdm.scripts]
 _.env = { PYTHONPATH = "src:tests:demo:stubs" }
@@ -49,11 +55,16 @@ lint = { composite = [
     "ruff check {args:.}",
     "mypy {args:.}",
 ], keep_going = true }
-start = "pay-viewer"
 tests = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests {args}",
     "coverage report",
     "coverage erase",
+] }
+start = { call = "payviewer.mainui:main" }
+bump_and_publish = { composite = [
+    "pdm bump patch --commit --tag",
+    "pdm publish",
+    "git push",
 ] }
 
 [tool.ruff]
@@ -65,18 +76,18 @@ format.skip-magic-trailing-comma = true
 format.docstring-code-format = true
 lint.select = [ "ALL" ]
 lint.ignore = [
-    "ANN1",   # disabled by me
-    "COM812", # conflicts with formatter
-    "D1",     # disabled by me
-    "D203",   # incompatibility with D211
-    "D213",   # incompatibility with D212
-    "ISC001", # conflicts with formatter
-    "PD",     # disabled by me
-    "PT009",  # disabled by me
-    "PT027",  # disabled by me
-    "Q001",   # conflicts with formatter
-    "Q002",   # conflicts with formatter
-    "S603",   # incompatibility with S602
+    "ANN1",
+    "COM812",
+    "D1",
+    "D203",
+    "D213",
+    "ISC001",
+    "PD",
+    "PT009",
+    "PT027",
+    "Q001",
+    "Q002",
+    "S603",
 ]
 lint.extend-per-file-ignores."stubs/**/*.pyi" = [
     "FBT001",
@@ -110,6 +121,7 @@ skip_empty = true
 mypy_path = [ "src", "tests", "demo", "stubs" ]
 strict = true
 warn_unused_configs = true
+
 [[tool.mypy.overrides]]
 module = [ "payviewer.automation", "payviewer.automation_cu" ]
 disable_error_code = "no-untyped-call"
