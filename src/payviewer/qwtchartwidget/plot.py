@@ -16,6 +16,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QFont
+from PySide6.QtGui import QMouseEvent
+from PySide6.QtWidgets import QWidget
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
@@ -33,11 +35,8 @@ from qwt.text import QwtText
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from PySide6.QtGui import QMouseEvent
-    from PySide6.QtWidgets import QWidget
-
     from payviewer.viewmodel import SortFilterViewModel
-
+## TODO replace file with guilib version
 
 def linecolors() -> 'Iterable[Qt.GlobalColor]':
     excluded: set[Qt.GlobalColor] = {
@@ -77,11 +76,6 @@ class FmtScaleDraw(QwtScaleDraw):
 class YearMonthScaleDraw(QwtScaleDraw):
     def label(self, value: float) -> str:
         return days2date(value).strftime('%Y-%m')
-
-
-class NoXDataError(Exception):
-    def __init__(self) -> None:
-        super().__init__('no *_xdata!')
 
 
 class Plot(QwtPlot):
@@ -143,7 +137,7 @@ class Plot(QwtPlot):
                     f'{name} - ...', weight=QFont.Weight.Bold, color=linecolor
                 ),
                 plot=self,
-                style=QwtPlotCurve.Lines,
+                style=QwtPlotCurve.Steps,
                 linecolor=linecolor,
                 linewidth=2,
                 antialiased=True,
@@ -164,7 +158,7 @@ class Plot(QwtPlot):
             )
 
         if min_xdata is None or max_xdata is None:
-            raise NoXDataError
+            raise ValueError
 
         self._date_changed(min_xdata, max_xdata)
 
@@ -230,8 +224,8 @@ class Plot(QwtPlot):
 
         for name, curve in self.curves.items():
             legend = cast(
-                QwtLegendLabel,
-                cast(QwtLegend, self.legend()).legendWidget(curve),
+                'QwtLegendLabel',
+                cast('QwtLegend', self.legend()).legendWidget(curve),
             )
 
             data = curve.data()
