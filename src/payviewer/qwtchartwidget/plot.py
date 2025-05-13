@@ -17,12 +17,10 @@ from PySide6.QtCore import Slot
 from PySide6.QtGui import QBrush
 from PySide6.QtGui import QFont
 from PySide6.QtGui import QMouseEvent
-from PySide6.QtWidgets import QWidget
 
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
 from qwt.legend import QwtLegend
-from qwt.legend import QwtLegendLabel
 from qwt.plot import QwtPlot
 from qwt.plot_curve import QwtPlotCurve
 from qwt.plot_grid import QwtPlotGrid
@@ -34,6 +32,8 @@ from qwt.text import QwtText
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+
+    from PySide6.QtWidgets import QWidget
 
     from payviewer.viewmodel import SortFilterViewModel
 ## TODO replace file with guilib version
