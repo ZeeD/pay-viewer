@@ -369,7 +369,7 @@ def extract_details(table: DataFrame) -> 'Iterator[AdditionalDetail]':
 def extract_ticket_pasto(additional_details: list[AdditionalDetail]) -> Decimal:
     ret = Decimal(0)
     for detail in additional_details:
-        if detail.cod not in {2302, 2308, 2861}:
+        if detail.cod not in {2302, 2308, 2461, 2462, 2861}:
             continue
         ret += detail.ore_o_giorni * detail.compenso_unitario
     return ret

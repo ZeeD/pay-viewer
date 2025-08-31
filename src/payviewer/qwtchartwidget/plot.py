@@ -21,6 +21,7 @@ from PySide6.QtGui import QMouseEvent
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
 from qwt.legend import QwtLegend
+from qwt.legend import QwtLegendLabel
 from qwt.plot import QwtPlot
 from qwt.plot_curve import QwtPlotCurve
 from qwt.plot_grid import QwtPlotGrid
@@ -37,6 +38,7 @@ if TYPE_CHECKING:
 
     from payviewer.viewmodel import SortFilterViewModel
 ## TODO replace file with guilib version
+
 
 def linecolors() -> 'Iterable[Qt.GlobalColor]':
     excluded: set[Qt.GlobalColor] = {
