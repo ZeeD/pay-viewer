@@ -125,8 +125,8 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
 
         # do login
         d.get('https://login.myareaf2a.com/login/user')
-        d.find_element(By.ID, 'mat-input-0').send_keys(username)
-        d.find_element(By.ID, 'mat-input-1').send_keys(password + Keys.RETURN)
+        d.find_element(By.ID, 'username').send_keys(username)
+        d.find_element(By.ID, 'password').send_keys(password + Keys.RETURN)
         wait.until(url_contains('home/card/DATI_PERSONALI'))
         # go to "DOCUMENTI PERSONALI"
         d.get('https://www.myareaf2a.com/home/documents/personal')
