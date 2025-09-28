@@ -13,7 +13,9 @@ if TYPE_CHECKING:
 @contextmanager
 def stub_open(content: str) -> 'Iterator[MagicMock]':
     with patch.object(Path, 'open') as mock:
-        mock.return_value = StringIO(content)
+        string_io = StringIO(content)
+        string_io.close = lambda: None  # type: ignore[method-assign]
+        mock.return_value = string_io
         yield mock
 
 

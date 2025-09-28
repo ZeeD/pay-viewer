@@ -3,9 +3,6 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Final
 from unittest import TestCase
-from unittest.mock import call
-from unittest.mock import mock_open
-from unittest.mock import patch
 
 from payviewer.model import AdditionalDetail
 from payviewer.model import Column
@@ -14,6 +11,7 @@ from payviewer.model import Info
 from payviewer.writer.csvwriter import CsvWriter
 from payviewer.writer.csvwriter import fieldnames
 from payviewer.writer.csvwriter import rows
+from testsupport import stub_open
 
 INFOS: Final = [
     Info(
@@ -54,6 +52,8 @@ INFOS: Final = [
 
 
 class TestCsvWriter(TestCase):
+    maxDiff = None
+
     def test_fieldnames(self) -> None:
         expected = [
             'month',
@@ -81,6 +81,7 @@ class TestCsvWriter(TestCase):
             'legenda_reperibilita',
             'legenda_rol',
             'legenda_congedo',
+            'ticket_pasto',
             'descrizione 1',
             'descrizione 2',
         ]
@@ -104,14 +105,17 @@ class TestCsvWriter(TestCase):
         self.assertListEqual(expected, actual)
 
     def test_write_infos(self) -> None:
-        expected = [
-            'month,periodo,livello_categoria,n_scatti,minimo,scatti,superm,sup_ass,edr,totale_retributivo,ferie_a_prec,ferie_spett,ferie_godute,ferie_saldo,par_a_prec,par_spett,par_godute,par_saldo,netto_da_pagare,legenda_ordinario,legenda_straordinario,legenda_ferie,legenda_reperibilita,legenda_rol,legenda_congedo,descrizione 1,descrizione 2\r\n',  # noqa: E501
-            '1982-05-11,,,,1,,,,,,,,,,,,,,,,,,,,,1,\r\n',
-            '1989-07-27,,,,,,,,,,,,,,,,,,,,,4,,,,,10\r\n',
-        ]
+        expected = """month,periodo,livello_categoria,n_scatti,minimo,scatti,\
+superm,sup_ass,edr,totale_retributivo,ferie_a_prec,ferie_spett,ferie_godute,\
+ferie_saldo,par_a_prec,par_spett,par_godute,par_saldo,netto_da_pagare,\
+legenda_ordinario,legenda_straordinario,legenda_ferie,legenda_reperibilita,\
+legenda_rol,legenda_congedo,ticket_pasto,descrizione 1,descrizione 2\r
+1982-05-11,,,,1,,,,,,,,,,,,,,,,,,,,,,1,\r
+1989-07-27,,,,,,,,,,,,,,,,,,,,,4,,,,,,10\r
+"""
 
-        mock = mock_open()
-        with patch('pathlib.io.open', mock):
+        with stub_open('') as mock:
             CsvWriter(Path()).write_infos(INFOS)
+        actual = mock.return_value.getvalue()
 
-        mock().write.assert_has_calls([call(e) for e in expected])
+        self.assertEqual(expected, actual)

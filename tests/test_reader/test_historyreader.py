@@ -11,6 +11,8 @@ from testsupport import stub_open
 
 
 class TestHistoryReader(TestCase):
+    maxDiff = None
+
     def test_read_infos(self) -> None:
         with stub_open(
             """[{"when": "1982-05-11",
@@ -24,7 +26,12 @@ class TestHistoryReader(TestCase):
             date(1982, 5, 11),
             [Column(ColumnHeader.minimo, Decimal(1))],
             [],
-            Path('/'),
+            Path(),
         )
 
-        self.assertEqual(actual, expected)
+        self.assertEqual(actual.when, expected.when)
+        self.assertListEqual(actual.columns, expected.columns)
+        self.assertListEqual(
+            actual.additional_details, expected.additional_details
+        )
+        self.assertEqual(actual.path, expected.path)

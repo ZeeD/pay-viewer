@@ -16,6 +16,8 @@ ZERO = Decimal(0)
 class TestPdf2Xls(TestCase):
     """test pdf2xls functions."""
 
+    maxDiff = None
+
     def test_read_real_pdf(self) -> None:
         expected = [
             Info(
@@ -27,7 +29,7 @@ class TestPdf2Xls(TestCase):
                     Column(ColumnHeader.sup_ass, Decimal('674.16')),
                     Column(ColumnHeader.edr, ZERO),
                     Column(ColumnHeader.totale_retributivo, Decimal('2895.67')),
-                    Column(ColumnHeader.netto_da_pagare, Decimal(2090)),
+                    Column(ColumnHeader.netto_da_pagare, Decimal('2090.00')),
                     Column(ColumnHeader.ferie_a_prec, Decimal('-1.82')),
                     Column(ColumnHeader.ferie_spett, Decimal('1.67')),
                     Column(ColumnHeader.ferie_godute, ZERO),
@@ -36,12 +38,13 @@ class TestPdf2Xls(TestCase):
                     Column(ColumnHeader.par_spett, Decimal('8.67')),
                     Column(ColumnHeader.par_godute, ZERO),
                     Column(ColumnHeader.par_saldo, Decimal('603.35')),
-                    Column(ColumnHeader.legenda_ordinario, Decimal(70)),
+                    Column(ColumnHeader.legenda_ordinario, Decimal('70.00')),
                     Column(ColumnHeader.legenda_straordinario, ZERO),
-                    Column(ColumnHeader.legenda_ferie, Decimal(72)),
-                    Column(ColumnHeader.legenda_reperibilita, Decimal('64.5')),
-                    Column(ColumnHeader.legenda_rol, Decimal(2)),
-                    Column(ColumnHeader.legenda_congedo, Decimal(0)),
+                    Column(ColumnHeader.legenda_ferie, Decimal('72.00')),
+                    Column(ColumnHeader.legenda_reperibilita, Decimal('64.50')),
+                    Column(ColumnHeader.legenda_rol, Decimal('2.00')),
+                    Column(ColumnHeader.legenda_congedo, Decimal('0.00')),
+                    Column(ColumnHeader.ticket_pasto, Decimal('109.20')),
                 ],
                 [
                     AdditionalDetail(

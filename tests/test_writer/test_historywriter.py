@@ -14,7 +14,7 @@ from payviewer.writer.historywriter import HistoryWriter
 class TestHistoryWriter(TestCase):
     def test_write_infos(self) -> None:
         mock = mock_open()
-        with patch('pathlib.io.open', mock):
+        with patch('pathlib._local.io.open', mock):
             HistoryWriter(Path()).write_infos(
                 [
                     Info(
