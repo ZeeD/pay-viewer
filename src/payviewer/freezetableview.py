@@ -29,7 +29,7 @@ class FreezeTableView(Doubler[QTableView], QAbstractItemView):
         QAbstractItemView.__init__(self, parent)
         self.fixed_columns = fixed_columns
         content = cast(
-            TableViewUI, QUiLoader(parent).load(FREEZE_TABLE_VIEW_UI_PATH)
+            'TableViewUI', QUiLoader(parent).load(FREEZE_TABLE_VIEW_UI_PATH)
         )
         Doubler.__init__(self, content.left, content.right)
         self._model = model

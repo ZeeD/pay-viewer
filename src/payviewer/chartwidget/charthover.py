@@ -33,7 +33,9 @@ class ChartHover(QGraphicsWidget):
         self.setLayout(QGraphicsLinearLayout(Qt.Orientation.Vertical))
         self.setZValue(11)
 
-        self.widget = cast(ChartHoverUI, QUiLoader().load(CHARTHOVERUI_UI_PATH))
+        self.widget = cast(
+            'ChartHoverUI', QUiLoader().load(CHARTHOVERUI_UI_PATH)
+        )
 
         item = QGraphicsProxyWidget(self)
         item.setWidget(self.widget)

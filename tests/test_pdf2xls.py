@@ -10,7 +10,7 @@ from payviewer.model import Info
 from payviewer.reader.pdfreader import PdfReader
 from testsupport import resource_pdf
 
-ZERO = Decimal('0')
+ZERO = Decimal(0)
 
 
 class TestPdf2Xls(TestCase):
@@ -27,7 +27,7 @@ class TestPdf2Xls(TestCase):
                     Column(ColumnHeader.sup_ass, Decimal('674.16')),
                     Column(ColumnHeader.edr, ZERO),
                     Column(ColumnHeader.totale_retributivo, Decimal('2895.67')),
-                    Column(ColumnHeader.netto_da_pagare, Decimal('2090')),
+                    Column(ColumnHeader.netto_da_pagare, Decimal(2090)),
                     Column(ColumnHeader.ferie_a_prec, Decimal('-1.82')),
                     Column(ColumnHeader.ferie_spett, Decimal('1.67')),
                     Column(ColumnHeader.ferie_godute, ZERO),
@@ -36,12 +36,12 @@ class TestPdf2Xls(TestCase):
                     Column(ColumnHeader.par_spett, Decimal('8.67')),
                     Column(ColumnHeader.par_godute, ZERO),
                     Column(ColumnHeader.par_saldo, Decimal('603.35')),
-                    Column(ColumnHeader.legenda_ordinario, Decimal('70')),
+                    Column(ColumnHeader.legenda_ordinario, Decimal(70)),
                     Column(ColumnHeader.legenda_straordinario, ZERO),
-                    Column(ColumnHeader.legenda_ferie, Decimal('72')),
+                    Column(ColumnHeader.legenda_ferie, Decimal(72)),
                     Column(ColumnHeader.legenda_reperibilita, Decimal('64.5')),
-                    Column(ColumnHeader.legenda_rol, Decimal('2')),
-                    Column(ColumnHeader.legenda_congedo, Decimal('0')),
+                    Column(ColumnHeader.legenda_rol, Decimal(2)),
+                    Column(ColumnHeader.legenda_congedo, Decimal(0)),
                 ],
                 [
                     AdditionalDetail(
@@ -49,7 +49,7 @@ class TestPdf2Xls(TestCase):
                         1,
                         2000,
                         'STIPENDIO',
-                        Decimal('26'),
+                        Decimal(26),
                         Decimal('111.37192'),
                         ZERO,
                         Decimal('2895.67'),
@@ -59,7 +59,7 @@ class TestPdf2Xls(TestCase):
                         0,
                         2308,
                         'TICKET PASTO E109,20',
-                        Decimal('21'),
+                        Decimal(21),
                         Decimal('5.2'),
                         ZERO,
                         ZERO,
@@ -85,17 +85,10 @@ class TestPdf2Xls(TestCase):
                         Decimal('258.50'),
                     ),
                     AdditionalDetail(
-                        0,
-                        0,
-                        4802,
-                        'FERIE GODUTE',
-                        Decimal('9'),
-                        ZERO,
-                        ZERO,
-                        ZERO,
+                        0, 0, 4802, 'FERIE GODUTE', Decimal(9), ZERO, ZERO, ZERO
                     ),
                     AdditionalDetail(
-                        0, 0, 4806, 'PAR GODUTE', Decimal('2'), ZERO, ZERO, ZERO
+                        0, 0, 4806, 'PAR GODUTE', Decimal(2), ZERO, ZERO, ZERO
                     ),
                     AdditionalDetail(
                         None,
@@ -113,7 +106,7 @@ class TestPdf2Xls(TestCase):
                         5792,
                         'F.METASALUTE C/AZ.',
                         ZERO,
-                        Decimal('13'),
+                        Decimal(13),
                         ZERO,
                         ZERO,
                     ),
@@ -123,7 +116,7 @@ class TestPdf2Xls(TestCase):
                         5817,
                         'CONTRIBUTO F.A.P. 9,19%',
                         Decimal('9.19'),
-                        Decimal('3215'),
+                        Decimal(3215),
                         Decimal('295.46'),
                         ZERO,
                     ),
@@ -133,7 +126,7 @@ class TestPdf2Xls(TestCase):
                         5860,
                         'CONTRIBUTO F.A.P. 0,30%',
                         Decimal('.3'),
-                        Decimal('3215'),
+                        Decimal(3215),
                         Decimal('9.65'),
                         ZERO,
                     ),

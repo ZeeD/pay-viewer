@@ -88,6 +88,8 @@ lint.ignore = [
     "Q001",
     "Q002",
     "S603",
+    "TD002",
+    "TD003",
 ]
 lint.extend-per-file-ignores."stubs/**/*.pyi" = [
     "FBT001",

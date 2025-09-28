@@ -226,7 +226,7 @@ class SortFilterViewModel(SearchableModel):
 
     @override
     def sourceModel(self) -> ViewModel:
-        return cast(ViewModel, super().sourceModel())
+        return cast('ViewModel', super().sourceModel())
 
     def sort(
         self, column: int, order: Qt.SortOrder = Qt.SortOrder.AscendingOrder

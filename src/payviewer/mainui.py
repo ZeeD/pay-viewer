@@ -18,7 +18,6 @@ from PySide6.QtWidgets import QGridLayout
 from PySide6.QtWidgets import QLineEdit
 from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import QMessageBox
-from PySide6.QtWidgets import QTableView
 from PySide6.QtWidgets import QToolButton
 from PySide6.QtWidgets import QWidget
 
@@ -39,6 +38,7 @@ from payviewer.writer.csvwriter import CsvWriter
 if TYPE_CHECKING:
     from PySide6.QtCore import QItemSelection
     from PySide6.QtGui import QAction
+    from PySide6.QtWidgets import QTableView
 
 
 class Settingsui(QDialog):
@@ -58,7 +58,7 @@ def new_settingsui(settings: Settings) -> Settingsui:
     def open_folder() -> None:
         settingsui.dataPathLineEdit.setText(QFileDialog.getExistingDirectory())
 
-    settingsui = cast(Settingsui, QUiLoader().load(SETTINGSUI_UI_PATH))
+    settingsui = cast('Settingsui', QUiLoader().load(SETTINGSUI_UI_PATH))
     settingsui.usernameLineEdit.setText(settings.username)
     settingsui.passwordLineEdit.setText(settings.password)
     settingsui.dataPathLineEdit.setText(settings.data_path)
@@ -98,7 +98,7 @@ def onclick(model: SortFilterViewModel, index: QModelIndex) -> None:
     WIDGETS.append(widget)
 
 
-def new_mainui(  # noqa: C901
+def new_mainui(  # noqa: C901, PLR0915
     settings: Settings, model: SortFilterViewModel, settingsui: Settingsui
 ) -> QWidget:
     def update_helper(
@@ -129,13 +129,13 @@ def new_mainui(  # noqa: C901
         writer = CsvWriter(Path('/home/zed/Desktop/pdf2xls.csv'))
         writer.write_infos(model.get_rows())
 
-    mainui = cast(Mainui, QUiLoader().load(MAINUI_UI_PATH))
+    mainui = cast('Mainui', QUiLoader().load(MAINUI_UI_PATH))
 
     # replace table_view
     table_view = FreezeTableView(mainui.xls, model)
     table_view.clicked.connect(partial(onclick, model))
 
-    sheet = SearchSheet(mainui.xls, table_view=cast(QTableView, table_view))
+    sheet = SearchSheet(mainui.xls, table_view=cast('QTableView', table_view))
     sheet.set_model(model)
     mainui.gridLayout_1.addWidget(sheet, 0, 0)
     mainui.tableView = sheet

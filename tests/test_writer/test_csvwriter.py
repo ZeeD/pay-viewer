@@ -91,13 +91,13 @@ class TestCsvWriter(TestCase):
         expected = [
             {
                 'month': date(1982, 5, 11),
-                'minimo': Decimal('1'),
-                'descrizione 1': Decimal('1'),
+                'minimo': Decimal(1),
+                'descrizione 1': Decimal(1),
             },
             {
                 'month': date(1989, 7, 27),
-                'legenda_ferie': Decimal('4'),
-                'descrizione 2': Decimal('10'),
+                'legenda_ferie': Decimal(4),
+                'descrizione 2': Decimal(10),
             },
         ]
         actual = rows(INFOS)

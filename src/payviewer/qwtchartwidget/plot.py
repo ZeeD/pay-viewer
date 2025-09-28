@@ -21,7 +21,6 @@ from PySide6.QtGui import QMouseEvent
 from payviewer.modelgui import SeriesModelFactory
 from payviewer.modelgui import SeriesModelUnit
 from qwt.legend import QwtLegend
-from qwt.legend import QwtLegendLabel
 from qwt.plot import QwtPlot
 from qwt.plot_curve import QwtPlotCurve
 from qwt.plot_grid import QwtPlotGrid
@@ -37,7 +36,9 @@ if TYPE_CHECKING:
     from PySide6.QtWidgets import QWidget
 
     from payviewer.viewmodel import SortFilterViewModel
-## TODO replace file with guilib version
+    from qwt.legend import QwtLegendLabel
+
+## TODO: replace file with guilib version
 
 
 def linecolors() -> 'Iterable[Qt.GlobalColor]':
@@ -164,14 +165,14 @@ class Plot(QwtPlot):
 
         self._date_changed(min_xdata, max_xdata)
 
-    @Slot(date)  # type: ignore[arg-type]
+    @Slot(date)
     def start_date_changed(self, start_date: date) -> None:
         lower_bound = date2days(start_date)
         upper_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().maxValue()
 
         self._date_changed(lower_bound, upper_bound)
 
-    @Slot(date)  # type: ignore[arg-type]
+    @Slot(date)
     def end_date_changed(self, end_date: date) -> None:
         lower_bound = self.axisScaleDiv(QwtPlot.xBottom).interval().minValue()
         upper_bound = date2days(end_date)

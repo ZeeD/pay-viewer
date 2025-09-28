@@ -21,8 +21,8 @@ class TestXlsWriter(TestCase):
                 Info(
                     date(2019, 1, 1),
                     [
-                        Column(ColumnHeader.minimo, Decimal('1')),
-                        Column(ColumnHeader.edr, Decimal('2')),
+                        Column(ColumnHeader.minimo, Decimal(1)),
+                        Column(ColumnHeader.edr, Decimal(2)),
                     ],
                     [
                         AdditionalDetail(
@@ -30,20 +30,20 @@ class TestXlsWriter(TestCase):
                             None,
                             123,
                             'descr1',
-                            Decimal('3'),
-                            Decimal('4'),
-                            Decimal('5'),
-                            Decimal('6'),
+                            Decimal(3),
+                            Decimal(4),
+                            Decimal(5),
+                            Decimal(6),
                         ),
                         AdditionalDetail(
                             None,
                             None,
                             456,
                             'descr2',
-                            Decimal('7'),
-                            Decimal('8'),
-                            Decimal('9'),
-                            Decimal('0'),
+                            Decimal(7),
+                            Decimal(8),
+                            Decimal(9),
+                            Decimal(0),
                         ),
                     ],
                     Path('/'),
@@ -56,19 +56,19 @@ class TestXlsWriter(TestCase):
             [
                 Info(
                     date(2019, 1, 1),
-                    [Column(ColumnHeader.minimo, Decimal('4'))],
+                    [Column(ColumnHeader.minimo, Decimal(4))],
                     [],
                     Path('/'),
                 ),
                 Info(
                     date(2019, 2, 1),
-                    [Column(ColumnHeader.edr, Decimal('5'))],
+                    [Column(ColumnHeader.edr, Decimal(5))],
                     [],
                     Path('/'),
                 ),
                 Info(
                     date(2019, 3, 1),
-                    [Column(ColumnHeader.n_scatti, Decimal('6'))],
+                    [Column(ColumnHeader.n_scatti, Decimal(6))],
                     [],
                     Path('/'),
                 ),

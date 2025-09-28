@@ -7,11 +7,11 @@ from PySide6.QtCharts import QChart
 from PySide6.QtCharts import QLineSeries
 from PySide6.QtCore import Qt
 
-from payviewer.chartwidget.datetimeaxis import DateTimeAxis
-
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from datetime import date
+
+    from payviewer.chartwidget.datetimeaxis import DateTimeAxis
 
 
 class Chart(QChart):
@@ -23,7 +23,7 @@ class Chart(QChart):
         self.scrolledTo = 0.0
 
     def x_zoom(self, start_date: 'date', end_date: 'date') -> None:
-        axis = cast(DateTimeAxis, self.axes(Qt.Orientation.Horizontal)[0])
+        axis = cast('DateTimeAxis', self.axes(Qt.Orientation.Horizontal)[0])
 
         axis.setMin(date2days(start_date))
         axis.setMax(date2days(end_date))

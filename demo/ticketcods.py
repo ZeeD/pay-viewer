@@ -3,12 +3,14 @@
 from json import load
 from logging import INFO
 from logging import basicConfig
-from logging import info
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+LOGGER = getLogger(__name__)
 
 
 def all_ticketcods() -> 'Iterator[int]':
@@ -28,9 +30,9 @@ def all_ticketcods() -> 'Iterator[int]':
 
 def main() -> None:
     basicConfig(level=INFO, format='%(message)s')
-    info('select cod where TICKET in descrizione:')
+    LOGGER.info('select cod where TICKET in descrizione:')
     for cod in sorted(set(all_ticketcods())):
-        info('cod: %d', cod)
+        LOGGER.info('cod: %d', cod)
 
 
 if __name__ == '__main__':

@@ -13,7 +13,7 @@ class Settings:
 
     @property
     def username(self) -> str:
-        return cast(str, self.settings.value(SETTINGS_USERNAME))
+        return cast('str', self.settings.value(SETTINGS_USERNAME))
 
     @username.setter
     def username(self, username: str) -> None:
@@ -21,7 +21,7 @@ class Settings:
 
     @property
     def password(self) -> str:
-        return cast(str, self.settings.value(SETTINGS_PASSWORD))
+        return cast('str', self.settings.value(SETTINGS_PASSWORD))
 
     @password.setter
     def password(self, password: str) -> None:
@@ -29,7 +29,7 @@ class Settings:
 
     @property
     def data_path(self) -> str:
-        return cast(str, self.settings.value(SETTINGS_DATA_PATH))
+        return cast('str', self.settings.value(SETTINGS_DATA_PATH))
 
     @data_path.setter
     def data_path(self, data_path: str) -> None:

@@ -19,7 +19,7 @@ class TestHistoryWriter(TestCase):
                 [
                     Info(
                         date(1982, 5, 11),
-                        [Column(ColumnHeader.minimo, Decimal('1'))],
+                        [Column(ColumnHeader.minimo, Decimal(1))],
                         [],
                         Path('/'),
                     )

@@ -1,8 +1,6 @@
 from datetime import UTC
 from datetime import datetime
-from logging import info
-from logging import warning
-from os import listdir
+from logging import getLogger
 from pathlib import Path
 from shutil import move
 from tempfile import TemporaryDirectory
@@ -34,6 +32,8 @@ NOV: Final = 11
 DIC: Final = 12
 TRED: Final = 13
 
+LOGGER = getLogger(__name__)
+
 
 class Date(NamedTuple):
     year: int
@@ -56,59 +56,62 @@ class Date(NamedTuple):
 
 
 def options(dtemp: str) -> Options:
-    options = Options()
-
-    options.profile = FirefoxProfile()
+    profile = FirefoxProfile()
 
     # disable Firefox's built-in PDF viewer
-    options.profile.set_preference('pdfjs.disabled', value=True)
+    profile.set_preference('pdfjs.disabled', value=True)
 
     # set download folder
-    options.profile.set_preference('browser.download.folderList', 2)
-    options.profile.set_preference('browser.download.dir', dtemp)
-    options.profile.set_preference(
+    profile.set_preference('browser.download.folderList', 2)
+    profile.set_preference('browser.download.dir', dtemp)
+    profile.set_preference(
         'browser.helperApps.neverAsk.saveToDisk', 'application/octet-stream'
     )
 
+    options = Options()
+    options.profile = profile
     return options
 
 
 def wait_download(dtemp: str) -> None:
-    info('wait_download (initial: %s)', listdir(dtemp))
-    while not listdir(dtemp):
+    dptemp = Path(dtemp)
+    LOGGER.info('wait_download (initial: %s)', list(dptemp.iterdir()))
+    while not list(dptemp.iterdir()):
         sleep(0.5)
-        info('wait_download [empty]')
-    while any(fn.endswith('.part') for fn in listdir(dtemp)):
+        LOGGER.info('wait_download [empty]')
+    while any(fn.suffix == '.part' for fn in dptemp.iterdir()):
         sleep(0.5)
-        info('wait_download [.part]')
+        LOGGER.info('wait_download [.part]')
 
 
 def mv_pdf_from_tmp_to_data(
     dtemp: str, year: int, month: int, data_path: str
 ) -> None:
     Path(f'{data_path}/{year}').mkdir(parents=True, exist_ok=True)
+    dptemp = Path(dtemp)
 
-    info('files in dtemp:')
-    for dtempfn in listdir(dtemp):
-        info('\t%s/%s', dtemp, dtempfn)
-        if f'Cedolini_{year}_{month:02}.pdf' == dtempfn:
-            info('\t(matched)')
+    LOGGER.info('files in dtemp:')
+    dtempfns = list(dptemp.iterdir())
+    for dtempfn in dtempfns:
+        LOGGER.info('\t%s/%s', dtemp, dtempfn)
+        if f'Cedolini_{year}_{month:02}.pdf' == dtempfn.name:
+            LOGGER.info('\t(matched)')
             src = f'{dtemp}/Cedolini_{year}_{month:02}.pdf'
             break
     else:
-        warning('\t(NOT matched)')
-        src = f'{dtemp}/{listdir(dtemp)[0]}'
+        LOGGER.warning('\t(NOT matched)')
+        src = f'{dtemp}/{dtempfns[0]}'
     dst = f'{data_path}/{year}/Cedolini_{year}_{month:02}.pdf'
-    info("mv'ing '%s' to '%s'", src, dst)
+    LOGGER.info("mv'ing '%s' to '%s'", src, dst)
     move(src, dst)
 
 
 def get_last_local(data_path: str) -> Date:
-    max_year = max(fn for fn in listdir(data_path) if '.' not in fn)
-    last_pdf = max(
-        fn for fn in listdir(f'{data_path}/{max_year}') if fn.endswith('.pdf')
-    )
-    year, month = map(int, last_pdf.split('.', 1)[0].split('_', 2)[1:])
+    data_path_p = Path(data_path)
+
+    max_year = max(fn for fn in data_path_p.iterdir() if '.' not in fn.name)
+    last_pdf = max(fn for fn in max_year.iterdir() if fn.suffix == '.pdf')
+    year, month = map(int, last_pdf.stem.split('_', 2)[1:])
     return Date(year, month)
 
 

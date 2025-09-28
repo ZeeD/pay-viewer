@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import TYPE_CHECKING
 from typing import cast
 
@@ -8,6 +7,8 @@ from guilib.dates.generators import next_first_of_the_year
 from PySide6.QtCharts import QCategoryAxis
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from PySide6.QtCore import QDateTime
     from PySide6.QtCore import QObject
 
@@ -25,8 +26,8 @@ class DateTimeAxis(QCategoryAxis):
         )
         self.setTruncateLabels(False)
 
-        x_min_date = cast(datetime, x_min.toPython()).date()
-        x_max_date = cast(datetime, x_max.toPython()).date()
+        x_min_date = cast('datetime', x_min.toPython()).date()
+        x_max_date = cast('datetime', x_max.toPython()).date()
 
         self.setStartValue(date2days(x_min_date))
 
