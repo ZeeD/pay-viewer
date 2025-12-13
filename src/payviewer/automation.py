@@ -153,9 +153,12 @@ def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  #
             text = f'{month:02d}/{year:04d}'
             for row in d.find_elements(By.CSS_SELECTOR, '.mat-mdc-row'):
                 mese = row.find_element(By.CSS_SELECTOR, '.cdk-column-label')
-                if not mese or not mese.get_attribute('textContent').endswith(
-                    text
-                ):
+                if not mese:
+                    continue
+                text_content = mese.get_attribute('textContent')
+                if text_content is None:
+                    continue
+                if not text_content.endswith(text):
                     continue
                 button = row.find_element(
                     By.CSS_SELECTOR, '.cdk-column-download button'

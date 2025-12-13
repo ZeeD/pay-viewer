@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from guilib.chartslider.chartslider import ChartSlider
+from guilib.chartslider.xchartslider import XChartSlider
 from PySide6.QtWidgets import QVBoxLayout
 from PySide6.QtWidgets import QWidget
 
@@ -23,7 +23,7 @@ class ChartWidget(QWidget):
         super().__init__(parent)
 
         chart_view = ChartView(model, self, factory)
-        chart_slider = ChartSlider(model, self, dates_column=0)
+        chart_slider = XChartSlider(model, self, dates_column=0)
 
         layout = QVBoxLayout(self)
         layout.addWidget(chart_view)

@@ -20,11 +20,11 @@ dependencies = [
     "jdk4py>=21.0.4.1",
     "openpyxl>=3.1.5",
     "pandas>=2.2.2",
-    "pyside6>=6.8.2",
-    "pythonqwt>=0.12.5",
+    "pyside6-essentials>=6.10.1",
+    "pythonqwt>=0.15",
     "selenium>=4.22",
     "tabula-py[jpype]>=2.9.3",
-    "zeed-guilib>=0.0.4",
+    "zeed-guilib>=0.0.13",
 ]
 urls.Homepage = "https://github.com/ZeeD/pay-viewer"
 urls.Repository = "https://github.com/ZeeD/pay-viewer.git"
