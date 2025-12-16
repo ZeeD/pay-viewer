@@ -32,6 +32,7 @@ from qwt.text import QwtText
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from decimal import Decimal
 
     from PySide6.QtWidgets import QWidget
 
@@ -214,6 +215,23 @@ class Plot(QwtPlot):
 
         self.replot()
 
+    @Slot(date)
+    def min_money_changed(self, min_money: 'Decimal') -> None:
+        lower_bound = float(min_money)
+        upper_bound = self.axisScaleDiv(QwtPlot.yLeft).interval().maxValue()
+
+        self._money_changed(lower_bound, upper_bound)
+
+    @Slot(date)
+    def max_money_changed(self, max_money: 'Decimal') -> None:
+        lower_bound = self.axisScaleDiv(QwtPlot.yLeft).interval().minValue()
+        upper_bound = float(max_money)
+
+        self._money_changed(lower_bound, upper_bound)
+
+    def _money_changed(self, lower_bound: float, upper_bound: float) -> None:
+        self.setAxisScale(QwtPlot.yLeft, lower_bound, upper_bound)
+
     @override
     def mouseMoveEvent(self, event: 'QMouseEvent') -> None:
         event_pos = event.position()
@@ -248,7 +266,7 @@ class Plot(QwtPlot):
 
             text = QwtText.make(
                 f'{name} - € {y_closest:_.2f}',
-                weight=QFont.Weight.Bold,
+                # weight=QFont.Weight.Bold, # noqa: ERA001
                 color=curve.pen().color(),
             )
             legend.setText(text)
