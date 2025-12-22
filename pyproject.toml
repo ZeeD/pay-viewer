@@ -60,7 +60,7 @@ tests = { composite = [
     "coverage report",
     "coverage erase",
 ] }
-start = { call = "payviewer.mainui:main" }
+start = "pay-viewer"
 bump_and_publish = { composite = [
     "pdm bump patch --commit --tag",
     "pdm publish",
