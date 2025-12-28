@@ -8,12 +8,14 @@ from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QStackedBarSeries
 from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor
+from PySide6.QtGui import QColorConstants
 from PySide6.QtWidgets import QApplication
 from PySide6.QtWidgets import QWidget
 
 from payviewer.loader import load
+from payviewer.model import ZERO
 from payviewer.model import Info
-from payviewer.model import get_descrizione
 from payviewer.settings import Settings
 
 if TYPE_CHECKING:
@@ -27,21 +29,20 @@ def q_bar_category_axis(title: str, categories: list[str]) -> QBarCategoryAxis:
     return ret
 
 
-def q_value_axis(title: str, min_: float, max_: float) -> QValueAxis:
+def q_value_axis(title: str) -> QValueAxis:
     ret = QValueAxis()
     ret.setTitleText(title)
-    ret.setRange(min_, max_)
-    # ensure 0 is shown
-    ret.setTickCount(1 + (int(max_ - min_) // 1_000))
-
+    ret.setTickCount(40)
     return ret
 
 
-def q_bar_set(label: str, values: list[float]) -> QBarSet:
+def q_bar_set(label: str, values: list[float], color: QColor) -> QBarSet:
     for _value in values:
         pass
     ret = QBarSet(label)
     ret.append(values)
+    ret.setColor(color)
+    ret.setBorderColor(QColorConstants.DarkGreen)
     return ret
 
 
@@ -58,39 +59,18 @@ def get_key(when: 'date') -> str:
     )
 
 
-def infos_to_data(
-    infos: list[Info],
-) -> list[tuple[str, list[tuple[str, float]]]]:
-    all_descrizione = {
-        get_descrizione(additional_detail): 0
-        for info in infos
-        for additional_detail in info.additional_details
-    }.keys()
-
-    tmp: dict[str, dict[str, float]] = {
-        descrizione: {get_key(info.when): 0 for info in infos}
-        for descrizione in all_descrizione
-    }
+def infos_to_data(infos: list[Info]) -> list[tuple[str, float, float]]:
+    ret = []
     for info in infos:
+        key = get_key(info.when)
+
+        trattenute = ZERO
+        competenze = ZERO
         for additional_detail in info.additional_details:
-            descrizione = get_descrizione(additional_detail)
-            key = get_key(info.when)
+            trattenute += additional_detail.trattenute
+            competenze += additional_detail.competenze
 
-            tmp[descrizione][key] = float(
-                -additional_detail.trattenute
-                if additional_detail.trattenute
-                else additional_detail.competenze
-            )
-    ret: list[tuple[str, list[tuple[str, float]]]] = []
-    for descrizione, when_values in tmp.items():
-        if all(value == 0 for value in when_values.values()):
-            continue
-
-        whens: list[tuple[str, float]] = []
-        for when in sorted(when_values):
-            value = when_values[when]
-            whens.append((when, value))
-        ret.append((descrizione, whens))
+        ret.append((key, float(trattenute), float(competenze)))
 
     return ret
 
@@ -99,26 +79,26 @@ def stacked() -> QWidget:
     infos = load(Settings().data_path)
     data = infos_to_data(infos)
 
-    axis_x = q_bar_category_axis('Month', [t[0] for t in data[0][1]])
-    axis_y = q_value_axis('€', -5_000, 10_000)
+    axis_x = q_bar_category_axis('Mensilità', [t[0] for t in data])
+    axis_y = q_value_axis('€')
 
     stacked_bar_series = q_stacked_bar_series(
-        *[
-            q_bar_set(descrizione, [t[1] for t in when_values])
-            for descrizione, when_values in data
-        ]
+        q_bar_set('netto', [t[2] - t[1] for t in data], QColorConstants.Green),
+        q_bar_set(
+            'trattenute', [t[1] for t in data], QColorConstants.DarkMagenta
+        ),
     )
 
     chart = QChart()
     chart.addSeries(stacked_bar_series)
-
     chart.addAxis(axis_x, Qt.AlignmentFlag.AlignBottom)
     chart.addAxis(axis_y, Qt.AlignmentFlag.AlignLeft)
     stacked_bar_series.attachAxis(axis_x)
     stacked_bar_series.attachAxis(axis_y)
-
     chart.legend().setVisible(True)
-    chart.legend().setAlignment(Qt.AlignmentFlag.AlignLeft)
+    chart.legend().setAlignment(Qt.AlignmentFlag.AlignBottom)
+
+    axis_y.applyNiceNumbers()
 
     return QChartView(chart)
 
