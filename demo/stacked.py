@@ -26,6 +26,7 @@ def q_bar_category_axis(title: str, categories: list[str]) -> QBarCategoryAxis:
     ret = QBarCategoryAxis()
     ret.setTitleText(title)
     ret.append(categories)
+    ret.setLabelsAngle(-90)
     return ret
 
 
