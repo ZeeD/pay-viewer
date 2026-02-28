@@ -43,30 +43,26 @@ dev = [
 [tool.pdm]
 distribution = true
 plugins = [ "pdm-bump" ]
-
-[tool.pdm.build]
-excludes = [ "tests" ]
-
-[tool.pdm.scripts]
-_.env = { PYTHONPATH = "src:tests:demo:stubs" }
-lint = { composite = [
+build.excludes = [ "tests" ]
+scripts._.env = { PYTHONPATH = "src:tests:demo:stubs" }
+scripts.lint = { composite = [
     "pyproject-fmt pyproject.toml",
     "ruff format {args:.}",
     "ruff check {args:.}",
     "mypy {args:.}",
 ], keep_going = true }
-tests = { composite = [
+scripts.tests = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests {args}",
     "coverage report",
     "coverage erase",
 ] }
-start = "pay-viewer"
-bump_and_publish = { composite = [
+scripts.start = "pay-viewer"
+scripts.bump_and_publish = { composite = [
     "pdm bump patch --commit --tag",
     "pdm publish",
     "git push",
 ] }
-tabula = """
+scripts.tabula = """
 .venv/lib/python3.13/site-packages/jdk4py/java-runtime/bin/java
 --add-opens java.base/java.util.zip=ALL-UNNAMED
 --add-opens java.desktop/sun.java2d=ALL-UNNAMED
@@ -119,14 +115,12 @@ lint.isort.force-single-line = true
 column_width = 80
 indent = 4
 
-[tool.coverage.run]
-branch = true
-source = [ "src", "tests" ]
-
-[tool.coverage.report]
-show_missing = true
-sort = "Cover"
-skip_empty = true
+[tool.coverage]
+run.branch = true
+run.source = [ "src", "tests" ]
+report.show_missing = true
+report.skip_empty = true
+report.sort = "Cover"
 
 [tool.mypy]
 mypy_path = [ "src", "tests", "demo", "stubs" ]
