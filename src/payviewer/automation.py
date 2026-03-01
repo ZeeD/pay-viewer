@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING
 from typing import Final
 from typing import NamedTuple
 
-from selenium.webdriver import Firefox
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.support.expected_conditions import (
     presence_of_element_located,
 )
@@ -118,7 +118,7 @@ def get_last_local(data_path: str) -> Date:
 def try_fetch_new_data(username: str, password: str, data_path: str) -> None:  # noqa: C901
     with (
         TemporaryDirectory() as dtemp,
-        Firefox(
+        WebDriver(
             service=Service(executable_path=str(GECKODRIVER_PATH)),
             options=options(dtemp),
         ) as d
