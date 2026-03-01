@@ -5,6 +5,7 @@ from decimal import Decimal
 from itertools import chain
 from statistics import mean
 from typing import NamedTuple
+from urllib.request import urlopen
 
 from PySide6.QtCharts import QBarCategoryAxis
 from PySide6.QtCharts import QBarSeries
@@ -14,7 +15,6 @@ from PySide6.QtCharts import QChartView
 from PySide6.QtCharts import QValueAxis
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
-from urllib3 import request
 
 from payviewer.loader import load
 from payviewer.model import ColumnHeader
@@ -24,13 +24,14 @@ from payviewer.settings import Settings
 
 def istat_client(year: int, mean_: Decimal) -> Decimal:
     somma = f'{mean_:.2f}'.replace('.', '%2C')
-    response = request(
-        'POST',
+    with urlopen(
         'https://rivaluta.istat.it/Rivaluta/Widget/CalcolatoreCoefficientiAction.action',
-        body=f'PERIODO=1&meseDa=Media%20Annua&annoDa={year}&meseA=Giugno&annoA=2024&SOMMA={somma}&EUROLIRE=true&',
-        headers={'Content-Type': 'application/x-www-form-urlencoded'},
-    )
-    raw_html = response.data.decode('latin1')
+        data=f'PERIODO=1&meseDa=Media%20Annua&annoDa={year}&meseA=Giugno&annoA=2024&SOMMA={somma}&EUROLIRE=true&'.encode(
+            'latin1'
+        ),
+    ) as request:
+        response = request.read()
+    raw_html = response.decode('latin1')
     try:
         raw_line = raw_html.splitlines()[38]
     except IndexError:
