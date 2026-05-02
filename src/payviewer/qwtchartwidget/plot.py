@@ -1,6 +1,5 @@
 from datetime import date
 from datetime import timedelta
-from itertools import cycle
 from math import inf
 from typing import TYPE_CHECKING
 from typing import cast
@@ -11,6 +10,10 @@ from guilib.dates.converters import days2date
 from guilib.dates.generators import days
 from guilib.dates.generators import months
 from guilib.dates.generators import years
+from guilib.qwtplot.plot import LIMIT
+from guilib.qwtplot.plot import linecolors
+from guilib.qwtplot.scaledraw import EuroScaleDraw
+from guilib.qwtplot.scaledraw import YearMonthScaleDraw
 from PySide6.QtCore import QSize
 from PySide6.QtCore import Qt
 from PySide6.QtCore import Slot
@@ -31,7 +34,6 @@ from qwt.symbol import QwtSymbol
 from qwt.text import QwtText
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
     from decimal import Decimal
 
     from PySide6.QtWidgets import QWidget
@@ -40,22 +42,6 @@ if TYPE_CHECKING:
     from qwt.legend import QwtLegendLabel
 
 ## TODO: replace file with guilib version
-
-
-def linecolors() -> 'Iterable[Qt.GlobalColor]':
-    excluded: set[Qt.GlobalColor] = {
-        Qt.GlobalColor.color0,
-        Qt.GlobalColor.color1,
-        Qt.GlobalColor.black,
-        Qt.GlobalColor.white,
-        Qt.GlobalColor.lightGray,
-        Qt.GlobalColor.cyan,
-        Qt.GlobalColor.green,
-        Qt.GlobalColor.magenta,
-        Qt.GlobalColor.yellow,
-        Qt.GlobalColor.transparent,
-    }
-    return cycle(filter(lambda c: c not in excluded, Qt.GlobalColor))
 
 
 class FmtScaleDraw(QwtScaleDraw):
@@ -77,35 +63,40 @@ class FmtScaleDraw(QwtScaleDraw):
         )
 
 
-class YearMonthScaleDraw(QwtScaleDraw):
-    def label(self, value: float) -> str:
-        return days2date(value).strftime('%Y-%m')
-
-
 class Plot(QwtPlot):
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         model: 'SortFilterViewModel',
         parent: 'QWidget | None',
         factory: SeriesModelFactory,
+        *,
+        x_bottom_scale_draw: 'QwtScaleDraw | None' = None,
+        y_left_scale_draw: 'QwtScaleDraw | None' = None,
+        curve_style: int = QwtPlotCurve.Steps,
     ) -> None:
         super().__init__(parent)
         self.factory = factory
-        self._model = model.sourceModel()
+        self._model = model
         self._model.modelReset.connect(self.model_reset)
         self.setCanvasBackground(Qt.GlobalColor.white)
         QwtPlotGrid.make(self, enableminor=(False, True))
-        self.setAxisScaleDraw(QwtPlot.xBottom, YearMonthScaleDraw())
+        self.setAxisScaleDraw(
+            QwtPlot.xBottom, x_bottom_scale_draw or YearMonthScaleDraw()
+        )
+        self.setAxisScaleDraw(
+            QwtPlot.yLeft, y_left_scale_draw or EuroScaleDraw()
+        )
         # https://github.com/PlotPyStack/PythonQwt/issues/88
         self.canvas().setMouseTracking(True)
         self.setMouseTracking(True)
         self.insertLegend(QwtLegend(), QwtPlot.TopLegend)
         self.curves: dict[str, QwtPlotCurve] = {}
         self.markers: dict[str, QwtPlotMarker] = {}
+        self._curve_style = curve_style
 
     @Slot()
     def model_reset(self) -> None:
-        series_model = self.factory(self._model._infos)  # noqa: SLF001
+        series_model = self.factory(self._model.sourceModel()._infos)  # noqa: SLF001
 
         self.setAxisScaleDraw(
             QwtPlot.yLeft, FmtScaleDraw.from_unit(series_model.unit)
@@ -120,6 +111,11 @@ class Plot(QwtPlot):
         ):
             xdata: list[float] = []
             ydata: list[float] = []
+
+            header = serie.name()
+            if not header:
+                raise ValueError
+
             for point in serie.points():
                 when, howmuch = point.x(), point.y()
                 xdata.append(when)
@@ -133,7 +129,7 @@ class Plot(QwtPlot):
                 if max_xdata is None or tmp > max_xdata:
                     max_xdata = tmp
 
-            name = serie.name()
+            name = header
             self.curves[name] = QwtPlotCurve.make(
                 xdata=xdata,
                 ydata=ydata,
@@ -141,7 +137,7 @@ class Plot(QwtPlot):
                     f'{name} - ...', weight=QFont.Weight.Bold, color=linecolor
                 ),
                 plot=self,
-                style=QwtPlotCurve.Steps,
+                style=self._curve_style,
                 linecolor=linecolor,
                 linewidth=2,
                 antialiased=True,
@@ -193,8 +189,24 @@ class Plot(QwtPlot):
         if len(ys) == 1:
             ys = []
 
+        minor = ds
+        medium = ms
+        major = ys
+        if len(medium) < LIMIT:
+            medium = ds
+            minor = []
+        if len(major) < LIMIT:
+            major = ms
+            medium = ds
+            minor = []
+        if len(major) < LIMIT:
+            major = ds
+            medium = []
+            minor = []
+
         self.setAxisScaleDiv(
-            QwtPlot.xBottom, QwtScaleDiv(lower_bound, upper_bound, ds, ms, ys)
+            QwtPlot.xBottom,
+            QwtScaleDiv(lower_bound, upper_bound, minor, medium, major),
         )
 
         y_min, y_max = inf, -inf
@@ -208,8 +220,9 @@ class Plot(QwtPlot):
                 for idx, x in enumerate(data.xData())
                 if lower_bound <= x <= upper_bound
             ]
-            y_min = min(y_min, *ys2)
-            y_max = max(y_max, *ys2)
+            if ys2:
+                y_min = min(y_min, *ys2)
+                y_max = max(y_max, *ys2)
 
         self.setAxisScale(QwtPlot.yLeft, y_min, y_max)
 
@@ -233,7 +246,7 @@ class Plot(QwtPlot):
         self.setAxisScale(QwtPlot.yLeft, lower_bound, upper_bound)
 
     @override
-    def mouseMoveEvent(self, event: 'QMouseEvent') -> None:
+    def mouseMoveEvent(self, event: QMouseEvent) -> None:
         event_pos = event.position()
 
         scale_map = self.canvasMap(QwtPlot.xBottom)
@@ -257,7 +270,7 @@ class Plot(QwtPlot):
             y_closest = None
             td_min = timedelta.max
             for x_data, y_data in zip(data.xData(), data.yData(), strict=True):
-                dt_x = days2date(x_data)
+                dt_x = days2date(float(x_data))
                 td = dt_hover - dt_x if dt_hover > dt_x else dt_x - dt_hover
                 if td < td_min:
                     x_closest = x_data

@@ -10,11 +10,12 @@ license = { file = "LICENSE" }
 authors = [
     { name = "ZeeD", email = "vito.detullio@gmail.com" },
 ]
-requires-python = ">=3.12,<3.14"
+requires-python = ">=3.12,<3.15"
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
     "jdk4py>=21.0.4.1",
@@ -28,6 +29,7 @@ dependencies = [
 ]
 urls.Homepage = "https://github.com/ZeeD/pay-viewer"
 urls.Repository = "https://github.com/ZeeD/pay-viewer.git"
+scripts.pay-settings = "paysettings:main"
 gui-scripts.pay-viewer = "payviewer.mainui:main"
 
 [dependency-groups]
@@ -43,7 +45,7 @@ dev = [
 [tool.pdm]
 distribution = true
 plugins = [ "pdm-bump" ]
-build.excludes = [ "tests" ]
+build.excludes = [ "tests", "demo" ]
 scripts._.env = { PYTHONPATH = "src:tests:demo:stubs" }
 scripts.lint = { composite = [
     "pyproject-fmt pyproject.toml",
@@ -51,7 +53,7 @@ scripts.lint = { composite = [
     "ruff check {args:.}",
     "mypy {args:.}",
 ], keep_going = true }
-scripts.tests = { composite = [
+scripts.test = { composite = [
     "coverage run -m unittest discover --verbose --locals --failfast --catch --start-directory tests {args}",
     "coverage report",
     "coverage erase",
@@ -61,6 +63,7 @@ scripts.bump_and_publish = { composite = [
     "pdm bump patch --commit --tag",
     "pdm publish",
     "git push",
+    "git push --tags",
 ] }
 scripts.tabula = """
 .venv/lib/python3.13/site-packages/jdk4py/java-runtime/bin/java
@@ -71,6 +74,7 @@ scripts.tabula = """
 -Dtabula.openBrowser=true
 -jar bin/tabula-win-1.2.1/tabula/tabula.jar
 """
+scripts.pay-settings = "pay-settings"
 
 [tool.ruff]
 line-length = 80
@@ -87,12 +91,10 @@ lint.ignore = [
     "D203",
     "D213",
     "ISC001",
-    "PD",
     "PT009",
     "PT027",
     "Q001",
     "Q002",
-    "S603",
     "TD002",
     "TD003",
 ]
@@ -115,18 +117,17 @@ lint.isort.force-single-line = true
 column_width = 80
 indent = 4
 
+[tool.mypy]
+mypy_path = [ "src", "tests", "demo", "stubs" ]
+strict = true
+warn_unused_configs = true
+overrides = [
+    { module = [ "payviewer.automation" ], disable_error_code = "no-untyped-call" },
+]
+
 [tool.coverage]
 run.branch = true
 run.source = [ "src", "tests" ]
 report.show_missing = true
 report.skip_empty = true
 report.sort = "Cover"
-
-[tool.mypy]
-mypy_path = [ "src", "tests", "demo", "stubs" ]
-strict = true
-warn_unused_configs = true
-
-[[tool.mypy.overrides]]
-module = [ "payviewer.automation", "payviewer.automation_cu" ]
-disable_error_code = "no-untyped-call"
