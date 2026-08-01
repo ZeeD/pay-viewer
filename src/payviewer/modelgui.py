@@ -206,7 +206,7 @@ class SeriesModel:
             yearly_sum_serie = QLineSeries()
             yearly_sum_serie.setName(f'yearly sum for {serie.name()}')
 
-            prev_year: None | int = None
+            prev_year: int | None = None
             yearly_sum = 0.0
             for point in serie.points():
                 when = days2date(point.x())

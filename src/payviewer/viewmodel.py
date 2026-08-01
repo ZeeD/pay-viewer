@@ -108,18 +108,14 @@ class ViewModel(QAbstractTableModel):
         self,
         index: QModelIndex | QPersistentModelIndex,
         role: int = Qt.ItemDataRole.DisplayRole,
-    ) -> (
-        'str | Qt.AlignmentFlag | None | date | Decimal | QBrush | QIcon | Path'
-    ): ...
+    ) -> 'str|Qt.AlignmentFlag|date|Decimal|QBrush|QIcon|Path|None': ...
 
     @override
     def data(  # noqa: C901 PLR0911 PLR0912
         self,
         index: QModelIndex | QPersistentModelIndex,
         role: int = Qt.ItemDataRole.DisplayRole,
-    ) -> (
-        'str | Qt.AlignmentFlag | None | date | Decimal | QBrush | QIcon | Path'
-    ):
+    ) -> 'str|Qt.AlignmentFlag|date|Decimal|QBrush|QIcon|Path|None':
         column = index.column()
         row = index.row()
 
