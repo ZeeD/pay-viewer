@@ -49,6 +49,7 @@ class PdfReader(ABCReader):
                 pandas_options={'header': None},
                 pages=1,
                 stream=True,
+                java_options=['--enable-native-access=ALL-UNNAMED']
             )
 
         table_periodo = tables[0]
