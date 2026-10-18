@@ -4,7 +4,7 @@ requires = [ "pdm-backend" ]
 
 [project]
 name = "zeed-pay-viewer"
-version = "0.0.1"
+version = "0.0.2"
 description = "python+qt based pay viewer"
 license = { file = "LICENSE" }
 requires-python = ">=3.12,<3.15"
