@@ -18,24 +18,24 @@ dependencies = [
     "jdk4py>=21.0.4.1",
     "openpyxl>=3.1.5",
     "pandas>=2.2.2",
-    "pyside6-essentials==6.12.0",
+    "pyside6-addons==6.12",
+    "pyside6-essentials==6.12",
+    "pyside6-pdf>=6.12.0.140",
     "pythonqwt>=0.15",
     "selenium>=4.22",
     "tabula-py[jpype]>=2.9.3",
     "zeed-guilib>=0.0.13",
-    "pyside6-addons==6.12.0",
-    "PySide6-Pdf>=6.12.0.140",
 ]
 [[project.authors]]
 name = "ZeeD"
 email = "vito.detullio@gmail.com"
-[project.gui-scripts]
-pay-viewer = "payviewer.mainui:main"
-[project.scripts]
-pay-settings = "paysettings:main"
 [project.urls]
 Homepage = "https://github.com/ZeeD/pay-viewer"
 Repository = "https://github.com/ZeeD/pay-viewer.git"
+[project.scripts]
+pay-settings = "paysettings:main"
+[project.gui-scripts]
+pay-viewer = "payviewer.mainui:main"
 
 [dependency-groups]
 dev = [
@@ -96,6 +96,7 @@ select = [ "ALL" ]
 ignore = [
     "ANN1",
     "COM812",
+    "CPY001",
     "D1",
     "D203",
     "D213",
@@ -105,8 +106,7 @@ ignore = [
     "Q001",
     "Q002",
     "TD002",
-    "TD003",
-    "CPY001"
+    "TD003"
 ]
 extend-per-file-ignores."stubs/**/*.pyi" = [
     "FBT001",
@@ -136,10 +136,10 @@ overrides = [
     { module = [ "payviewer.automation" ], disable_error_code = "no-untyped-call" },
 ]
 
-[tool.coverage.report]
-show_missing = true
-skip_empty = true
-sort = "Cover"
 [tool.coverage.run]
-branch = true
 source = [ "src", "tests" ]
+branch = true
+[tool.coverage.report]
+skip_empty = true
+show_missing = true
+sort = "Cover"
