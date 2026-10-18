@@ -24,6 +24,7 @@ dependencies = [
     "tabula-py[jpype]>=2.9.3",
     "zeed-guilib>=0.0.13",
     "pyside6-addons==6.12.0",
+    "PySide6-Pdf>=6.12.0.140",
 ]
 [[project.authors]]
 name = "ZeeD"
